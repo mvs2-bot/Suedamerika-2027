@@ -54,6 +54,10 @@
       --badge-stefan-ines-txt: #15803d;
       --badge-stefan-ines-border: #86efac;
 
+      --badge-stefan-ines-tanja-bg: #fef9c3;
+      --badge-stefan-ines-tanja-txt: #854d0e;
+      --badge-stefan-ines-tanja-border: #fef08a;
+
       --badge-ines-tanja-bg: #fef3c7;
       --badge-ines-tanja-txt: #92400e;
       --badge-ines-tanja-border: #fde68a;
@@ -521,6 +525,12 @@
       border: 1px solid var(--badge-stefan-ines-border);
     }
 
+    .group-stefan-ines-tanja {
+      background: var(--badge-stefan-ines-tanja-bg);
+      color: var(--badge-stefan-ines-tanja-txt);
+      border: 1px solid var(--badge-stefan-ines-tanja-border);
+    }
+
     .group-ines-tanja {
       background: var(--badge-ines-tanja-bg);
       color: var(--badge-ines-tanja-txt);
@@ -603,25 +613,7 @@
       margin-bottom: 4px;
     }
 
-    /* KALENDER STYLES */
-    .calendar-container {
-      background: var(--card-bg);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 14px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.03);
-    }
-
-    .calendar-grid-header {
-      display: grid;
-      grid-template-columns: 140px repeat(68, 1fr);
-      gap: 1px;
-      background: var(--border);
-      border: 1px solid var(--border);
-      border-radius: 6px 6px 0 0;
-      overflow-x: auto;
-    }
-
+    /* KALENDER GANTT STYLES */
     .calendar-timeline {
       overflow-x: auto;
       border: 1px solid var(--border);
@@ -630,7 +622,7 @@
 
     .calendar-row {
       display: grid;
-      grid-template-columns: 150px repeat(68, 28px);
+      grid-template-columns: 150px repeat(68, 30px);
       border-bottom: 1px solid var(--border);
       background: #ffffff;
       align-items: center;
@@ -669,7 +661,7 @@
     }
 
     .calendar-cell {
-      height: 36px;
+      height: 38px;
       border-right: 1px solid #f1f5f9;
       display: flex;
       align-items: center;
@@ -678,8 +670,9 @@
       position: relative;
     }
 
+    /* Aufenthaltsbalken & Flugtage-Style */
     .calendar-bar {
-      height: 22px;
+      height: 24px;
       border-radius: 4px;
       width: 100%;
       margin: 0 1px;
@@ -690,12 +683,37 @@
       font-size: 0.65rem;
       font-weight: 800;
       box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+      cursor: pointer;
     }
 
-    .bar-stefan { background: var(--stefan-color); }
-    .bar-ines { background: var(--ines-color); }
-    .bar-tanja { background: var(--tanja-color); }
-    .bar-verena { background: var(--verena-color); }
+    /* Nicht ausgefüllte / Gestrichelte Kästchen für Flugtage */
+    .calendar-bar.flight-day {
+      background-color: transparent !important;
+      border: 2px dashed currentColor;
+      box-shadow: none;
+      font-size: 0.75rem;
+    }
+
+    .bar-stefan { background: var(--stefan-color); color: var(--stefan-color); }
+    .bar-ines { background: var(--ines-color); color: var(--ines-color); }
+    .bar-tanja { background: var(--tanja-color); color: var(--tanja-color); }
+    .bar-verena { background: var(--verena-color); color: var(--verena-color); }
+
+    .calendar-legend {
+      display: flex;
+      gap: 16px;
+      margin-top: 12px;
+      flex-wrap: wrap;
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--text-main);
+    }
+
+    .calendar-legend-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
 
     /* Interaktive Packliste Styles */
     .info-card {
@@ -1068,10 +1086,19 @@
     <div id="calendarTab" class="tab-content">
       <div class="info-card">
         <h3>🗓️ Anwesenheits-Kalender (Wer ist wann wo?)</h3>
-        <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 12px;">Visualisierung der Aufenthaltszeiten, An- und Abreisen aller 4 Personen über den gesamten Zeitraum vom 22.03.2027 bis 28.05.2027:</p>
+        <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 10px;">Visualisierung der Aufenthaltszeiten, An- und Abreisen aller 4 Personen über den gesamten Zeitraum vom 22.03.2027 bis 28.05.2027:</p>
         
         <div class="calendar-timeline">
           <div id="calendarGantt"></div>
+        </div>
+
+        <div class="calendar-legend">
+          <div class="calendar-legend-item">
+            <span style="display:inline-block; width:16px; height:16px; background:#15803d; border-radius:3px;"></span> Vollfarbig: Aufenthalt vor Ort in Südamerika
+          </div>
+          <div class="calendar-legend-item">
+            <span style="display:inline-block; width:16px; height:16px; border:2px dashed #15803d; border-radius:3px; text-align:center; font-size:10px; line-height:14px;">✈️</span> Gestrichelt & Icon: Flugtag / An- oder Abreise aus Europa
+          </div>
         </div>
       </div>
     </div>
@@ -1206,7 +1233,7 @@
     <!-- TAB 5: FLUGÜBERSICHT -->
     <div id="budgetTab" class="tab-content">
       <div class="info-card">
-        <h3>✈️️ Flug- & Anreiseübersicht (Alle Personen)</h3>
+        <h3>✈️ Flug- & Anreiseübersicht (Alle Personen)</h3>
         <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 12px;">Alle Flugverbindungen und Schlüsseltermine der Südamerika-Reise:</p>
         
         <ul class="flight-list">
@@ -1221,7 +1248,7 @@
             <div class="flight-date">Sa, 17.04.2027 • Ankunft Tanja</div>
             <div class="flight-route">Europa ➔ Lima (LIM) ➔ Cusco (CUZ)</div>
             <div class="flight-details">Tanja reist an für 26 Tage / ca. 3.5 Wochen Südperu, Titicacasee & Dschungel.</div>
-            <div class="flight-price">Anreise Tanja (3,5 Wochen)</div>
+            <div class="flight-price">Anreise Tanja (26 Tage)</div>
           </li>
 
           <li class="flight-item">
@@ -1235,13 +1262,13 @@
             <div class="flight-date">So, 02.05.2027 • Ankunft Verena</div>
             <div class="flight-route">Europa ➔ Lima (LIM) ➔ Cusco (CUZ)</div>
             <div class="flight-details">Verena reist an für den gesamten Mai.</div>
-            <div class="flight-price">Anreise Verena (Ganzer Mai)</div>
+            <div class="flight-price">Anreise Verena (Ganzer Mai / 27 Tage)</div>
           </li>
 
           <li class="flight-item">
             <div class="flight-date">Mi, 12.05.2027 • Rückflug Tanja</div>
             <div class="flight-route">Lima (LIM) ➔ Europa</div>
-            <div class="flight-details">Tanja fliegt nach ca. 3,5 Wochen alleine zurück.</div>
+            <div class="flight-details">Tanja fliegt nach genau 26 Tagen Südamerika zurück nach Europa.</div>
             <div class="flight-price">Rückflug Tanja</div>
           </li>
 
@@ -1280,7 +1307,7 @@
 
     /* GESAMT-REISEROUTE (TAG 1 BIS TAG 68 VOLLSTÄNDIG) */
     const allDaysData = [
-      // PHASE 1: STEFAN & INES (TAG 1 - 32)
+      // PHASE 1: STEFAN & INES (TAG 1 - 26)
       { day: "Tag 1", date: "22.03. (Mo)", phase: "phase1", groupTag: "Stefan & Ines", num: 1, region: "Patagonien", regTag: "tag-patagonien", title: "Flug nach Südamerika", details: "Europa ➔ Santiago de Chile (SCL) ➔ Punta Arenas (PUQ)", transport: "✈️ Flugzeug", hotel: "🏨 Punta Arenas", locName: "Santiago de Chile" },
       { day: "Tag 2", date: "23.03. (Di)", phase: "phase1", groupTag: "Stefan & Ines", num: 2, region: "Patagonien", regTag: "tag-patagonien", title: "Puerto Natales", details: "Bus entlang der Magellanstraße, Vorbereitung W-Trek", transport: "🚌 Linienbus", hotel: "🏨 Puerto Natales", locName: "Puerto Natales" },
       { day: "Tag 3", date: "24.03. (Mi)", phase: "phase1", groupTag: "Stefan & Ines", num: 2, region: "Patagonien", regTag: "tag-patagonien", title: "W-Trek Tag 1: Las Torres Base", details: "Start W-Trek, Aufstieg zu den Torres-Granittürmen", transport: "🥾 Wandern", hotel: "⛺ Refugio Central", locName: "Torres del Paine" },
@@ -1308,13 +1335,13 @@
       { day: "Tag 25", date: "15.04. (Do)", phase: "phase1", groupTag: "Stefan & Ines", num: 4, region: "Cusco & Machu Picchu", regTag: "tag-cusco", title: "Rückkehr nach Cusco", details: "Panoramazug zurück nach Cusco & Entspannung", transport: "🚆 Inka Rail", hotel: "🏨 Cusco", locName: "Cusco" },
       { day: "Tag 26", date: "16.04. (Fr)", phase: "phase1", groupTag: "Stefan & Ines", num: 4, region: "Cusco & Machu Picchu", regTag: "tag-cusco", title: "Rainbow Mountain Tagestour", details: "Wanderung zum Rainbow Mountain (5.036 m)", transport: "🚐 Tour", hotel: "🏨 Cusco", locName: "Cusco" },
       
-      // AB JETZT: TANJA TRITT EIN (17.04.)
-      { day: "Tag 27", date: "17.04. (Sa)", phase: "phase1", groupTag: "Stefan & Ines", num: 4, region: "Cusco & Machu Picchu", regTag: "tag-cusco", title: "Ankunft Tanja in Cusco", details: "Tanja trifft ein! Gemütliches Abendessen zu dritt.", transport: "🛺 Taxi", hotel: "🏨 Cusco", locName: "Cusco" },
-      { day: "Tag 28", date: "18.04. (So)", phase: "phase1", groupTag: "Stefan & Ines", num: 4, region: "Cusco & Machu Picchu", regTag: "tag-cusco", title: "Cusco mit Tanja, Ines & Stefan", details: "Sacsayhuamán Inka-Festung & San Pedro Markt", transport: "🚶 Zu Fuß", hotel: "🏨 Cusco", locName: "Cusco" },
-      { day: "Tag 29", date: "19.04. (Mo)", phase: "phase1", groupTag: "Stefan & Ines", num: 4, region: "Cusco & Machu Picchu", regTag: "tag-cusco", title: "Ausflug Humantay Lake", details: "Türkisfarbener Gletschersee (4.200 m)", transport: "🚐 Tour", hotel: "🏨 Cusco", locName: "Cusco" },
-      { day: "Tag 30", date: "20.04. (Di)", phase: "phase1", groupTag: "Stefan & Ines", num: 4, region: "Cusco & Machu Picchu", regTag: "tag-cusco", title: "Cusco Kultur & Schokolade-Museum", details: "Peruanische Küche & Vorbereitung Rückflug", transport: "🚶 Zu Fuß", hotel: "🏨 Cusco", locName: "Cusco" },
-      { day: "Tag 31", date: "21.04. (Mi)", phase: "phase1", groupTag: "Stefan & Ines", num: 4, region: "Cusco & Machu Picchu", regTag: "tag-cusco", title: "Abschluss-Abend Stefan", details: "Letzter gemeinsamer Abend von Stefan, Ines & Tanja", transport: "🚶 Zu Fuß", hotel: "🏨 Cusco", locName: "Cusco" },
-      { day: "Tag 32", date: "22.04. (Do)", phase: "phase1", groupTag: "Stefan & Ines", num: 5, region: "Abreise Stefan", regTag: "tag-default", title: "Rückflug Stefan / Übergabe an Mädels", details: "Stefan fliegt via Lima zurück nach Europa. Ines & Tanja starten durch!", transport: "✈️ Flug CUZ ➔ LIM ➔ Atlantik", hotel: "✈️ Im Flugzeug", locName: "Lima" },
+      // AB JETZT: TANJA TRITT EIN (17.04.) -> STEFAN, INES & TANJA (TAG 27 - 32)
+      { day: "Tag 27", date: "17.04. (Sa)", phase: "phase1", groupTag: "Stefan & Ines & Tanja", num: 4, region: "Cusco & Machu Picchu", regTag: "tag-cusco", title: "Ankunft Tanja in Cusco", details: "Tanja trifft ein! Gemütliches Abendessen zu dritt.", transport: "🛺 Taxi", hotel: "🏨 Cusco", locName: "Cusco" },
+      { day: "Tag 28", date: "18.04. (So)", phase: "phase1", groupTag: "Stefan & Ines & Tanja", num: 4, region: "Cusco & Machu Picchu", regTag: "tag-cusco", title: "Cusco mit Tanja, Ines & Stefan", details: "Sacsayhuamán Inka-Festung & San Pedro Markt", transport: "🚶 Zu Fuß", hotel: "🏨 Cusco", locName: "Cusco" },
+      { day: "Tag 29", date: "19.04. (Mo)", phase: "phase1", groupTag: "Stefan & Ines & Tanja", num: 4, region: "Cusco & Machu Picchu", regTag: "tag-cusco", title: "Ausflug Humantay Lake", details: "Türkisfarbener Gletschersee (4.200 m)", transport: "🚐 Tour", hotel: "🏨 Cusco", locName: "Cusco" },
+      { day: "Tag 30", date: "20.04. (Di)", phase: "phase1", groupTag: "Stefan & Ines & Tanja", num: 4, region: "Cusco & Machu Picchu", regTag: "tag-cusco", title: "Cusco Kultur & Schokolade-Museum", details: "Peruanische Küche & Vorbereitung Rückflug", transport: "🚶 Zu Fuß", hotel: "🏨 Cusco", locName: "Cusco" },
+      { day: "Tag 31", date: "21.04. (Mi)", phase: "phase1", groupTag: "Stefan & Ines & Tanja", num: 4, region: "Cusco & Machu Picchu", regTag: "tag-cusco", title: "Abschluss-Abend Stefan", details: "Letzter gemeinsamer Abend von Stefan, Ines & Tanja", transport: "🚶 Zu Fuß", hotel: "🏨 Cusco", locName: "Cusco" },
+      { day: "Tag 32", date: "22.04. (Do)", phase: "phase1", groupTag: "Stefan & Ines & Tanja", num: 5, region: "Abreise Stefan", regTag: "tag-default", title: "Rückflug Stefan / Übergabe an Mädels", details: "Stefan fliegt via Lima zurück nach Europa. Ines & Tanja starten durch!", transport: "✈️ Flug CUZ ➔ LIM ➔ Atlantik", hotel: "✈️ Im Flugzeug", locName: "Lima" },
 
       // PHASE 2: INES MIT MÄDELS (TAG 33 - 68)
       { day: "Tag 33", date: "23.04. (Fr)", phase: "phase2", groupTag: "Ines & Tanja", num: 6, region: "Südperu", regTag: "tag-suedperu", title: "Cusco ➔ Arequipa", details: "Ines & Tanja reisen weiter in die weiße Vulkanstadt", transport: "✈️ Inlandsflug / Bus", hotel: "🏨 Arequipa", locName: "Arequipa" },
@@ -1356,7 +1383,7 @@
       { day: "Tag 65", date: "25.05. (Di)", phase: "phase2", groupTag: "Ines & Verena", num: 5, region: "Lima Küste", regTag: "tag-default", title: "Kulturtag Lima Zentrum", details: "Plaza Mayor, Kathedrale & Katakomben San Francisco", transport: "🚕 Uber", hotel: "🏨 Lima Miraflores", locName: "Lima" },
       { day: "Tag 66", date: "26.05. (Mi)", phase: "phase2", groupTag: "Ines & Verena", num: 5, region: "Lima Küste", regTag: "tag-default", title: "Pazifik-Sonnenuntergang", details: "Letzte Einkäufe & Vorbereitung Packen", transport: "🚶 Zu Fuß", hotel: "🏨 Lima Miraflores", locName: "Lima" },
       { day: "Tag 67", date: "27.05. (Do)", phase: "phase2", groupTag: "Ines & Verena", num: 5, region: "Großes Finale", regTag: "tag-default", title: "Abschluss-Gala-Essen", details: "Festliches Finale im Gourmet-Restaurant Central / Maido", transport: "🚕 Uber", hotel: "🏨 Lima Miraflores", locName: "Lima" },
-      { day: "Tag 68", date: "28.05. (Fr)", phase: "phase2", groupTag: "Ines & Verena", num: 12, region: "Großes Finale", regTag: "tag-default", title: "GEMEINSAMER RÜCKFLUG INES & VERENA", details: "Ende des Abenteuers! Gemeinsamer Heimflug nach Europa.", transport: "✈️ Flug LIM ➔ Atlantik", hotel: "✈️️ Im Flugzeug", locName: "Lima" }
+      { day: "Tag 68", date: "28.05. (Fr)", phase: "phase2", groupTag: "Ines & Verena", num: 12, region: "Großes Finale", regTag: "tag-default", title: "GEMEINSAMER RÜCKFLUG INES & VERENA", details: "Ende des Abenteuers! Gemeinsamer Heimflug nach Europa.", transport: "✈️ Flug LIM ➔ Atlantik", hotel: "✈️ Im Flugzeug", locName: "Lima" }
     ];
 
     /* PHASEN SWITCHER */
@@ -1410,6 +1437,7 @@
         tr.onclick = () => focusMap(item.locName);
 
         let groupClass = 'group-stefan-ines';
+        if (item.groupTag === 'Stefan & Ines & Tanja') groupClass = 'group-stefan-ines-tanja';
         if (item.groupTag === 'Ines & Tanja') groupClass = 'group-ines-tanja';
         if (item.groupTag === 'Ines, Tanja & Verena') groupClass = 'group-ines-tanja-verena';
         if (item.groupTag === 'Ines & Verena') groupClass = 'group-ines-verena';
@@ -1495,16 +1523,16 @@
       });
     }
 
-    /* KALENDER-ANWESENHEIT RENDERER */
+    /* KALENDER-ANWESENHEIT RENDERER MIT GESTRICHELTEN FLUGTAGEN */
     function renderCalendarGantt() {
       const container = document.getElementById('calendarGantt');
       if (!container) return;
 
       const people = [
-        { name: "Stefan", class: "bar-stefan", start: 1, end: 32, label: "32 Tage (Patagonien, Atacama, Machu Picchu)" },
-        { name: "Ines", class: "bar-ines", start: 1, end: 68, label: "68 Tage (Gesamtes Südamerika-Abenteuer)" },
-        { name: "Tanja", class: "bar-tanja", start: 27, end: 52, label: "26 Tage (~3,5 W. Südperu, Titicaca, Dschungel)" },
-        { name: "Verena", class: "bar-verena", start: 42, end: 68, label: "27 Tage (Dschungel, Huaraz & Lima Finale)" }
+        { name: "Stefan", class: "bar-stefan", start: 1, end: 32, flightStart: 1, flightEnd: 32, label: "32 Tage (Patagonien, Atacama, Machu Picchu)" },
+        { name: "Ines", class: "bar-ines", start: 1, end: 68, flightStart: 1, flightEnd: 68, label: "68 Tage (Gesamtes Südamerika-Abenteuer)" },
+        { name: "Tanja", class: "bar-tanja", start: 27, end: 52, flightStart: 27, flightEnd: 52, label: "26 Tage (~3,5 W. Südperu, Titicaca, Dschungel)" },
+        { name: "Verena", class: "bar-verena", start: 42, end: 68, flightStart: 42, flightEnd: 68, label: "27 Tage (Dschungel, Huaraz & Lima Finale)" }
       ];
 
       let html = `<div style="min-width: 1200px;">`;
@@ -1525,9 +1553,14 @@
         html += `<div class="calendar-label">${p.name}</div>`;
         for (let i = 1; i <= 68; i++) {
           const active = i >= p.start && i <= p.end;
+          const isFlightDay = (i === p.flightStart || i === p.flightEnd);
           html += `<div class="calendar-cell">`;
           if (active) {
-            html += `<div class="calendar-bar ${p.class}" title="${p.name}: ${p.label}">✓</div>`;
+            if (isFlightDay) {
+              html += `<div class="calendar-bar ${p.class} flight-day" title="${p.name}: Flugtag / An- oder Abreise (Tag ${i})">✈️</div>`;
+            } else {
+              html += `<div class="calendar-bar ${p.class}" title="${p.name}: ${p.label}">✓</div>`;
+            }
           }
           html += `</div>`;
         }
@@ -1740,8 +1773,8 @@
     }
 
     function loadPacklist() {
-      const savedStefan = localStorage.getItem('sa_packlist_stefan_v2');
-      const savedInes = localStorage.getItem('sa_packlist_ines_v2');
+      const savedStefan = localStorage.getItem('sa_packlist_stefan_v5');
+      const savedInes = localStorage.getItem('sa_packlist_ines_v5');
 
       packlists.stefan = savedStefan ? JSON.parse(savedStefan) : JSON.parse(JSON.stringify(defaultStefan));
       packlists.ines = savedInes ? JSON.parse(savedInes) : JSON.parse(JSON.stringify(defaultInes));
@@ -1751,7 +1784,7 @@
     }
 
     function savePacklist() {
-      localStorage.setItem(`sa_packlist_${currentPerson}_v2`, JSON.stringify(packlists[currentPerson]));
+      localStorage.setItem(`sa_packlist_${currentPerson}_v5`, JSON.stringify(packlists[currentPerson]));
       renderPacklist();
       renderAnalysis();
     }
