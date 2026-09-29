@@ -20,6 +20,9 @@
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
+  <!-- Leaflet PolylineDecorator für Pfeile auf Linien -->
+  <script src="https://cdn.jsdelivr.net/npm/leaflet-polylinedecorator@1.6.0/leaflet.polylineDecorator.min.js"></script>
+
   <!-- Chart.js für Diagramme -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
@@ -39,10 +42,10 @@
       --primary-rgb: 13, 148, 136;
       --accent: #b45309;       /* Anden Erdtöne */
       
-      --patagonien: #0284c7;   /* Eisblau / Blau für Süden */
-      --atacama: #d97706;      /* Wüsten-Orange */
-      --peru: #059669;         /* Inka-Grün */
-      --bonus: #7c3aed;        /* Violett für Ines & Mädels */
+      --patagonien: #0284c7;   
+      --atacama: #d97706;      
+      --peru: #059669;         
+      --bonus: #7c3aed;        
       --danger: #dc2626;
 
       --tag-wtrek: #0284c7;
@@ -50,6 +53,7 @@
       --tag-atacama: #d97706;
       --tag-peru: #059669;
       --tag-bonus: #7c3aed;
+      --tag-huaraz: #db2777;
     }
 
     * {
@@ -248,6 +252,20 @@
       min-height: 400px;
     }
 
+    /* Nummerierte Leaflet Marker */
+    .number-marker {
+      background-color: var(--primary);
+      color: #ffffff;
+      border: 2px solid #ffffff;
+      border-radius: 50%;
+      font-weight: 800;
+      font-size: 11px;
+      display: flex !important;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+    }
+
     /* Einklappbare Legende auf der Karte */
     .custom-legend {
       background: #ffffff;
@@ -257,7 +275,7 @@
       box-shadow: 0 2px 8px rgba(0,0,0,0.08);
       font-size: 0.78rem;
       color: var(--text-main);
-      max-width: 260px;
+      max-width: 270px;
       font-family: 'Plus Jakarta Sans', sans-serif;
     }
 
@@ -299,38 +317,45 @@
       flex-shrink: 0;
     }
 
-    /* Etappen Switcher unterhalb der Karte */
-    .etappen-switcher {
+    /* HAUPTBEREICHE SWITCHER UNTERHALB DER KARTE */
+    .main-section-switcher {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 8px;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
       margin-bottom: 14px;
     }
 
-    .etappe-btn {
+    .section-btn {
       background: var(--card-bg);
       border: 2px solid var(--border);
       color: var(--text-main);
-      padding: 8px 10px;
+      padding: 10px 14px;
       border-radius: 8px;
       cursor: pointer;
-      font-size: 0.82rem;
+      font-size: 0.9rem;
       font-weight: 800;
       text-align: center;
       transition: all 0.2s ease;
       display: flex;
+      flex-direction: column;
       align-items: center;
       justify-content: center;
-      gap: 6px;
+      gap: 4px;
       box-shadow: 0 1px 3px rgba(0,0,0,0.03);
     }
 
-    .etappe-btn:hover {
+    .section-btn span.subtext {
+      font-size: 0.73rem;
+      font-weight: 600;
+      opacity: 0.85;
+    }
+
+    .section-btn:hover {
       border-color: var(--primary);
       background: var(--card-bg-hover);
     }
 
-    .etappe-btn.active {
+    .section-btn.active {
       background: var(--primary);
       border-color: var(--primary);
       color: #ffffff;
@@ -449,7 +474,7 @@
       white-space: nowrap;
     }
 
-    /* Personen-Badges */
+    /* Gruppen Badges */
     .group-badge-stefan-ines {
       display: inline-block;
       font-size: 0.68rem;
@@ -462,7 +487,19 @@
       white-space: nowrap;
     }
 
-    .group-badge-ines-maedels {
+    .group-badge-ines-tanja {
+      display: inline-block;
+      font-size: 0.68rem;
+      font-weight: 700;
+      padding: 1px 5px;
+      border-radius: 4px;
+      background: #fef3c7;
+      color: #b45309;
+      border: 1px solid #fde68a;
+      white-space: nowrap;
+    }
+
+    .group-badge-ines-tanja-verena {
       display: inline-block;
       font-size: 0.68rem;
       font-weight: 700;
@@ -471,6 +508,18 @@
       background: #f3e8ff;
       color: #6b21a8;
       border: 1px solid #e9d5ff;
+      white-space: nowrap;
+    }
+
+    .group-badge-ines-verena {
+      display: inline-block;
+      font-size: 0.68rem;
+      font-weight: 700;
+      padding: 1px 5px;
+      border-radius: 4px;
+      background: #fce7f3;
+      color: #be185d;
+      border: 1px solid #fbcfe8;
       white-space: nowrap;
     }
 
@@ -490,6 +539,7 @@
     .tag-atacama { background: #fef3c7; color: #b45309; }
     .tag-peru { background: #d1fae5; color: #047857; }
     .tag-bonus { background: #f3e8ff; color: #6b21a8; }
+    .tag-huaraz { background: #fce7f3; color: #be185d; }
     .tag-default { background: #f1f5f9; color: var(--text-muted); }
 
     .route-title {
@@ -727,7 +777,6 @@
       padding: 1px 2px;
     }
 
-    /* Select-Menüs für Gewichtstyp & Packort */
     .table-select {
       background: #f8fafc;
       border: 1px solid var(--border);
@@ -759,7 +808,6 @@
       padding: 4px 8px !important;
     }
 
-    /* GEWICHTSANALYSE STYLES */
     .analysis-table-header-stefan {
       background: #0f766e !important;
       color: #ffffff !important;
@@ -820,6 +868,7 @@
       }
       .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
       .charts-grid { grid-template-columns: 1fr; }
+      .main-section-switcher { grid-template-columns: 1fr; }
     }
 
     @media (min-width: 861px) {
@@ -834,12 +883,13 @@
     <header>
       <div class="title-group">
         <h1>🏔️ Südamerika Abenteuer 2027</h1>
-        <p>Chile, Argentinien & Peru • 22.03.2027 – 22.04.2027 (+ Peru-Extension Ines)</p>
+        <p>Chile, Argentinien & Peru • 22.03.2027 – 28.05.2027 (Stefan, Ines, Tanja & Verena)</p>
         <div class="countdown-badge" id="countdown">⏳ Countdown wird berechnet...</div>
       </div>
       <div class="stats-bar">
-        <div class="stat-pill">Stefan & Ines: <strong>32</strong> Tage</div>
-        <div class="stat-pill">Ines & Mädels: <strong>Follow-up in Peru</strong></div>
+        <div class="stat-pill">Stefan & Ines: <strong>22.03. – 22.04.</strong></div>
+        <div class="stat-pill">Tanja: <strong>20.04. – 16.05.</strong></div>
+        <div class="stat-pill">Verena: <strong>01.05. – 28.05.</strong></div>
       </div>
     </header>
 
@@ -848,7 +898,7 @@
       <button class="tab-btn active" onclick="switchTab('routeTab', this)">🗺️ Reiseroute & Karte</button>
       <button class="tab-btn" onclick="switchTab('packTab', this)">🎒 Interaktive Packliste</button>
       <button class="tab-btn" onclick="switchTab('analysisTab', this)">📊 Gewichtsanalyse</button>
-      <button class="tab-btn" onclick="switchTab('budgetTab', this)">✈️ Gebuchte Flüge</button>
+      <button class="tab-btn" onclick="switchTab('budgetTab', this)">✈️ Flug- & Anreise-Details</button>
     </div>
 
     <!-- TAB 1: REISEROUTE & KARTE -->
@@ -857,7 +907,7 @@
       <!-- Gesamte Karten-Sektion -->
       <div class="map-section" id="mapSection">
         <div class="map-header">
-          <h2>🗺️ Interaktive Südamerika-Karte <span style="font-size:0.8rem; font-weight:500; color:var(--text-muted);">(Tabelle anklicken zum Zoomen)</span></h2>
+          <h2>🗺️️ Interaktive Karte mit nummerierten Stationen (#1 bis #12) & Richtungs-Pfeilen</h2>
           <button class="btn-fullscreen" onclick="toggleMapFullscreen()" id="fullscreenBtn">
             <span id="fullscreenIcon">🔍</span> <span id="fullscreenText">Vollbild</span>
           </button>
@@ -865,19 +915,15 @@
         <div id="map"></div>
       </div>
 
-      <!-- ETAPPEN AUSWAHLFELD UNTERHALB DER KARTE -->
-      <div class="etappen-switcher">
-        <button id="btnEtappe1" class="etappe-btn active" onclick="switchEtappe('etappe1')">
-          1. Patagonien & W-Trek (22.03. - 05.04.)
+      <!-- HAUPTBEREICHE SWITCHER UNTERHALB DER KARTE -->
+      <div class="main-section-switcher">
+        <button id="btnMainStefan" class="section-btn active" onclick="switchMainSection('stefanSection')">
+          <span>1. Südamerika mit Stefan & Ines</span>
+          <span class="subtext">22.03.2027 – 22.04.2027 (Patagonien, Atacama, Peru & Machu Picchu)</span>
         </button>
-        <button id="btnEtappe2" class="etappe-btn" onclick="switchEtappe('etappe2')">
-          2. Atacama-Wüste (06.04. - 12.04.)
-        </button>
-        <button id="btnEtappe3" class="etappe-btn" onclick="switchEtappe('etappe3')">
-          3. Peru & Machu Picchu (13.04. - 22.04.)
-        </button>
-        <button id="btnEtappeBonus" class="etappe-btn" onclick="switchEtappe('bonus')">
-          Bonus: Ines & Mädels (ab 22.04.)
+        <button id="btnMainMaedels" class="section-btn" onclick="switchMainSection('maedelsSection')">
+          <span>2. Ines mit Mädels (ohne Stefan)</span>
+          <span class="subtext">23.04.2027 – 28.05.2027 (Arequipa, Colca, Titicaca, Amazonas & Huaraz)</span>
         </button>
       </div>
 
@@ -1044,64 +1090,71 @@
     <!-- TAB 4: FLUGÜBERSICHT -->
     <div id="budgetTab" class="tab-content">
       <div class="info-card">
-        <h3>✈️ Gebuchte / Geplante Flüge (Südamerika 2027)</h3>
-        <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 12px;">Übersicht über alle geplanten Langstrecken- und Inlandsflüge:</p>
+        <h3>✈️ Flug- & Anreise-Übersicht (Südamerika 2027)</h3>
+        <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 12px;">Übersicht über alle geplanten Langstrecken- und Inlandsflüge für alle Mitreisenden:</p>
         
         <ul class="flight-list">
           <li class="flight-item">
             <div class="flight-date">22.03.2027 • Langstrecke Hinreise (Stefan & Ines)</div>
-            <div class="flight-route">Europa (VIE/MUC/FRA) ➔ Santiago de Chile (SCL)</div>
-            <div class="flight-details">Nachtflug gen Südamerika • ca. 14–16 Std. Flugzeit</div>
+            <div class="flight-route">Europa (VIE/MUC) ➔ Santiago de Chile (SCL) ➔ Punta Arenas (PUQ)</div>
+            <div class="flight-details">Nachtflug & Inlandsanschluss nach Patagonien</div>
             <div class="flight-price">Geplant (Stefan & Ines)</div>
           </li>
 
           <li class="flight-item">
-            <div class="flight-date">22.03.2027 • Inlandsflug Chile (Patagonien)</div>
-            <div class="flight-route">Santiago de Chile (SCL) ➔ Punta Arenas (PUQ)</div>
-            <div class="flight-details">LATAM / Sky Airline • ca. 3,5 Std. Flugzeit in den Süden</div>
+            <div class="flight-date">04.04.2027 • Inlandsflug Patagonien ➔ Chile Zentrum</div>
+            <div class="flight-route">El Calafate (FTE) / PUQ ➔ Santiago de Chile (SCL)</div>
+            <div class="flight-details">Transfer aus Patagonien in den Norden Chiles</div>
             <div class="flight-price">Geplant (Stefan & Ines)</div>
           </li>
 
           <li class="flight-item">
-            <div class="flight-date">04.04.2027 • Inlandsflug Argentinien/Chile</div>
-            <div class="flight-route">El Calafate (FTE) ➔ Buenos Aires (AEP/EZE) / Santiago (SCL)</div>
-            <div class="flight-details">Aerolineas Argentinas / LATAM • Transfer aus Patagonien</div>
+            <div class="flight-date">06.04. & 10.04.2027 • Atacama Inlandsflüge</div>
+            <div class="flight-route">Santiago (SCL) ↔ Calama (CJC)</div>
+            <div class="flight-details">Flüge zur und aus der Atacama Wüste</div>
             <div class="flight-price">Geplant (Stefan & Ines)</div>
           </li>
 
           <li class="flight-item">
-            <div class="flight-date">06.04.2027 • Inlandsflug Chile (Atacama Wüste)</div>
-            <div class="flight-route">Santiago de Chile (SCL) ➔ Calama (CJC)</div>
-            <div class="flight-details">LATAM / Sky Airline • 2 Std. Flugzeit in den Norden</div>
-            <div class="flight-price">Geplant (Stefan & Ines)</div>
-          </li>
-
-          <li class="flight-item">
-            <div class="flight-date">10.04.2027 • Inlandsflug Chile</div>
-            <div class="flight-route">Calama (CJC) ➔ Santiago de Chile (SCL)</div>
-            <div class="flight-details">Rückflug aus der Atacama Wüste nach Santiago</div>
-            <div class="flight-price">Geplant (Stefan & Ines)</div>
-          </li>
-
-          <li class="flight-item">
-            <div class="flight-date">13.04.2027 • Länderwechsel nach Peru</div>
+            <div class="flight-date">13.04.2027 • Peru Flug</div>
             <div class="flight-route">Santiago de Chile (SCL) ➔ Lima (LIM) ➔ Cusco (CUZ)</div>
-            <div class="flight-details">LATAM Airlines • Flug in die Inka-Hauptstadt der Anden</div>
+            <div class="flight-details">Anreise ins Heilige Tal der Inka</div>
             <div class="flight-price">Geplant (Stefan & Ines)</div>
           </li>
 
-          <li class="flight-item">
-            <div class="flight-date">22.04.2027 • Rückflug Europa (Stefan)</div>
-            <div class="flight-route">Cusco (CUZ) ➔ Lima (LIM) ➔ Europa</div>
-            <div class="flight-details">Stefan tritt die Heimreise an. Ines bleibt vor Ort in Peru!</div>
+          <li class="flight-item" style="border-left-color: #b45309;">
+            <div class="flight-date" style="color:#b45309;">ca. 20.04.2027 • Ankunft Tanja</div>
+            <div class="flight-route">Europa ➔ Lima (LIM) ➔ Cusco (CUZ)</div>
+            <div class="flight-details">Tanja trifft Ines & Stefan in Cusco (bleibt ca. 3,5 Wochen bis ~16.05.)</div>
+            <div class="flight-price">Geplant (Tanja)</div>
+          </li>
+
+          <li class="flight-item" style="border-left-color: #dc2626;">
+            <div class="flight-date" style="color:#dc2626;">22.04.2027 • Heimflug Stefan</div>
+            <div class="flight-route">Cusco (CUZ) ➔ Lima (LIM) ➔ Europa (MUC/VIE)</div>
+            <div class="flight-details">Stefan tritt die Heimreise an. Ines setzt Reise mit Tanja fort.</div>
             <div class="flight-price">Geplant (Stefan)</div>
           </li>
 
-          <li class="flight-item">
-            <div class="flight-date">Ende April 2027 • Ankunft Mädels (Freundinnen)</div>
-            <div class="flight-route">Europa ➔ Lima (LIM) / Cusco (CUZ)</div>
-            <div class="flight-details">Ines trifft ihre Freundinnen in Peru für die Weiterreise</div>
-            <div class="flight-price">Geplant (Ines & Mädels)</div>
+          <li class="flight-item" style="border-left-color: #6b21a8;">
+            <div class="flight-date" style="color:#6b21a8;">ca. 01.05.2027 • Ankunft Verena</div>
+            <div class="flight-route">Europa ➔ Lima (LIM) ➔ Arequipa / Cusco / Juliaca</div>
+            <div class="flight-details">Verena reist an und bleibt den gesamten Mai in Peru</div>
+            <div class="flight-price">Geplant (Verena)</div>
+          </li>
+
+          <li class="flight-item" style="border-left-color: #b45309;">
+            <div class="flight-date" style="color:#b45309;">ca. 16.05.2027 • Rückflug Tanja</div>
+            <div class="flight-route">Lima (LIM) ➔ Europa</div>
+            <div class="flight-details">Tanja fliegt nach ca. 3,5 Wochen Abenteuer wieder heim</div>
+            <div class="flight-price">Geplant (Tanja)</div>
+          </li>
+
+          <li class="flight-item" style="border-left-color: #be185d;">
+            <div class="flight-date" style="color:#be185d;">Fr. 28.05.2027 • Gemeinsamer Rückflug Ines & Verena</div>
+            <div class="flight-route">Lima (LIM) ➔ Europa (VIE/MUC)</div>
+            <div class="flight-details">Ines & Verena fliegen zusammen nach einem sensationellen Mai nach Hause</div>
+            <div class="flight-price">Geplant (Ines & Verena)</div>
           </li>
         </ul>
       </div>
@@ -1110,8 +1163,8 @@
   </div>
 
   <script>
-    let currentEtappe = 'etappe1';
-    let currentRegionFilter = 'all';
+    let currentMainSection = 'stefanSection';
+    let currentSubFilter = 'all';
     let map;
     const markers = {};
     let chartStefanInstance = null;
@@ -1138,113 +1191,119 @@
       }, 300);
     }
 
-    /* TAGESPLAN SÜDAMERIKA 2027 DATEN */
-    const etappe1Data = [
-      { day: "Tag 1", date: "22.03. (Mo)", groupTag: "Stefan & Ines", region: "Patagonien (Chile)", regTag: "tag-wtrek", title: "Flug Europa ➔ Santiago ➔ Punta Arenas", details: "Start der Südamerika-Reise, Weiterflug nach Punta Arenas am Magellan-Sumpf", transport: "✈️ Langstrecke & Inlandsflug", hotel: "🏨 Hotel in Punta Arenas", locName: "Punta Arenas", lat: -53.003, lng: -70.855, color: "#0284c7" },
-      { day: "Tag 2", date: "23.03. (Di)", groupTag: "Stefan & Ines", region: "Patagonien (Chile)", regTag: "tag-wtrek", title: "Punta Arenas ➔ Puerto Natales", details: "Busfahrt nach Puerto Natales, Basislager-Vorbereitung für den W-Trek, Verpflegung kaufen", transport: "🚌 Bus (ca. 3h)", hotel: "🏨 Guesthouse Puerto Natales", locName: "Puerto Natales", lat: -51.727, lng: -72.506, color: "#0284c7" },
-      { day: "Tag 3", date: "24.03. (Mi)", groupTag: "Stefan & Ines", region: "W-Trek (Torres del Paine)", regTag: "tag-wtrek", title: "W-Trek Tag 1: Mirador Base de Las Torres", details: "Fahrt in den Nationalpark. Wanderung zum spektakulären Aussichtspunkt der Granittürme", transport: "🚌 Bus ➔ 🥾 Trekking", hotel: "🏕️ Refugio / Camp Central", locName: "Torres del Paine", lat: -51.253, lng: -72.880, color: "#0284c7" },
-      { day: "Tag 4", date: "25.03. (Do)", groupTag: "Stefan & Ines", region: "W-Trek (Torres del Paine)", regTag: "tag-wtrek", title: "W-Trek Tag 2: Lago Nordenskjöld ➔ Cuernos", details: "Wanderung entlang des türkisfarbenen Sees Lago Nordenskjöld bis zum Refugio Cuernos / Frances", transport: "🥾 Trekking (ca. 13 km)", hotel: "🏕️ Refugio Cuernos / Frances", locName: "Torres del Paine", lat: -51.253, lng: -72.880, color: "#0284c7" },
-      { day: "Tag 5", date: "26.03. (Fr)", groupTag: "Stefan & Ines", region: "W-Trek (Torres del Paine)", regTag: "tag-wtrek", title: "W-Trek Tag 3: Valle Francés ➔ Paine Grande", details: "Aufstieg ins herbstliche Valle Francés (Mirador Francés & Británico) mit Hängegletscher-Blick", transport: "🥾 Trekking (ca. 18 km)", hotel: "🏕️ Refugio Paine Grande", locName: "Torres del Paine", lat: -51.253, lng: -72.880, color: "#0284c7" },
-      { day: "Tag 6", date: "27.03. (Sa)", groupTag: "Stefan & Ines", region: "W-Trek (Torres del Paine)", regTag: "tag-wtrek", title: "W-Trek Tag 4: Grey Gletscher ➔ Puerto Natales", details: "Wanderung zum Grey Gletscher. Nachmittags Katamaran über den Pehoé-See & Bus nach Puerto Natales", transport: "🥾 Trekking ➔ ⛴️ Katamaran ➔ 🚌 Bus", hotel: "🏨 Guesthouse Puerto Natales", locName: "Puerto Natales", lat: -51.727, lng: -72.506, color: "#0284c7" },
-      { day: "Tag 7", date: "28.03. (So)", groupTag: "Stefan & Ines", region: "Patagonien (Chile)", regTag: "tag-wtrek", title: "Ruhetag in Puerto Natales", details: "Ausrüstung sortieren, entspannen, gut Essen gehen & Füße hochlegen", transport: "🚶 Zu Fuß", hotel: "🏨 Guesthouse Puerto Natales", locName: "Puerto Natales", lat: -51.727, lng: -72.506, color: "#0284c7" },
-      { day: "Tag 8", date: "29.03. (Mo)", groupTag: "Stefan & Ines", region: "Patagonien (Argentinien)", regTag: "tag-argentinien", title: "Grenzüberschreitung: Puerto Natales ➔ El Calafate", details: "Busfahrt durch die Pampa über die Grenze von Chile nach Argentinien (El Calafate)", transport: "🚌 Grenzüberschreitender Bus", hotel: "🏨 Hotel in El Calafate", locName: "El Calafate", lat: -50.338, lng: -72.265, color: "#2563eb" },
-      { day: "Tag 9", date: "30.03. (Di)", groupTag: "Stefan & Ines", region: "Patagonien (Argentinien)", regTag: "tag-argentinien", title: "Perito-Moreno-Gletscher Highlights", details: "Tagesausflug zum Perito Moreno Glacier: Kalbendes Eis von den Stegen beobachten & Bootstour", transport: "🚌 Ausflugsbus / ⛴️ Boot", hotel: "🏨 Hotel in El Calafate", locName: "El Calafate", lat: -50.338, lng: -72.265, color: "#2563eb" },
-      { day: "Tag 10", date: "31.03. (Mi)", groupTag: "Stefan & Ines", region: "Patagonien (Argentinien)", regTag: "tag-argentinien", title: "El Calafate ➔ El Chaltén", details: "Fahrt in die Trekking-Hauptstadt Argentiniens am Fuße des Fitz Roy", transport: "🚌 Bus (ca. 3h)", hotel: "🏨 Hostería in El Chaltén", locName: "El Chaltén", lat: -49.331, lng: -72.886, color: "#2563eb" },
-      { day: "Tag 11", date: "01.04. (Do)", groupTag: "Stefan & Ines", region: "Patagonien (Argentinien)", regTag: "tag-argentinien", title: "Laguna de los Tres (Fitz Roy Hike)", details: "Spektakuläre Tageswanderung zur Laguna de los Tres mit dem kultigen Fitz Roy Blick", transport: "🥾 Wanderung (ca. 21 km)", hotel: "🏨 Hostería in El Chaltén", locName: "El Chaltén", lat: -49.331, lng: -72.886, color: "#2563eb" },
-      { day: "Tag 12", date: "02.04. (Fr)", groupTag: "Stefan & Ines", region: "Patagonien (Argentinien)", regTag: "tag-argentinien", title: "Laguna Torre (Cerro Torre)", details: "Tageswanderung durch das Flussdelta zur Laguna Torre mit Gletscher-Eisschollen", transport: "🥾 Wanderung (ca. 18 km)", hotel: "🏨 Hostería in El Chaltén", locName: "El Chaltén", lat: -49.331, lng: -72.886, color: "#2563eb" },
-      { day: "Tag 13", date: "03.04. (Sa)", groupTag: "Stefan & Ines", region: "Patagonien (Argentinien)", regTag: "tag-argentinien", title: "El Chaltén ➔ El Calafate", details: "Entspannte Rückfahrt nach El Calafate, Empanadas & Steak genießen", transport: "🚌 Bus", hotel: "🏨 Hotel in El Calafate", locName: "El Calafate", lat: -50.338, lng: -72.265, color: "#2563eb" },
-      { day: "Tag 14", date: "04.04. (So)", groupTag: "Stefan & Ines", region: "Patagonien ➔ Nord", regTag: "tag-default", title: "Flug El Calafate ➔ Santiago / Buenos Aires", details: "Rückflug aus dem tiefen Süden Südamerikas gen Norden", transport: "✈️ Flugzeug", hotel: "🏨 Transit-Hotel", locName: "Santiago de Chile", lat: -33.393, lng: -70.786, color: "#0d9488" },
-      { day: "Tag 15", date: "05.04. (Mo)", groupTag: "Stefan & Ines", region: "Patagonien ➔ Nord", regTag: "tag-default", title: "Puffertag & Zwischenstopp", details: "Erholungstag zwischen den Etappen, Wäsche waschen & Großstadt genießen", transport: "🏙️ Stadt-Spaziergang", hotel: "🏨 Hotel in Santiago", locName: "Santiago de Chile", lat: -33.393, lng: -70.786, color: "#0d9488" }
+    /* BEREICH 1: STEFAN & INES (TAG 1 BIS TAG 32 - EDEL VOLLSTÄNDIG TAG FÜR TAG) */
+    const stefanData = [
+      { day: "Tag 1", date: "22.03. (Mo)", groupTag: "Stefan & Ines", num: 1, region: "Patagonien (Chile)", regTag: "tag-wtrek", title: "Flug Europa ➔ Santiago ➔ Punta Arenas", details: "Start der Südamerika-Reise, Weiterflug nach Punta Arenas am Magellan-Sumpf", transport: "✈️ Langstrecke & Inlandsflug", hotel: "🏨 Hotel in Punta Arenas", locName: "Punta Arenas", lat: -53.003, lng: -70.855, color: "#0284c7" },
+      { day: "Tag 2", date: "23.03. (Di)", groupTag: "Stefan & Ines", num: 2, region: "Patagonien (Chile)", regTag: "tag-wtrek", title: "Punta Arenas ➔ Puerto Natales", details: "Busfahrt nach Puerto Natales, Basislager-Vorbereitung für den W-Trek, Verpflegung kaufen", transport: "🚌 Bus (ca. 3h)", hotel: "🏨 Guesthouse Puerto Natales", locName: "Puerto Natales", lat: -51.727, lng: -72.506, color: "#0284c7" },
+      { day: "Tag 3", date: "24.03. (Mi)", groupTag: "Stefan & Ines", num: 2, region: "W-Trek (Torres del Paine)", regTag: "tag-wtrek", title: "W-Trek Tag 1: Mirador Base de Las Torres", details: "Fahrt in den Nationalpark. Wanderung zum spektakulären Aussichtspunkt der Granittürme", transport: "🚌 Bus ➔ 🥾 Trekking", hotel: "🏕️ Refugio / Camp Central", locName: "Torres del Paine", lat: -51.253, lng: -72.880, color: "#0284c7" },
+      { day: "Tag 4", date: "25.03. (Do)", groupTag: "Stefan & Ines", num: 2, region: "W-Trek (Torres del Paine)", regTag: "tag-wtrek", title: "W-Trek Tag 2: Lago Nordenskjöld ➔ Cuernos", details: "Wanderung entlang des türkisfarbenen Sees Lago Nordenskjöld bis zum Refugio Cuernos / Frances", transport: "🥾 Trekking (ca. 13 km)", hotel: "🏕️ Refugio Cuernos / Frances", locName: "Torres del Paine", lat: -51.253, lng: -72.880, color: "#0284c7" },
+      { day: "Tag 5", date: "26.03. (Fr)", groupTag: "Stefan & Ines", num: 2, region: "W-Trek (Torres del Paine)", regTag: "tag-wtrek", title: "W-Trek Tag 3: Valle Francés ➔ Paine Grande", details: "Aufstieg ins herbstliche Valle Francés (Mirador Francés & Británico) mit Hängegletscher-Blick", transport: "🥾 Trekking (ca. 18 km)", hotel: "🏕️ Refugio Paine Grande", locName: "Torres del Paine", lat: -51.253, lng: -72.880, color: "#0284c7" },
+      { day: "Tag 6", date: "27.03. (Sa)", groupTag: "Stefan & Ines", num: 2, region: "W-Trek (Torres del Paine)", regTag: "tag-wtrek", title: "W-Trek Tag 4: Grey Gletscher ➔ Puerto Natales", details: "Wanderung zum Grey Gletscher. Nachmittags Katamaran über den Pehoé-See & Bus nach Puerto Natales", transport: "🥾 Trekking ➔ ⛴️ Katamaran ➔ 🚌 Bus", hotel: "🏨 Guesthouse Puerto Natales", locName: "Puerto Natales", lat: -51.727, lng: -72.506, color: "#0284c7" },
+      { day: "Tag 7", date: "28.03. (So)", groupTag: "Stefan & Ines", num: 2, region: "Patagonien (Chile)", regTag: "tag-wtrek", title: "Ruhetag in Puerto Natales", details: "Ausrüstung sortieren, entspannen, gut Essen gehen & Füße hochlegen", transport: "🚶 Zu Fuß", hotel: "🏨 Guesthouse Puerto Natales", locName: "Puerto Natales", lat: -51.727, lng: -72.506, color: "#0284c7" },
+      { day: "Tag 8", date: "29.03. (Mo)", groupTag: "Stefan & Ines", num: 2, region: "Patagonien (Argentinien)", regTag: "tag-argentinien", title: "Grenzüberschreitung: Puerto Natales ➔ El Calafate", details: "Busfahrt durch die Pampa über die Grenze von Chile nach Argentinien (El Calafate)", transport: "🚌 Grenzüberschreitender Bus", hotel: "🏨 Hotel in El Calafate", locName: "El Calafate", lat: -50.338, lng: -72.265, color: "#2563eb" },
+      { day: "Tag 9", date: "30.03. (Di)", groupTag: "Stefan & Ines", num: 2, region: "Patagonien (Argentinien)", regTag: "tag-argentinien", title: "Perito-Moreno-Gletscher Highlights", details: "Tagesausflug zum Perito Moreno Glacier: Kalbendes Eis von den Stegen beobachten & Bootstour", transport: "🚌 Ausflugsbus / ⛴ Boot", hotel: "🏨 Hotel in El Calafate", locName: "El Calafate", lat: -50.338, lng: -72.265, color: "#2563eb" },
+      { day: "Tag 10", date: "31.03. (Mi)", groupTag: "Stefan & Ines", num: 2, region: "Patagonien (Argentinien)", regTag: "tag-argentinien", title: "El Calafate ➔ El Chaltén", details: "Fahrt in die Trekking-Hauptstadt Argentiniens am Fuße des Fitz Roy", transport: "🚌 Bus (ca. 3h)", hotel: "🏨 Hostería in El Chaltén", locName: "El Chaltén", lat: -49.331, lng: -72.886, color: "#2563eb" },
+      { day: "Tag 11", date: "01.04. (Do)", groupTag: "Stefan & Ines", num: 2, region: "Patagonien (Argentinien)", regTag: "tag-argentinien", title: "Laguna de los Tres (Fitz Roy Hike)", details: "Spektakuläre Tageswanderung zur Laguna de los Tres mit dem kultigen Fitz Roy Blick", transport: "🥾 Wanderung (ca. 21 km)", hotel: "🏨 Hostería in El Chaltén", locName: "El Chaltén", lat: -49.331, lng: -72.886, color: "#2563eb" },
+      { day: "Tag 12", date: "02.04. (Fr)", groupTag: "Stefan & Ines", num: 2, region: "Patagonien (Argentinien)", regTag: "tag-argentinien", title: "Laguna Torre (Cerro Torre)", details: "Tageswanderung durch das Flussdelta zur Laguna Torre mit Gletscher-Eisschollen", transport: "🥾 Wanderung (ca. 18 km)", hotel: "🏨 Hostería in El Chaltén", locName: "El Chaltén", lat: -49.331, lng: -72.886, color: "#2563eb" },
+      { day: "Tag 13", date: "03.04. (Sa)", groupTag: "Stefan & Ines", num: 2, region: "Patagonien (Argentinien)", regTag: "tag-argentinien", title: "El Chaltén ➔ El Calafate", details: "Entspannte Rückfahrt nach El Calafate, Empanadas & Steak genießen", transport: "🚌 Bus", hotel: "🏨 Hotel in El Calafate", locName: "El Calafate", lat: -50.338, lng: -72.265, color: "#2563eb" },
+      { day: "Tag 14", date: "04.04. (So)", groupTag: "Stefan & Ines", num: 1, region: "Patagonien ➔ Nord", regTag: "tag-default", title: "Flug El Calafate ➔ Santiago", details: "Rückflug aus dem tiefen Süden Südamerikas gen Norden nach Santiago de Chile", transport: "✈️ Flugzeug", hotel: "🏨 Transit-Hotel Santiago", locName: "Santiago de Chile", lat: -33.393, lng: -70.786, color: "#0d9488" },
+      { day: "Tag 15", date: "05.04. (Mo)", groupTag: "Stefan & Ines", num: 1, region: "Chile Zentrum", regTag: "tag-default", title: "Puffertag & Santiago Erholung", details: "Erholungstag zwischen den Etappen, Wäsche waschen & Großstadt genießen", transport: "🏙️ Stadt-Spaziergang", hotel: "🏨 Hotel in Santiago", locName: "Santiago de Chile", lat: -33.393, lng: -70.786, color: "#0d9488" },
+      { day: "Tag 16", date: "06.04. (Di)", groupTag: "Stefan & Ines", num: 3, region: "Atacama-Wüste", regTag: "tag-atacama", title: "Flug Santiago ➔ Calama ➔ San Pedro de Atacama", details: "Ankunft in der trockensten Wüste der Welt. Akklimatisierung auf 2.400 m", transport: "✈️ Flug ➔ 🚐 Shuttle", hotel: "🏨 Adobe Hotel San Pedro", locName: "San Pedro de Atacama", lat: -22.908, lng: -68.199, color: "#d97706" },
+      { day: "Tag 17", date: "07.04. (Mi)", groupTag: "Stefan & Ines", num: 3, region: "Atacama-Wüste", regTag: "tag-atacama", title: "Valle de la Luna & Valle de la Muerte", details: "Spektakuläre Mondlandschaft, Salzformationen und Sonnenuntergang über den Dünen", transport: "🚐 Tour-Bus / Fahrrad", hotel: "🏨 Adobe Hotel San Pedro", locName: "San Pedro de Atacama", lat: -22.908, lng: -68.199, color: "#d97706" },
+      { day: "Tag 18", date: "08.04. (Do)", groupTag: "Stefan & Ines", num: 3, region: "Atacama-Wüste", regTag: "tag-atacama", title: "El Tatio Geysire & Termas de Puritama", details: "Frühaufstehen für die fauchenden Geysire auf 4.300 m, danach entspannen in heißen Thermen", transport: "🚐 Früh-Morgen-Tour", hotel: "🏨 Adobe Hotel San Pedro", locName: "San Pedro de Atacama", lat: -22.908, lng: -68.199, color: "#d97706" },
+      { day: "Tag 19", date: "09.04. (Fr)", groupTag: "Stefan & Ines", num: 3, region: "Atacama-Wüste", regTag: "tag-atacama", title: "Lagunas Altiplánicas & Salar de Atacama", details: "Königsblaue Bergseen Miscanti & Miñiques sowie Flamingos im Salzsee", transport: "🚐 Tagesausflug", hotel: "🏨 Adobe Hotel San Pedro", locName: "San Pedro de Atacama", lat: -22.908, lng: -68.199, color: "#d97706" },
+      { day: "Tag 20", date: "10.04. (Sa)", groupTag: "Stefan & Ines", num: 1, region: "Chile Zentrum", regTag: "tag-default", title: "San Pedro ➔ Calama ➔ Santiago", details: "Rückfahrt nach Calama und Flug zurück in die chilenische Hauptstadt Santiago", transport: "🚐 Shuttle ➔ ✈️ Flug", hotel: "🏨 Hotel in Santiago", locName: "Santiago de Chile", lat: -33.393, lng: -70.786, color: "#0d9488" },
+      { day: "Tag 21", date: "11.04. (So)", groupTag: "Stefan & Ines", num: 1, region: "Chile Zentrum", regTag: "tag-default", title: "Santiago de Chile Kultur & Kulinarik", details: "San Cristóbal Hügel mit Seilbahn, Künstlerviertel Barrio Lastarria & gutes Essen", transport: "🚇 Metro / Cable Car", hotel: "🏨 Hotel in Santiago", locName: "Santiago de Chile", lat: -33.393, lng: -70.786, color: "#0d9488" },
+      { day: "Tag 22", date: "12.04. (Mo)", groupTag: "Stefan & Ines", num: 1, region: "Chile Zentrum", regTag: "tag-default", title: "Vorbereitung Weiterreise Peru", details: "Koffer umpacken, Dokumente checken, entspannte Stunden vor der Peru-Etappe", transport: "🚶 Spaziergang", hotel: "🏨 Hotel in Santiago", locName: "Santiago de Chile", lat: -33.393, lng: -70.786, color: "#0d9488" },
+      { day: "Tag 23", date: "13.04. (Di)", groupTag: "Stefan & Ines", num: 4, region: "Heiliges Tal (Peru)", regTag: "tag-peru", title: "Flug Santiago ➔ Lima ➔ Cusco ➔ Valle Sagrado", details: "Ankunft in den peruanischen Anden. Direkt ins tiefere Heilige Tal (Ollantaytambo) zur Akklimatisierung!", transport: "✈️ Flug ➔ 🚕 Taxi", hotel: "🏨 Hotel in Ollantaytambo", locName: "Ollantaytambo", lat: -13.258, lng: -72.263, color: "#059669" },
+      { day: "Tag 24", date: "14.04. (Mi)", groupTag: "Stefan & Ines", num: 4, region: "Heiliges Tal (Peru)", regTag: "tag-peru", title: "Inka-Kultur: Maras Salzterrassen & Moray", details: "Erkundung der terrassenförmigen Inka-Agrarlabore Moray und der schimmernden Salineras de Maras", transport: "🛺 Colectivo / Taxi", hotel: "🏨 Hotel in Ollantaytambo", locName: "Ollantaytambo", lat: -13.258, lng: -72.263, color: "#059669" },
+      { day: "Tag 25", date: "15.04. (Do)", groupTag: "Stefan & Ines", num: 4, region: "Heiliges Tal (Peru)", regTag: "tag-peru", title: "Ollantaytambo Festung & Pisac Markt", details: "Besichtigung der gewaltigen Inka-Festung Ollantaytambo & bunter Markt in Pisac", transport: "🚌 Local Bus / Colectivo", hotel: "🏨 Hotel in Ollantaytambo", locName: "Ollantaytambo", lat: -13.258, lng: -72.263, color: "#059669" },
+      { day: "Tag 26", date: "16.04. (Fr)", groupTag: "Stefan & Ines", num: 4, region: "Machu Picchu Region", regTag: "tag-peru", title: "Panoramazug ➔ Aguas Calientes", details: "Fahrt mit dem berühmten Panoramazug (Inca Rail/PeruRail) durch die Urubamba-Schlucht", transport: "🚆 Panoramazug", hotel: "🏨 Hotel in Aguas Calientes", locName: "Machu Picchu", lat: -13.163, lng: -72.545, color: "#059669" },
+      { day: "Tag 27", date: "17.04. (Sa)", groupTag: "Stefan & Ines", num: 4, region: "Machu Picchu Region", regTag: "tag-peru", title: "🌟 HIGHLIGHT: MACHU PICCHU", details: "Früher Morgen-Slot im Inka-Weltwunder Machu Picchu (+ optional Huayna Picchu Climb). Abends Zug nach Cusco", transport: "🚌 Shuttle-Bus ➔ 🚆 Zug ➔ 🚕 Taxi", hotel: "🏨 Boutique Hotel Cusco", locName: "Machu Picchu", lat: -13.163, lng: -72.545, color: "#059669" },
+      { day: "Tag 28", date: "18.04. (So)", groupTag: "Stefan & Ines", num: 4, region: "Cusco & Anden", regTag: "tag-peru", title: "Cusco Inka-Hauptstadt", details: "Plaza de Armas, Sonnentempel Qorikancha, Mercado San Pedro und Festung Sacsayhuamán", transport: "🚶 Spaziergang", hotel: "🏨 Boutique Hotel Cusco", locName: "Cusco", lat: -13.535, lng: -71.967, color: "#059669" },
+      { day: "Tag 29", date: "19.04. (Mo)", groupTag: "Stefan & Ines", num: 4, region: "Cusco & Anden", regTag: "tag-peru", title: "Tagestour: Vinicunca Rainbow Mountain", details: "Tagesausflug zum 5.000 m hohen Regenbogenberg Vinicunca oder azurblauem Humantay See", transport: "🚐 Tour-Bus", hotel: "🏨 Boutique Hotel Cusco", locName: "Cusco", lat: -13.535, lng: -71.967, color: "#059669" },
+      { day: "Tag 30", date: "20.04. (Di)", groupTag: "Ines, Stefan & Tanja", num: 4, region: "Cusco & Anden", regTag: "tag-peru", title: "Ankunft Tanja in Cusco!", details: "Tanja reist an! Erstes gemeinsames Abendessen, Pisco Sour & Stadtrundgang", transport: "🚶 Spaziergang", hotel: "🏨 Boutique Hotel Cusco", locName: "Cusco", lat: -13.535, lng: -71.967, color: "#059669" },
+      { day: "Tag 31", date: "21.04. (Mi)", groupTag: "Ines, Stefan & Tanja", num: 4, region: "Cusco & Anden", regTag: "tag-peru", title: "Künstlerviertel San Blas & Abschiedsabend", details: "Gemeinsamer Ausflug nach San Blas. Großes Abschiedsessen vor Stefans Heimflug", transport: "🚶 Spaziergang", hotel: "🏨 Boutique Hotel Cusco", locName: "Cusco", lat: -13.535, lng: -71.967, color: "#059669" },
+      { day: "Tag 32", date: "22.04. (Do)", groupTag: "Stefan (Heimflug) / Ines & Tanja", num: 5, region: "Abreise / Übergabe", regTag: "tag-default", title: "Stefan Heimflug ➔ Ines & Tanja setzen Reise fort", details: "Stefan fliegt via Lima zurück nach Europa. Ines & Tanja erkunden weiter Peru!", transport: "✈️ Flugzeug (Stefan)", hotel: "✈️ Flug / Hotel Cusco", locName: "Lima", lat: -12.022, lng: -77.114, color: "#059669" }
     ];
 
-    const etappe2Data = [
-      { day: "Tag 16", date: "06.04. (Di)", groupTag: "Stefan & Ines", region: "Atacama-Wüste", regTag: "tag-atacama", title: "Flug Calama ➔ San Pedro de Atacama", details: "Ankunft in der trockensten Wüste der Welt. Akklimatisierung auf 2.400 m", transport: "✈️ Flug ➔ 🚐 Shuttle", hotel: "🏨 Adobe Hotel San Pedro", locName: "San Pedro de Atacama", lat: -22.908, lng: -68.199, color: "#d97706" },
-      { day: "Tag 17", date: "07.04. (Mi)", groupTag: "Stefan & Ines", region: "Atacama-Wüste", regTag: "tag-atacama", title: "Valle de la Luna & Valle de la Muerte", details: "Spektakuläre Mondlandschaft, Salzformationen und Sonnenuntergang über den Dünen", transport: "🚐 Tour-Bus / Fahrrad", hotel: "🏨 Adobe Hotel San Pedro", locName: "San Pedro de Atacama", lat: -22.908, lng: -68.199, color: "#d97706" },
-      { day: "Tag 18", date: "08.04. (Do)", groupTag: "Stefan & Ines", region: "Atacama-Wüste", regTag: "tag-atacama", title: "El Tatio Geysire & Termas de Puritama", details: "Frühaufstehen für die fauchenden Geysire auf 4.300 m, danach entspannen in heißen Thermen", transport: "🚐 Früh-Morgen-Tour", hotel: "🏨 Adobe Hotel San Pedro", locName: "San Pedro de Atacama", lat: -22.908, lng: -68.199, color: "#d97706" },
-      { day: "Tag 19", date: "09.04. (Fr)", groupTag: "Stefan & Ines", region: "Atacama-Wüste", regTag: "tag-atacama", title: "Lagunas Altiplánicas & Salar de Atacama", details: "Königsblaue Bergseen Miscanti & Miñiques sowie Flamingos im Salzsee", transport: "🚐 Tagesausflug", hotel: "🏨 Adobe Hotel San Pedro", locName: "San Pedro de Atacama", lat: -22.908, lng: -68.199, color: "#d97706" },
-      { day: "Tag 20", date: "10.04. (Sa)", groupTag: "Stefan & Ines", region: "Chile Zentrum", regTag: "tag-default", title: "San Pedro ➔ Calama ➔ Santiago", details: "Rückfahrt nach Calama und Flug zurück in die chilenische Hauptstadt Santiago", transport: "🚐 Shuttle ➔ ✈️ Flug", hotel: "🏨 Hotel in Santiago", locName: "Santiago de Chile", lat: -33.393, lng: -70.786, color: "#0d9488" },
-      { day: "Tag 21", date: "11.04. (So)", groupTag: "Stefan & Ines", region: "Chile Zentrum", regTag: "tag-default", title: "Santiago de Chile Kultur & Kulinarik", details: "San Cristóbal Hügel mit Seilbahn, Künstlerviertel Barrio Lastarria & gutes Essen", transport: "🚇 Metro / Cable Car", hotel: "🏨 Hotel in Santiago", locName: "Santiago de Chile", lat: -33.393, lng: -70.786, color: "#0d9488" },
-      { day: "Tag 22", date: "12.04. (Mo)", groupTag: "Stefan & Ines", region: "Chile Zentrum", regTag: "tag-default", title: "Vorbereitung Weiterreise Peru", details: "Koffer umpacken, Dokumente checken, entspannte Stunden vor der Peru-Etappe", transport: "🚶 Spaziergang", hotel: "🏨 Hotel in Santiago", locName: "Santiago de Chile", lat: -33.393, lng: -70.786, color: "#0d9488" }
+    /* BEREICH 2: INES MIT MÄDELS (TAG 33 BIS TAG 68 - JEDER TAG EINZELN GEFLATOT & JEDES DATUM EXAKT EXPLEZIT) */
+    const maedelsData = [
+      { day: "Tag 33", date: "23.04. (Fr)", groupTag: "Ines & Tanja", num: 6, region: "Süd-Peru", regTag: "tag-bonus", title: "Cusco ➔ Arequipa (Weiße Stadt)", details: "Flug oder Komfortbus nach Arequipa. Koloniale Altstadt aus weißem Vulkangestein & Santa Catalina Kloster", transport: "🚌 Bus / ✈️ Flug", hotel: "🏨 Boutique Hotel Arequipa", locName: "Arequipa", lat: -16.409, lng: -71.537, color: "#7c3aed" },
+      { day: "Tag 34", date: "24.04. (Sa)", groupTag: "Ines & Tanja", num: 6, region: "Süd-Peru", regTag: "tag-bonus", title: "Arequipa Altstadt & Yanahuara", details: "Aussichtspunkt Yanahuara mit Blick auf den Misti-Vulkan & Pisco Sour Verkostung", transport: "🚶 Spaziergang", hotel: "🏨 Boutique Hotel Arequipa", locName: "Arequipa", lat: -16.409, lng: -71.537, color: "#7c3aed" },
+      { day: "Tag 35", date: "25.04. (So)", groupTag: "Ines & Tanja", num: 7, region: "Süd-Peru", regTag: "tag-bonus", title: "Colca Canyon Anreise & Chivay Thermen", details: "Fahrt in den spektakulären Colca Canyon, Vicuña-Herden beobachten & Thermen Chivay", transport: "🚐 Tour-Bus", hotel: "🏨 Lodge im Colca Canyon", locName: "Colca Canyon", lat: -15.608, lng: -71.883, color: "#7c3aed" },
+      { day: "Tag 36", date: "26.04. (Mo)", groupTag: "Ines & Tanja", num: 7, region: "Süd-Peru", regTag: "tag-bonus", title: "Kondor-Beobachtung Cruz del Condor", details: "Frühes Aufstehen am Cruz del Condor: Riesige Kondore im Thermikflug beobachten", transport: "🚐 Tour-Bus / 🥾 Hike", hotel: "🏨 Lodge im Colca Canyon", locName: "Colca Canyon", lat: -15.608, lng: -71.883, color: "#7c3aed" },
+      { day: "Tag 37", date: "27.04. (Di)", groupTag: "Ines & Tanja", num: 8, region: "Süd-Peru", regTag: "tag-bonus", title: "Colca Canyon ➔ Puno (Titicacasee)", details: "Panoramabufahrt über das Altiplano zum Titicacasee auf 3.812 m Höhe", transport: "🚌 Bus", hotel: "🏨 Hotel in Puno", locName: "Puno", lat: -15.840, lng: -70.021, color: "#7c3aed" },
+      { day: "Tag 38", date: "28.04. (Mi)", groupTag: "Ines & Tanja", num: 8, region: "Süd-Peru", regTag: "tag-bonus", title: "Titicacasee: Uros Schilfinseln", details: "Bootstour zu den berühmten schwimmenden Inseln der Uros aus Totora-Schilf", transport: "🚤 Bootstour", hotel: "🏨 Hotel in Puno", locName: "Puno", lat: -15.840, lng: -70.021, color: "#7c3aed" },
+      { day: "Tag 39", date: "29.04. (Do)", groupTag: "Ines & Tanja", num: 8, region: "Süd-Peru", regTag: "tag-bonus", title: "Insel Taquile ➔ Rückfahrt Cusco", details: "Besuch der Insel Taquile (strickende Männer) und malerische Rückreise Richtung Cusco", transport: "🚤 Boot ➔ 🚌 Bus", hotel: "🏨 Hotel in Cusco", locName: "Puno", lat: -15.840, lng: -70.021, color: "#7c3aed" },
+      { day: "Tag 40", date: "30.04. (Fr)", groupTag: "Ines & Tanja", num: 4, region: "Cusco Region", regTag: "tag-bonus", title: "Cusco Entspannung & Vorbereitung Verena", details: "Märkte erkunden, Peruanischen Kaffee genießen und Ankunft von Verena vorbereiten", transport: "🚶 Spaziergang", hotel: "🏨 Hotel in Cusco", locName: "Cusco", lat: -13.535, lng: -71.967, color: "#7c3aed" },
+      { day: "Tag 41", date: "01.05. (Sa)", groupTag: "Ines, Tanja & Verena", num: 4, region: "Anden ➔ Cusco", regTag: "tag-bonus", title: "Ankunft Verena! Treffen aller 3 Mädels", details: "Verena landet in Peru! Großes Wiedersehen der 3 Mädels & gemeinsamer Feierabend", transport: "🚕 Taxi", hotel: "🏨 Hotel in Cusco", locName: "Cusco", lat: -13.535, lng: -71.967, color: "#7c3aed" },
+      { day: "Tag 42", date: "02.05. (So)", groupTag: "Ines, Tanja & Verena", num: 9, region: "Amazonas Regenwald", regTag: "tag-bonus", title: "Flug Cusco ➔ Puerto Maldonado", details: "Kurzflug ab Cusco in den tiefen Amazonas. Bootstransfer zur Eco-Lodge am Fluss Madre de Dios", transport: "✈ Flug ➔ 🚤 Dschungelboot", hotel: "🌿 Eco-Lodge Puerto Maldonado", locName: "Puerto Maldonado", lat: -12.593, lng: -69.189, color: "#7c3aed" },
+      { day: "Tag 43", date: "03.05. (Mo)", groupTag: "Ines, Tanja & Verena", num: 9, region: "Amazonas Regenwald", regTag: "tag-bonus", title: "Dschungel Exkursion & Canopy Walkway", details: "Wanderung zu Riesenbäumen, Hängebrücken in den Baumkronen & Abends Kaiman-Ausschau", transport: "🥾 Dschungel-Hike / Boot", hotel: "🌿 Eco-Lodge Puerto Maldonado", locName: "Puerto Maldonado", lat: -12.593, lng: -69.189, color: "#7c3aed" },
+      { day: "Tag 44", date: "04.05. (Di)", groupTag: "Ines, Tanja & Verena", num: 9, region: "Amazonas Regenwald", regTag: "tag-bonus", title: "Sandoval See & Papageien-Lehmlecke", details: "Kanu-Fahrt auf dem Sandoval See (Riesenotter) & bunte Papageien an der Lehmwand", transport: "🚣 Kanu / Zu Fuß", hotel: "🌿 Eco-Lodge Puerto Maldonado", locName: "Puerto Maldonado", lat: -12.593, lng: -69.189, color: "#7c3aed" },
+      { day: "Tag 45", date: "05.05. (Mi)", groupTag: "Ines, Tanja & Verena", num: 9, region: "Amazonas Regenwald", regTag: "tag-bonus", title: "Amazonas ➔ Flug nach Lima", details: "Abschied vom Urwald, Rückflug nach Lima an die Pazifikküste", transport: "🚤 Boot ➔ ✈️ Flug", hotel: "🏨 Hotel in Lima Miraflores", locName: "Puerto Maldonado", lat: -12.593, lng: -69.189, color: "#7c3aed" },
+      { day: "Tag 46", date: "06.05. (Do)", groupTag: "Ines, Tanja & Verena", num: 10, region: "Wüste & Küste", regTag: "tag-bonus", title: "Lima ➔ Huacachina Wüstenoase", details: "Busfahrt entlang der Wüstenküste zur malerischen Oase Huacachina mit riesigen Sanddünen", transport: "🚌 Bus", hotel: "🏨 Oasen-Resort Huacachina", locName: "Huacachina", lat: -14.087, lng: -75.763, color: "#7c3aed" },
+      { day: "Tag 47", date: "07.05. (Fr)", groupTag: "Ines, Tanja & Verena", num: 10, region: "Wüste & Küste", regTag: "tag-bonus", title: "Buggy-Fahrt & Sandboarding", details: "Actionreiche Dünenbuggy-Fahrt bei Sonnenuntergang und Sandboarding auf den Riesendünen", transport: "🏎️ Dünenbuggy", hotel: "🏨 Oasen-Resort Huacachina", locName: "Huacachina", lat: -14.087, lng: -75.763, color: "#7c3aed" },
+      { day: "Tag 48", date: "08.05. (Sa)", groupTag: "Ines, Tanja & Verena", num: 10, region: "Wüste & Küste", regTag: "tag-bonus", title: "Paracas & Ballestas Inseln (Galapagos Perus)", details: "Bootstour zu den Ballestas Inseln mit tausenden Seelöwen, Pinguinen & Meeresvögeln", transport: "🚤 Boot ➔ 🚌 Bus", hotel: "🏨 Hotel in Paracas / Lima", locName: "Huacachina", lat: -14.087, lng: -75.763, color: "#7c3aed" },
+      { day: "Tag 49", date: "09.05. (So)", groupTag: "Ines, Tanja & Verena", num: 5, region: "Küste / Lima", regTag: "tag-bonus", title: "Rückkehr nach Lima", details: "Gemütliche Rückfahrt nach Lima, Spaziergang am Malecón de Miraflores", transport: "🚌 Bus", hotel: "🏨 Hotel in Lima", locName: "Lima", lat: -12.022, lng: -77.114, color: "#7c3aed" },
+      { day: "Tag 50", date: "10.05. (Mo)", groupTag: "Ines, Tanja & Verena", num: 5, region: "Küste / Lima", regTag: "tag-bonus", title: "Lima Gastronomie & Miraflores", details: "Ceviche-Verkostung in Spitzenrestaurants & Spaziergang am Surfer-Strand", transport: "🚕 Taxi", hotel: "🏨 Hotel in Lima Miraflores", locName: "Lima", lat: -12.022, lng: -77.114, color: "#7c3aed" },
+      { day: "Tag 51", date: "11.05. (Di)", groupTag: "Ines, Tanja & Verena", num: 5, region: "Küste / Lima", regTag: "tag-bonus", title: "Künstlerviertel Barranco", details: "Streetart, Seufzerbrücke (Puente de los Suspiros) und Rooftop Bars", transport: "🚶 Zu Fuß", hotel: "🏨 Hotel in Lima", locName: "Lima", lat: -12.022, lng: -77.114, color: "#7c3aed" },
+      { day: "Tag 52", date: "12.05. (Mi)", groupTag: "Ines, Tanja & Verena", num: 5, region: "Küste / Lima", regTag: "tag-bonus", title: "Historisches Zentrum Lima", details: "Plaza Mayor, Kathedrale und Katakomben des San Francisco Klosters", transport: "🚕 Taxi", hotel: "🏨 Hotel in Lima", locName: "Lima", lat: -12.022, lng: -77.114, color: "#7c3aed" },
+      { day: "Tag 53", date: "13.05. (Do)", groupTag: "Ines, Tanja & Verena", num: 5, region: "Küste / Lima", regTag: "tag-bonus", title: "Shoppen & Strandtag in Larcomar", details: "Shopping Center an den Klippen, Kaffeepause mit Ozeanblick", transport: "🚶 Zu Fuß", hotel: "🏨 Hotel in Lima", locName: "Lima", lat: -12.022, lng: -77.114, color: "#7c3aed" },
+      { day: "Tag 54", date: "14.05. (Fr)", groupTag: "Ines, Tanja & Verena", num: 5, region: "Küste / Lima", regTag: "tag-bonus", title: "Pisco Sour Workshop & Kochkurs", details: "Lernen, wie man echten Pisco Sour und Causa Rellena zubereitet", transport: "🚕 Taxi", hotel: "🏨 Hotel in Lima", locName: "Lima", lat: -12.022, lng: -77.114, color: "#7c3aed" },
+      { day: "Tag 55", date: "15.05. (Sa)", groupTag: "Ines, Tanja & Verena", num: 5, region: "Küste / Lima", regTag: "tag-bonus", title: "Tanjas Abschiedsabend", details: "Großes gemeinsames Festessen zum Abschluss von Tanjas Reise", transport: "🍸 Restaurant", hotel: "🏨 Hotel in Lima", locName: "Lima", lat: -12.022, lng: -77.114, color: "#7c3aed" },
+      { day: "Tag 56", date: "16.05. (So)", groupTag: "Ines, Tanja & Verena", num: 5, region: "Abreise Tanja", regTag: "tag-default", title: "Rückflug Tanja nach Europa ➔ Ines & Verena starten Nord-Trip", details: "Tanja fliegt heim. Ines & Verena packen für die peruanischen Alpen!", transport: "✈️ Flugzeug (Tanja)", hotel: "🏨 Hotel in Lima", locName: "Lima", lat: -12.022, lng: -77.114, color: "#7c3aed" },
+      { day: "Tag 57", date: "17.05. (Mo)", groupTag: "Ines & Verena", num: 11, region: "Cordillera Blanca", regTag: "tag-huaraz", title: "Panorama-Busfahrt Lima ➔ Huaraz", details: "Fahrt von der Küste auf 3.050 m Höhe in das 'Outdoor-Mekka' Huaraz", transport: "🚌 Komfortbus (ca. 8h)", hotel: "🏨 Mountain Lodge Huaraz", locName: "Huaraz", lat: -9.526, lng: -77.528, color: "#db2777" },
+      { day: "Tag 58", date: "18.05. (Di)", groupTag: "Ines & Verena", num: 11, region: "Cordillera Blanca", regTag: "tag-huaraz", title: "Akklimatisierung: Laguna Wilcacocha", details: "Eingehtour zur Laguna Wilcacocha mit Panoramablick auf die Sechstausender der Cordillera Blanca", transport: "🥾 Hike (ca. 10 km)", hotel: "🏨 Mountain Lodge Huaraz", locName: "Huaraz", lat: -9.526, lng: -77.528, color: "#db2777" },
+      { day: "Tag 59", date: "19.05. (Mi)", groupTag: "Ines & Verena", num: 11, region: "Cordillera Blanca", regTag: "tag-huaraz", title: "Laguna Churup Hike", details: "Anspruchsvolle Wanderung zur türkisblauen Laguna Churup (4.450 m) mit leichten Kletterpassagen", transport: "🥾 Trekking", hotel: "🏨 Mountain Lodge Huaraz", locName: "Huaraz", lat: -9.526, lng: -77.528, color: "#db2777" },
+      { day: "Tag 60", date: "20.05. (Do)", groupTag: "Ines & Verena", num: 11, region: "Cordillera Blanca", regTag: "tag-huaraz", title: "HIGHLIGHT: LAGUNA 69", details: "Ikonische Tageswanderung zur leuchtend azurblauen Laguna 69 auf 4.600 m Höhe unter Gletscherwänden", transport: "🚐 Shuttle ➔ 🥾 Hike (14 km)", hotel: "🏨 Mountain Lodge Huaraz", locName: "Huaraz", lat: -9.526, lng: -77.528, color: "#db2777" },
+      { day: "Tag 61", date: "21.05. (Fr)", groupTag: "Ines & Verena", num: 11, region: "Cordillera Blanca", regTag: "tag-huaraz", title: "Laguna Parón (Caraz)", details: "Ausflug zur größten Lagune der Cordillera Blanca mit Blick auf den Huandoy & Artesonraju (Paramount Logo)", transport: "🚐 Tour-Bus", hotel: "🏨 Mountain Lodge Huaraz", locName: "Huaraz", lat: -9.526, lng: -77.528, color: "#db2777" },
+      { day: "Tag 62", date: "22.05. (Sa)", groupTag: "Ines & Verena", num: 11, region: "Cordillera Blanca", regTag: "tag-huaraz", title: "Pastoruri Gletscher (5.000 m)", details: "Fahrt zum schmelzenden Pastoruri-Gletscher und Puya Raimondii Riesengewächsen", transport: "🚐 Tour-Bus", hotel: "🏨 Mountain Lodge Huaraz", locName: "Huaraz", lat: -9.526, lng: -77.528, color: "#db2777" },
+      { day: "Tag 63", date: "23.05. (So)", groupTag: "Ines & Verena", num: 11, region: "Cordillera Blanca", regTag: "tag-huaraz", title: "Entspannung in Huaraz & Rückfahrt Lima", details: "Entspannter Vormittag in Huaraz, Nachmittags Komfort-Bus zurück an die Küste", transport: "🚌 Komfortbus (ca. 8h)", hotel: "🏨 Boutique Hotel Lima", locName: "Huaraz", lat: -9.526, lng: -77.528, color: "#db2777" },
+      { day: "Tag 64", date: "24.05. (Mo)", groupTag: "Ines & Verena", num: 12, region: "Lima Finale", regTag: "tag-bonus", title: "Lima Strandspaziergang & Surfen", details: "Morgen-Spaziergang an den Klippen von Miraflores, Kaffeepause", transport: "🚶 Zu Fuß", hotel: "🏨 Boutique Hotel Lima", locName: "Lima", lat: -12.022, lng: -77.114, color: "#7c3aed" },
+      { day: "Tag 65", date: "25.05. (Di)", groupTag: "Ines & Verena", num: 12, region: "Lima Finale", regTag: "tag-bonus", title: "Souvenir-Shopping Mercado Inka", details: "Alpaka-Pullover, Mitbringsel & Anden-Schmuck einkaufen", transport: "🛺 Colectivo", hotel: "🏨 Boutique Hotel Lima", locName: "Lima", lat: -12.022, lng: -77.114, color: "#7c3aed" },
+      { day: "Tag 66", date: "26.05. (Mi)", groupTag: "Ines & Verena", num: 12, region: "Lima Finale", regTag: "tag-bonus", title: "Rooftop Drinks & Gala-Dinner", details: "Sonnenuntergang über dem Pazifik genießen & exquisites Abendessen", transport: "🚕 Taxi", hotel: "🏨 Boutique Hotel Lima", locName: "Lima", lat: -12.022, lng: -77.114, color: "#7c3aed" },
+      { day: "Tag 67", date: "27.05. (Do)", groupTag: "Ines & Verena", num: 12, region: "Lima Finale", regTag: "tag-bonus", title: "Koffer packen & Letzte Stunden", details: "Gepäck reisefertig machen, Fotos sortieren und Erinnerungen austauschen", transport: "🚶 Spaziergang", hotel: "🏨 Boutique Hotel Lima", locName: "Lima", lat: -12.022, lng: -77.114, color: "#7c3aed" },
+      { day: "Tag 68", date: "28.05. (Fr)", groupTag: "Ines & Verena", num: 12, region: "Gemeinsame Heimreise", regTag: "tag-default", title: "🌟 GEMEINSAMER RÜCKFLUG INES & VERENA", details: "Ines & Verena treten zusammen von Lima aus den Rückflug nach Europa an. Ende eines epischen Südamerika-Trips!", transport: "✈️ Langstreckenflug", hotel: "✈️ Im Flugzeug", locName: "Lima", lat: -12.022, lng: -77.114, color: "#7c3aed" }
     ];
 
-    const etappe3Data = [
-      { day: "Tag 23", date: "13.04. (Di)", groupTag: "Stefan & Ines", region: "Heiliges Tal (Peru)", regTag: "tag-peru", title: "Flug Santiago ➔ Lima ➔ Cusco ➔ Valle Sagrado", details: "Ankunft in den peruanischen Anden. Direkt ins tiefere Heilige Tal (Ollantaytambo) zur Akklimatisierung!", transport: "✈️ Flug ➔ 🚕 Taxi", hotel: "🏨 Hotel in Ollantaytambo", locName: "Ollantaytambo", lat: -13.258, lng: -72.263, color: "#059669" },
-      { day: "Tag 24", date: "14.04. (Mi)", groupTag: "Stefan & Ines", region: "Heiliges Tal (Peru)", regTag: "tag-peru", title: "Inka-Kultur: Maras Salzterrassen & Moray", details: "Erkundung der terrassenförmigen Inka-Agrarlabore Moray und der schimmernden Salineras de Maras", transport: "🛺 Colectivo / Taxi", hotel: "🏨 Hotel in Ollantaytambo", locName: "Ollantaytambo", lat: -13.258, lng: -72.263, color: "#059669" },
-      { day: "Tag 25", date: "15.04. (Do)", groupTag: "Stefan & Ines", region: "Heiliges Tal (Peru)", regTag: "tag-peru", title: "Ollantaytambo Festung & Pisac Markt", details: "Besichtigung der gewaltigen Inka-Festung Ollantaytambo & bunter Markt in Pisac", transport: "🚌 Local Bus / Colectivo", hotel: "🏨 Hotel in Ollantaytambo", locName: "Ollantaytambo", lat: -13.258, lng: -72.263, color: "#059669" },
-      { day: "Tag 26", date: "16.04. (Fr)", groupTag: "Stefan & Ines", region: "Machu Picchu Region", regTag: "tag-peru", title: "Panoramazug ➔ Aguas Calientes", details: "Fahrt mit dem berühmten Panoramazug (Inca Rail/PeruRail) durch die Urubamba-Schlucht", transport: "🚆 Panoramazug", hotel: "🏨 Hotel in Aguas Calientes", locName: "Machu Picchu", lat: -13.163, lng: -72.545, color: "#059669" },
-      { day: "Tag 27", date: "17.04. (Sa)", groupTag: "Stefan & Ines", region: "Machu Picchu Region", regTag: "tag-peru", title: "🌟 HIGHLIGHT: MACHU PICCHU", details: "Früher Morgen-Slot im Inka-Weltwunder Machu Picchu (+ optional Huayna Picchu Climb). Abends Zug nach Cusco", transport: "🚌 Shuttle-Bus ➔ 🚆 Zug ➔ 🚕 Taxi", hotel: "🏨 Boutique Hotel Cusco", locName: "Machu Picchu", lat: -13.163, lng: -72.545, color: "#059669" },
-      { day: "Tag 28", date: "18.04. (So)", groupTag: "Stefan & Ines", region: "Cusco & Anden", regTag: "tag-peru", title: "Cusco Inka-Hauptstadt", details: "Plaza de Armas, Sonnentempel Qorikancha, Mercado San Pedro und Festung Sacsayhuamán", transport: "🚶 Spaziergang", hotel: "🏨 Boutique Hotel Cusco", locName: "Cusco", lat: -13.535, lng: -71.967, color: "#059669" },
-      { day: "Tag 29", date: "19.04. (Mo)", groupTag: "Stefan & Ines", region: "Cusco & Anden", regTag: "tag-peru", title: "Tagestour: Vinicunca Rainbow Mountain", details: "Tagesausflug zum 5.000 m hohen Regenbogenberg Vinicunca oder azurblauem Humantay See", transport: "🚐 Tour-Bus", hotel: "🏨 Boutique Hotel Cusco", locName: "Cusco", lat: -13.535, lng: -71.967, color: "#059669" },
-      { day: "Tag 30", date: "20.04. (Di)", groupTag: "Stefan & Ines", region: "Cusco & Anden", regTag: "tag-peru", title: "Künstlerviertel San Blas & Genuss", details: "Gassen von San Blas erkunden, Kaffeeverkostung und Schokoladenmuseum ChocoMuseo", transport: "🚶 Spaziergang", hotel: "🏨 Boutique Hotel Cusco", locName: "Cusco", lat: -13.535, lng: -71.967, color: "#059669" },
-      { day: "Tag 31", date: "21.04. (Mi)", groupTag: "Stefan & Ines", region: "Cusco & Anden", regTag: "tag-peru", title: "Abschiedsabendessen mit Ines", details: "Letzte Souvenirs besorgen, Pisco Sour trinken und peruanische Spitzenküche genießen", transport: "🚶 Spaziergang", hotel: "🏨 Boutique Hotel Cusco", locName: "Cusco", lat: -13.535, lng: -71.967, color: "#059669" },
-      { day: "Tag 32", date: "22.04. (Do)", groupTag: "Stefan & Ines", region: "Abreise / Übergabe", regTag: "tag-default", title: "Stefan Heimflug ➔ Ines bleibt in Peru!", details: "Stefan fliegt via Lima zurück nach Europa. Ines bleibt in Cusco/Peru und erwartet ihre Mädels!", transport: "✈️ Flugzeug (Stefan)", hotel: "✈️ Flug / Hotel Ines", locName: "Cusco", lat: -13.535, lng: -71.967, color: "#059669" }
-    ];
+    /* SWITCHER FÜR DIE 2 HAUPTBEREICHE */
+    function switchMainSection(section) {
+      currentMainSection = section;
+      currentSubFilter = 'all';
 
-    const bonusData = [
-      { day: "Woche 1", date: "ab 23.04.", groupTag: "Ines & Mädels", region: "Süd-Peru Option", regTag: "tag-bonus", title: "Arequipa & Colca-Canyon", details: "Weiße Stadt Arequipa erkunden & Kondor-Beobachtung im tiefen Colca Canyon", transport: "🚌 Tour-Bus", hotel: "🏨 Hotel in Arequipa", locName: "Arequipa", lat: -16.409, lng: -71.537, color: "#7c3aed" },
-      { day: "Woche 2", date: "Ende April", groupTag: "Ines & Mädels", region: "Süd-Peru Option", regTag: "tag-bonus", title: "Titicacasee & Schwimmende Inseln", details: "Puno am Titicacasee besuchen, Uros Schilfinseln & Taquile Erkundung", transport: "🚌 Bus ➔ 🚤 Boot", hotel: "🏨 Hotel in Puno", locName: "Cusco", lat: -13.535, lng: -71.967, color: "#7c3aed" },
-      { day: "Woche 3", date: "Anfang Mai", groupTag: "Ines & Mädels", region: "Dschungel Option", regTag: "tag-bonus", title: "Amazonas Regenwald (Puerto Maldonado)", details: "Flug ab Cusco nach Puerto Maldonado: Eco-Lodge, Kaimane, Papageien & Canopy Walks", transport: "✈️ Flug ➔ 🚤 Dschungelboot", hotel: "🌿 Eco-Lodge Dschungel", locName: "Puerto Maldonado", lat: -12.593, lng: -69.189, color: "#7c3aed" },
-      { day: "Woche 4", date: "Mai 2027", groupTag: "Ines & Mädels", region: "Küste Option", regTag: "tag-bonus", title: "Huacachina Oase & Paracas / Lima", details: "Sandboarding in der Oase Huacachina, Ballestas Inseln & Kulinarik-Finale in Lima", transport: "🚌 Bus", hotel: "🏨 Hotel in Lima", locName: "Lima", lat: -12.022, lng: -77.114, color: "#7c3aed" }
-    ];
+      document.getElementById('btnMainStefan').classList.toggle('active', section === 'stefanSection');
+      document.getElementById('btnMainMaedels').classList.toggle('active', section === 'maedelsSection');
 
-    function switchEtappe(etappe) {
-      currentEtappe = etappe;
-      currentRegionFilter = 'all';
-
-      document.getElementById('btnEtappe1').classList.toggle('active', etappe === 'etappe1');
-      document.getElementById('btnEtappe2').classList.toggle('active', etappe === 'etappe2');
-      document.getElementById('btnEtappe3').classList.toggle('active', etappe === 'etappe3');
-      document.getElementById('btnEtappeBonus').classList.toggle('active', etappe === 'bonus');
-
-      renderFilters();
+      renderSubFilters();
       renderTableAndCards();
     }
 
-    function renderFilters() {
+    function renderSubFilters() {
       const controls = document.getElementById('filterControls');
-      const placeholderText = "Nach Ort, Aktivität, Trekking oder Flug suchen...";
+      const placeholderText = "Nach Ort, Aktivität, Person oder Trekking suchen...";
 
-      if (currentEtappe === 'etappe1') {
+      if (currentMainSection === 'stefanSection') {
         controls.innerHTML = `
           <input type="text" id="searchInput" class="search-input" placeholder="${placeholderText}" onkeyup="filterPlan()">
-          <button class="filter-btn active" onclick="setFilter('all', this)">Alle</button>
-          <button class="filter-btn" onclick="setFilter('W-Trek', this)">W-Trek / Torres</button>
-          <button class="filter-btn" onclick="setFilter('Puerto Natales', this)">Puerto Natales</button>
-          <button class="filter-btn" onclick="setFilter('El Calafate', this)">El Calafate (Gletscher)</button>
-          <button class="filter-btn" onclick="setFilter('El Chaltén', this)">El Chaltén (Fitz Roy)</button>
-        `;
-      } else if (currentEtappe === 'etappe2') {
-        controls.innerHTML = `
-          <input type="text" id="searchInput" class="search-input" placeholder="${placeholderText}" onkeyup="filterPlan()">
-          <button class="filter-btn active" onclick="setFilter('all', this)">Alle</button>
-          <button class="filter-btn" onclick="setFilter('San Pedro', this)">San Pedro de Atacama</button>
-          <button class="filter-btn" onclick="setFilter('Geysire', this)">Geysire & Thermen</button>
-          <button class="filter-btn" onclick="setFilter('Santiago', this)">Santiago de Chile</button>
-        `;
-      } else if (currentEtappe === 'etappe3') {
-        controls.innerHTML = `
-          <input type="text" id="searchInput" class="search-input" placeholder="${placeholderText}" onkeyup="filterPlan()">
-          <button class="filter-btn active" onclick="setFilter('all', this)">Alle</button>
-          <button class="filter-btn" onclick="setFilter('Heiliges Tal', this)">Valle Sagrado</button>
-          <button class="filter-btn" onclick="setFilter('Machu Picchu', this)">Machu Picchu</button>
-          <button class="filter-btn" onclick="setFilter('Cusco', this)">Cusco & Anden</button>
+          <button class="filter-btn active" onclick="setSubFilter('all', this)">Alle (Stefan & Ines)</button>
+          <button class="filter-btn" onclick="setSubFilter('Patagonien', this)">Patagonien & W-Trek</button>
+          <button class="filter-btn" onclick="setSubFilter('Atacama', this)">Atacama-Wüste</button>
+          <button class="filter-btn" onclick="setSubFilter('Peru', this)">Machu Picchu & Cusco</button>
         `;
       } else {
         controls.innerHTML = `
           <input type="text" id="searchInput" class="search-input" placeholder="${placeholderText}" onkeyup="filterPlan()">
-          <button class="filter-btn active" onclick="setFilter('all', this)">Alle Options-Routen</button>
-          <button class="filter-btn" onclick="setFilter('Arequipa', this)">Arequipa & Colca</button>
-          <button class="filter-btn" onclick="setFilter('Amazonas', this)">Amazonas-Dschungel</button>
-          <button class="filter-btn" onclick="setFilter('Küste', this)">Huacachina & Lima</button>
+          <button class="filter-btn active" onclick="setSubFilter('all', this)">Alle Mädels-Etappen</button>
+          <button class="filter-btn" onclick="setSubFilter('Ines & Tanja', this)">Ines & Tanja (Arequipa/Titicaca)</button>
+          <button class="filter-btn" onclick="setSubFilter('Ines, Tanja & Verena', this)">Mädels-Trio (Dschungel & Oase)</button>
+          <button class="filter-btn" onclick="setSubFilter('Ines & Verena', this)">Ines & Verena (Huaraz & Finale)</button>
         `;
       }
     }
 
     function renderTableAndCards() {
-      let data = etappe1Data;
-      if (currentEtappe === 'etappe2') data = etappe2Data;
-      if (currentEtappe === 'etappe3') data = etappe3Data;
-      if (currentEtappe === 'bonus') data = bonusData;
+      const data = currentMainSection === 'stefanSection' ? stefanData : maedelsData;
 
       const tbody = document.getElementById('planTableBody');
       tbody.innerHTML = '';
@@ -1258,7 +1317,9 @@
         tr.onclick = () => focusMap(item.locName);
 
         let groupClass = 'group-badge-stefan-ines';
-        if (item.groupTag === 'Ines & Mädels') groupClass = 'group-badge-ines-maedels';
+        if (item.groupTag === 'Ines & Tanja') groupClass = 'group-badge-ines-tanja';
+        if (item.groupTag === 'Ines, Tanja & Verena' || item.groupTag === 'Ines, Stefan & Tanja') groupClass = 'group-badge-ines-tanja-verena';
+        if (item.groupTag === 'Ines & Verena') groupClass = 'group-badge-ines-verena';
 
         const groupBadgeHtml = item.groupTag ? `<span class="${groupClass}">${item.groupTag}</span>` : '';
 
@@ -1271,7 +1332,7 @@
             <div class="sub-note">${item.date}</div>
           </td>
           <td><span class="tag-region ${item.regTag}">${item.region}</span></td>
-          <td><div class="route-title">${item.title}</div></td>
+          <td><div class="route-title">#${item.num} ${item.title}</div></td>
           <td>${item.details}</td>
           <td><span class="transport-pill">${item.transport}</span></td>
           <td><span class="hotel-pill">${item.hotel}</span></td>
@@ -1282,8 +1343,8 @@
       filterPlan();
     }
 
-    function setFilter(filterVal, btn) {
-      currentRegionFilter = filterVal;
+    function setSubFilter(filterVal, btn) {
+      currentSubFilter = filterVal;
       document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
       filterPlan();
@@ -1299,7 +1360,7 @@
         const region = row.getAttribute('data-region') || '';
         const group = row.getAttribute('data-group') || '';
         const matchesSearch = text.includes(q);
-        const matchesFilter = currentRegionFilter === 'all' || region.includes(currentRegionFilter) || group.includes(currentRegionFilter) || text.includes(currentRegionFilter.toLowerCase());
+        const matchesFilter = currentSubFilter === 'all' || region.includes(currentSubFilter) || group.includes(currentSubFilter) || text.includes(currentSubFilter.toLowerCase());
 
         row.style.display = (matchesSearch && matchesFilter) ? '' : 'none';
       });
@@ -1341,7 +1402,6 @@
       });
     }
 
-    /* MAP INITIALISATION FOR SÜDAMERIKA */
     function initMap() {
       const osmMap = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { 
         maxZoom: 19, 
@@ -1366,66 +1426,50 @@
         "⛰️ OpenTopoMap (Topographie & Berge)": openTopo
       }, null, { collapsed: true, position: 'topright' }).addTo(map);
 
-      // Südamerika Wegpunkte
+      // SÜDAMERIKA WEGPUNKTE (#1 bis #12 NUMMERIERT)
       const points = {
-        santiago: { name: "Santiago de Chile", date: "22.03. | 05.04. | 10.04.2027", lat: -33.393, lng: -70.786, desc: "<b>🇨🇱 Haupt-Drehkreuz Chile</b><br>Flughafen SCL & Großstadt-Flair", color: "#0d9488" },
-        punta_arenas: { name: "Punta Arenas", date: "22.03. – 23.03.2027", lat: -53.003, lng: -70.855, desc: "<b>🇨🇱 Magallanes Region</b><br>Südlichste Großstadt Patagoniens", color: "#0284c7" },
-        puerto_natales: { name: "Puerto Natales", date: "23.03. | 27.03. – 29.03.", lat: -51.727, lng: -72.506, desc: "<b>🇨🇱 Tor zum Torres del Paine</b><br>Basislager & Verpflegung für den W-Trek", color: "#0284c7" },
-        torres: { name: "Torres del Paine", date: "24.03. – 27.03.2027", lat: -51.253, lng: -72.880, desc: "<b>🏔️ W-Trek Highlight</b><br>Base de las Torres, Valle Francés & Grey Gletscher", color: "#0284c7" },
-        calafate: { name: "El Calafate", date: "29.03. – 31.03. | 03.04.", lat: -50.338, lng: -72.265, desc: "<b>🇦🇷 Argentinisches Patagonien</b><br>Perito Moreno Gletscher Abenteuer", color: "#2563eb" },
-        chalten: { name: "El Chaltén", date: "31.03. – 03.04.2027", lat: -49.331, lng: -72.886, desc: "<b>🏔️ Trekking-Hauptstadt</b><br>Fitz Roy & Cerro Torre Wanderungen", color: "#2563eb" },
-        atacama: { name: "San Pedro de Atacama", date: "06.04. – 10.04.2027", lat: -22.908, lng: -68.199, desc: "<b>🌵 Atacama-Wüste</b><br>Mondtal, El Tatio Geysire & Salzseen", color: "#d97706" },
-        lima: { name: "Lima", date: "13.04. & Mai 2027", lat: -12.022, lng: -77.114, desc: "<b>🇵🇪 Hauptstadt Peru</b><br>Gastronomie & Pazifik-Küste", color: "#059669" },
-        cusco: { name: "Cusco", date: "13.04. – 22.04.2027", lat: -13.535, lng: -71.967, desc: "<b>🇵🇪 Inka-Hauptstadt der Anden</b><br>3.400 m Höhe, San Blas & Ausflüge", color: "#059669" },
-        ollantaytambo: { name: "Ollantaytambo", date: "13.04. – 16.04.2027", lat: -13.258, lng: -72.263, desc: "<b>🏛️ Heiliges Tal (Valle Sagrado)</b><br>Akklimatisierung, Maras & Moray", color: "#059669" },
-        machu_picchu: { name: "Machu Picchu", date: "16.04. – 17.04.2027", lat: -13.163, lng: -72.545, desc: "<b>🌟 INKA-WELTWUNDER</b><br>Aguas Calientes & Machu Picchu Zitadelle", color: "#059669" },
-        arequipa: { name: "Arequipa", date: "Bonus Option", lat: -16.409, lng: -71.537, desc: "<b>🇵🇪 Weiße Stadt & Colca Canyon</b><br>Kondore beobachten", color: "#7c3aed" },
-        amazonas: { name: "Puerto Maldonado", date: "Bonus Option", lat: -12.593, lng: -69.189, desc: "<b>🌿 Amazonas Dschungel</b><br>Lodge-Aufenthalt & Kaimane", color: "#7c3aed" }
+        santiago: { num: 1, name: "Santiago de Chile", date: "22.03. | 05.04. | 10.04.2027", lat: -33.393, lng: -70.786, desc: "<b>🇨🇱 Haupt-Drehkreuz Chile</b><br>Flughafen SCL & Großstadt-Flair", color: "#0d9488" },
+        punta_arenas: { num: 2, name: "Punta Arenas", date: "22.03. – 23.03.2027", lat: -53.003, lng: -70.855, desc: "<b>🇨🇱 Magallanes Region</b><br>Südlichste Großstadt Patagoniens", color: "#0284c7" },
+        puerto_natales: { num: 2, name: "Puerto Natales", date: "23.03. | 27.03. – 29.03.", lat: -51.727, lng: -72.506, desc: "<b>🇨🇱 Tor zum Torres del Paine</b><br>Basislager & Verpflegung für den W-Trek", color: "#0284c7" },
+        torres: { num: 2, name: "Torres del Paine", date: "24.03. – 27.03.2027", lat: -51.253, lng: -72.880, desc: "<b>🏔️ W-Trek Highlight</b><br>Base de las Torres, Valle Francés & Grey Gletscher", color: "#0284c7" },
+        calafate: { num: 2, name: "El Calafate", date: "29.03. – 31.03. | 03.04.", lat: -50.338, lng: -72.265, desc: "<b>🇦🇷 Argentinisches Patagonien</b><br>Perito Moreno Gletscher Abenteuer", color: "#2563eb" },
+        chalten: { num: 2, name: "El Chaltén", date: "31.03. – 03.04.2027", lat: -49.331, lng: -72.886, desc: "<b>🏔 Trekking-Hauptstadt</b><br>Fitz Roy & Cerro Torre Wanderungen", color: "#2563eb" },
+        atacama: { num: 3, name: "San Pedro de Atacama", date: "06.04. – 10.04.2027", lat: -22.908, lng: -68.199, desc: "<b>🌵 Atacama-Wüste</b><br>Mondtal, El Tatio Geysire & Salzseen", color: "#d97706" },
+        cusco: { num: 4, name: "Cusco", date: "13.04. – 05.05.2027", lat: -13.535, lng: -71.967, desc: "<b>🇵🇪 Inka-Hauptstadt der Anden</b><br>3.400 m Höhe, San Blas & Treffpunkt Tanja/Verena", color: "#059669" },
+        ollantaytambo: { num: 4, name: "Ollantaytambo", date: "13.04. – 16.04.2027", lat: -13.258, lng: -72.263, desc: "<b>🏛️ Heiliges Tal (Valle Sagrado)</b><br>Akklimatisierung, Maras & Moray", color: "#059669" },
+        machu_picchu: { num: 4, name: "Machu Picchu", date: "16.04. – 17.04.2027", lat: -13.163, lng: -72.545, desc: "<b>🌟 INKA-WELTWUNDER</b><br>Aguas Calientes & Machu Picchu Zitadelle", color: "#059669" },
+        lima: { num: 5, name: "Lima", date: "Mai 2027", lat: -12.022, lng: -77.114, desc: "<b>🇵🇪 Hauptstadt Peru</b><br>Kulinarik, Miraflores & Rückflug Stefan", color: "#059669" },
+        arequipa: { num: 6, name: "Arequipa", date: "23.04. – 26.04.2027", lat: -16.409, lng: -71.537, desc: "<b>🇵🇪 Weiße Stadt</b><br>Ines & Tanja: Koloniale Altstadt", color: "#7c3aed" },
+        colca: { num: 7, name: "Colca Canyon", date: "24.04. – 26.04.2027", lat: -15.608, lng: -71.883, desc: "<b>🏔️ Colca Canyon</b><br>Ines & Tanja: Kondor-Flug beobachten", color: "#7c3aed" },
+        puno: { num: 8, name: "Titicacasee (Puno)", date: "27.04. – 29.04.2027", lat: -15.840, lng: -70.021, desc: "<b>🌊 Titicacasee (3.812 m)</b><br>Ines & Tanja: Schwimmende Uros-Inseln", color: "#7c3aed" },
+        amazonas: { num: 9, name: "Puerto Maldonado", date: "02.05. – 05.05.2027", lat: -12.593, lng: -69.189, desc: "<b>🌿 Amazonas Dschungel</b><br>Ines, Tanja & Verena: Lodge & Kaimane", color: "#7c3aed" },
+        huacachina: { num: 10, name: "Huacachina / Paracas", date: "06.05. – 09.05.2027", lat: -14.087, lng: -75.763, desc: "<b>🏜️ Wüstenoase & Pazifik</b><br>Sandboarding & Seelöwen", color: "#7c3aed" },
+        huaraz: { num: 11, name: "Huaraz (Cordillera Blanca)", date: "17.05. – 23.05.2027", lat: -9.526, lng: -77.528, desc: "<b>🏔️ Peruanische Alpen</b><br>Ines & Verena: Laguna 69 Trekking", color: "#db2777" },
+        lima_finale: { num: 12, name: "Lima Finale (28.05.)", date: "24.05. – 28.05.2027", lat: -12.022, lng: -77.114, desc: "<b>🌟 Gemeinsamer Rückflug</b><br>Ines & Verena treten Heimreise an", color: "#7c3aed" }
       };
 
-      const southAmericaBounds = [
-        [-55.0, -78.0], 
-        [-10.0, -65.0]
-      ];
-
-      const flightStyle = { color: '#059669', weight: 2, opacity: 0.85, dashArray: '5, 5' };
-      const overlandStyle = { color: '#0284c7', weight: 3, opacity: 0.9 };
-      const bonusStyle = { color: '#7c3aed', weight: 2.5, opacity: 0.8, dashArray: '3, 3' };
-
-      // Fluglinien
-      L.polyline([[points.santiago.lat, points.santiago.lng], [points.punta_arenas.lat, points.punta_arenas.lng]], flightStyle).addTo(map);
-      L.polyline([[points.calafate.lat, points.calafate.lng], [points.santiago.lat, points.santiago.lng]], flightStyle).addTo(map);
-      L.polyline([[points.santiago.lat, points.santiago.lng], [points.atacama.lat, points.atacama.lng]], flightStyle).addTo(map);
-      L.polyline([[points.santiago.lat, points.santiago.lng], [points.lima.lat, points.lima.lng], [points.cusco.lat, points.cusco.lng]], flightStyle).addTo(map);
-      L.polyline([[points.cusco.lat, points.cusco.lng], [points.amazonas.lat, points.amazonas.lng]], bonusStyle).addTo(map);
-
-      // Landwege
-      L.polyline([[points.punta_arenas.lat, points.punta_arenas.lng], [points.puerto_natales.lat, points.puerto_natales.lng], [points.torres.lat, points.torres.lng]], overlandStyle).addTo(map);
-      L.polyline([[points.puerto_natales.lat, points.puerto_natales.lng], [points.calafate.lat, points.calafate.lng], [points.chalten.lat, points.chalten.lng]], { color: '#2563eb', weight: 3 }).addTo(map);
-      L.polyline([[points.cusco.lat, points.cusco.lng], [points.ollantaytambo.lat, points.ollantaytambo.lng], [points.machu_picchu.lat, points.machu_picchu.lng]], { color: '#059669', weight: 3 }).addTo(map);
-
-      // Marker
+      // MARKER MIT ZAHL ERSTELLEN
       const markerGroup = L.featureGroup();
 
       Object.keys(points).forEach(key => {
         const p = points[key];
-        const pt = [p.lat, p.lng];
+        
+        const numberIcon = L.divIcon({
+          className: 'number-marker',
+          html: `<span>${p.num}</span>`,
+          iconSize: [24, 24],
+          iconAnchor: [12, 12]
+        });
 
         const popupContent = `
           <div style="color: #0f172a; font-family: 'Plus Jakarta Sans', sans-serif; min-width: 200px;">
-            <h3 style="margin: 0 0 4px 0; font-size: 1.05rem; color: ${p.color}; border-bottom: 1px solid #cbd5e1; padding-bottom: 4px;">📍 ${p.name}</h3>
+            <h3 style="margin: 0 0 4px 0; font-size: 1.05rem; color: ${p.color}; border-bottom: 1px solid #cbd5e1; padding-bottom: 4px;">#${p.num} ${p.name}</h3>
             <span class="popup-date-badge">📅 ${p.date}</span>
             <div style="font-size: 0.85rem; color: #334155; margin-top: 4px;">${p.desc}</div>
           </div>
         `;
 
-        const marker = L.circleMarker(pt, {
-          color: p.color,
-          fillColor: p.color,
-          fillOpacity: 0.9,
-          radius: 7,
-          weight: 2
-        }).bindPopup(popupContent);
+        const marker = L.marker([p.lat, p.lng], { icon: numberIcon }).bindPopup(popupContent);
 
         markerGroup.addLayer(marker);
         markers[p.name] = { marker, lat: p.lat, lng: p.lng };
@@ -1434,22 +1478,50 @@
 
       markerGroup.addTo(map);
 
+      /* FUNKTION FÜR LINIEN MIT RICHTUNGS-PFEILEN */
+      function drawArrowLine(coords, color, dash = null) {
+        const line = L.polyline(coords, { color: color, weight: 3, opacity: 0.85, dashArray: dash }).addTo(map);
+        if (L.polylineDecorator) {
+          L.polylineDecorator(line, {
+            patterns: [
+              { offset: '35%', repeat: '40%', symbol: L.Symbol.arrowHead({ pixelSize: 9, polygon: false, pathOptions: { color: color, stroke: true, weight: 2 } }) }
+            ]
+          }).addTo(map);
+        }
+      }
+
+      // Fluglinien & Landwege mit Pfeilen
+      drawArrowLine([[points.santiago.lat, points.santiago.lng], [points.punta_arenas.lat, points.punta_arenas.lng]], '#0284c7', '5, 5');
+      drawArrowLine([[points.calafate.lat, points.calafate.lng], [points.santiago.lat, points.santiago.lng]], '#0284c7', '5, 5');
+      drawArrowLine([[points.santiago.lat, points.santiago.lng], [points.atacama.lat, points.atacama.lng]], '#d97706');
+      drawArrowLine([[points.santiago.lat, points.santiago.lng], [points.lima.lat, points.lima.lng], [points.cusco.lat, points.cusco.lng]], '#059669', '5, 5');
+      drawArrowLine([[points.cusco.lat, points.cusco.lng], [points.amazonas.lat, points.amazonas.lng]], '#7c3aed', '3, 3');
+      drawArrowLine([[points.amazonas.lat, points.amazonas.lng], [points.lima.lat, points.lima.lng]], '#7c3aed', '3, 3');
+
+      drawArrowLine([[points.punta_arenas.lat, points.punta_arenas.lng], [points.puerto_natales.lat, points.puerto_natales.lng], [points.torres.lat, points.torres.lng]], '#0284c7');
+      drawArrowLine([[points.puerto_natales.lat, points.puerto_natales.lng], [points.calafate.lat, points.calafate.lng], [points.chalten.lat, points.chalten.lng]], '#2563eb');
+      drawArrowLine([[points.cusco.lat, points.cusco.lng], [points.ollantaytambo.lat, points.ollantaytambo.lng], [points.machu_picchu.lat, points.machu_picchu.lng]], '#059669');
+      
+      drawArrowLine([[points.cusco.lat, points.cusco.lng], [points.arequipa.lat, points.arequipa.lng], [points.colca.lat, points.colca.lng], [points.puno.lat, points.puno.lng], [points.cusco.lat, points.cusco.lng]], '#7c3aed');
+      drawArrowLine([[points.lima.lat, points.lima.lng], [points.huacachina.lat, points.huacachina.lng]], '#7c3aed');
+      drawArrowLine([[points.lima.lat, points.lima.lng], [points.huaraz.lat, points.huaraz.lng]], '#db2777');
+
       // Legende
       const legend = L.control({ position: 'bottomright' });
       legend.onAdd = function() {
         const div = L.DomUtil.create('div', 'custom-legend');
         div.innerHTML = `
           <div class="legend-header" onclick="toggleLegendBody()">
-            <span>📌 Etappen-Legende</span>
+            <span>📌 Etappen-Legende (# Marker)</span>
             <span id="legendToggleIcon">▼</span>
           </div>
           <div class="legend-body" id="legendBody" style="display: none;">
-            <div class="legend-item"><span class="legend-color" style="background:#0284c7;"></span> 1. Patagonien & W-Trek</div>
-            <div class="legend-item"><span class="legend-color" style="background:#2563eb;"></span> 1. El Calafate & Fitz Roy</div>
-            <div class="legend-item"><span class="legend-color" style="background:#d97706;"></span> 2. Atacama-Wüste</div>
-            <div class="legend-item"><span class="legend-color" style="background:#059669;"></span> 3. Peru & Machu Picchu</div>
-            <div class="legend-item"><span class="legend-color" style="background:#7c3aed;"></span> Bonus: Ines & Mädels</div>
-            <div class="legend-item"><span class="legend-line" style="border-top: 2px dashed #059669;"></span> Inlands- & Verbindungsflüge</div>
+            <div class="legend-item"><span class="legend-color" style="background:#0284c7;"></span> 1. Patagonien (#1, #2)</div>
+            <div class="legend-item"><span class="legend-color" style="background:#d97706;"></span> 2. Atacama-Wüste (#3)</div>
+            <div class="legend-item"><span class="legend-color" style="background:#059669;"></span> 3. Peru & Machu Picchu (#4, #5)</div>
+            <div class="legend-item"><span class="legend-color" style="background:#7c3aed;"></span> 4. Mädels Südperu & Dschungel (#6-#10)</div>
+            <div class="legend-item"><span class="legend-color" style="background:#db2777;"></span> 4. Huaraz & Finale (#11, #12)</div>
+            <div class="legend-item"><span class="legend-line" style="border-top: 3px solid #0d9488;"></span> ➔ Pfeile = Fahrt- & Flugrichtung</div>
           </div>
         `;
         L.DomEvent.disableClickPropagation(div);
@@ -1457,7 +1529,7 @@
       };
       legend.addTo(map);
 
-      map.fitBounds(southAmericaBounds, { padding: [20, 20] });
+      map.fitBounds([[-55.0, -78.0], [-8.0, -65.0]], { padding: [20, 20] });
     }
 
     function toggleLegendBody() {
@@ -1489,7 +1561,10 @@
       else if (locationName.includes("Machu Picchu")) targetMarker = markers["machu_picchu"];
       else if (locationName.includes("Cusco")) targetMarker = markers["cusco"];
       else if (locationName.includes("Arequipa")) targetMarker = markers["arequipa"];
+      else if (locationName.includes("Puno")) targetMarker = markers["puno"];
       else if (locationName.includes("Puerto Maldonado")) targetMarker = markers["amazonas"];
+      else if (locationName.includes("Huacachina")) targetMarker = markers["huacachina"];
+      else if (locationName.includes("Huaraz")) targetMarker = markers["huaraz"];
       else if (locationName.includes("Lima")) targetMarker = markers["lima"];
       else targetMarker = markers[locationName];
 
@@ -1500,9 +1575,9 @@
       }
     }
 
-    /* COUNTDOWN SÜDAMERIKA (22.03.2027 10:00 UTC+1) */
+    /* COUNTDOWN SÜDAMERIKA */
     function updateCountdown() {
-      const flightTime = Date.UTC(2027, 2, 22, 9, 0, 0); // 22.03.2027 10:00 CET (09:00 UTC)
+      const flightTime = Date.UTC(2027, 2, 22, 9, 0, 0); // 22.03.2027 10:00 CET
       const now = Date.now();
       const diff = flightTime - now;
       const el = document.getElementById('countdown');
@@ -1523,7 +1598,6 @@
       }
     }
 
-    /* PACKLISTEN MIT TREKKING & PATAGONIEN SPEZIFIKA */
     let currentPerson = 'stefan';
 
     const rawItemsStefan = [
@@ -1627,8 +1701,8 @@
     }
 
     function loadPacklist() {
-      const savedStefan = localStorage.getItem('suedamerika_packlist_stefan_v1');
-      const savedInes = localStorage.getItem('suedamerika_packlist_ines_v1');
+      const savedStefan = localStorage.getItem('suedamerika_packlist_stefan_v3');
+      const savedInes = localStorage.getItem('suedamerika_packlist_ines_v3');
 
       packlists.stefan = savedStefan ? JSON.parse(savedStefan) : JSON.parse(JSON.stringify(defaultStefan));
       packlists.ines = savedInes ? JSON.parse(savedInes) : JSON.parse(JSON.stringify(defaultInes));
@@ -1638,7 +1712,7 @@
     }
 
     function savePacklist() {
-      localStorage.setItem(`suedamerika_packlist_${currentPerson}_v1`, JSON.stringify(packlists[currentPerson]));
+      localStorage.setItem(`suedamerika_packlist_${currentPerson}_v3`, JSON.stringify(packlists[currentPerson]));
       renderPacklist();
       renderAnalysis();
     }
@@ -1798,7 +1872,6 @@
       savePacklist();
     }
 
-    /* DYNAMISCHE GEWICHTSANALYSE & CHARTS */
     const allCategories = [
       "Dokumente & Wertsachen",
       "Rucksäcke & Trekking-Gepäck",
@@ -1928,7 +2001,7 @@
     }
 
     window.addEventListener('DOMContentLoaded', () => {
-      switchEtappe('etappe1');
+      switchMainSection('stefanSection');
       initMap();
       loadPacklist();
       updateCountdown();
