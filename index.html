@@ -1,0 +1,1939 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>Südamerika Abenteuer 2027 (Chile, Argentinien & Peru)</title>
+
+  <!-- PWA & Mobile Web App Meta -->
+  <meta name="theme-color" content="#0d9488">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Leaflet CSS & JS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+  <!-- Chart.js für Diagramme -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <style>
+    :root {
+      --bg: #f4f7f5;           
+      --card-bg: #ffffff;      
+      --card-bg-hover: #f0fdfa;
+      --border: #cbd5e1;       
+      
+      --text-main: #0f172a;    
+      --text: #334155;         
+      --text-muted: #64748b;   
+      
+      --primary: #0d9488;      /* Teal / Patagonien-Gletscher */
+      --primary-hover: #0f766e;
+      --primary-rgb: 13, 148, 136;
+      --accent: #b45309;       /* Anden Erdtöne */
+      
+      --patagonien: #0284c7;   /* Eisblau / Blau für Süden */
+      --atacama: #d97706;      /* Wüsten-Orange */
+      --peru: #059669;         /* Inka-Grün */
+      --bonus: #7c3aed;        /* Violett für Ines & Mädels */
+      --danger: #dc2626;
+
+      --tag-wtrek: #0284c7;
+      --tag-argentinien: #2563eb;
+      --tag-atacama: #d97706;
+      --tag-peru: #059669;
+      --tag-bonus: #7c3aed;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.25;
+      padding: 16px 12px;
+    }
+
+    .container {
+      max-width: 1280px;
+      margin: 0 auto;
+    }
+
+    header {
+      margin-bottom: 14px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: flex-end;
+      gap: 12px;
+      border-bottom: 3px solid var(--primary);
+      padding-bottom: 12px;
+    }
+
+    .title-group h1 {
+      font-size: 1.65rem;
+      font-weight: 800;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .title-group p {
+      color: var(--text-muted);
+      font-size: 0.88rem;
+      margin-top: 2px;
+      font-weight: 600;
+    }
+
+    .countdown-badge {
+      display: inline-block;
+      margin-top: 4px;
+      background: #ccfbf1;
+      border: 1px solid #5eead4;
+      color: #0f766e;
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: 0.82rem;
+      font-weight: 800;
+    }
+
+    .stats-bar {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .stat-pill {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      padding: 4px 10px;
+      border-radius: 9999px;
+      font-size: 0.8rem;
+      color: var(--text-main);
+      font-weight: 600;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+    }
+
+    .stat-pill strong {
+      color: var(--primary);
+    }
+
+    /* Tab Navigation */
+    .nav-tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 14px;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 6px;
+      overflow-x: auto;
+    }
+
+    .tab-btn {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      padding: 6px 14px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      font-weight: 700;
+      transition: all 0.2s ease;
+      white-space: nowrap;
+    }
+
+    .tab-btn.active, .tab-btn:hover {
+      background: var(--primary);
+      border-color: var(--primary);
+      color: #ffffff;
+    }
+
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    /* Kartenansicht & Fullscreen Overlay */
+    .map-section {
+      margin-bottom: 16px;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-top: 4px solid var(--primary);
+      border-radius: 8px;
+      padding: 12px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+      position: relative;
+      transition: all 0.3s ease;
+    }
+
+    .map-section.fullscreen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 9999;
+      border-radius: 0;
+      border: none;
+      padding: 12px;
+      margin: 0;
+      overflow-y: auto;
+      background: var(--bg);
+    }
+
+    .map-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .map-section h2 {
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-fullscreen {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      color: var(--primary);
+      padding: 4px 10px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 700;
+      font-size: 0.8rem;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+      transition: all 0.15s ease;
+    }
+
+    .btn-fullscreen:hover {
+      background: var(--primary);
+      color: #ffffff;
+      border-color: var(--primary);
+    }
+
+    #map {
+      height: 480px;
+      width: 100%;
+      border-radius: 6px;
+      z-index: 1;
+      border: 1px solid var(--border);
+      transition: height 0.3s ease;
+    }
+
+    .map-section.fullscreen #map {
+      height: calc(100vh - 80px);
+      min-height: 400px;
+    }
+
+    /* Einklappbare Legende auf der Karte */
+    .custom-legend {
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 8px 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      font-size: 0.78rem;
+      color: var(--text-main);
+      max-width: 260px;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+
+    .legend-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-weight: 800;
+      color: var(--primary);
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .legend-body {
+      margin-top: 6px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .legend-color {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      display: inline-block;
+      flex-shrink: 0;
+    }
+
+    .legend-line {
+      width: 18px;
+      height: 3px;
+      display: inline-block;
+      flex-shrink: 0;
+    }
+
+    /* Etappen Switcher unterhalb der Karte */
+    .etappen-switcher {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+
+    .etappe-btn {
+      background: var(--card-bg);
+      border: 2px solid var(--border);
+      color: var(--text-main);
+      padding: 8px 10px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 0.82rem;
+      font-weight: 800;
+      text-align: center;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+    }
+
+    .etappe-btn:hover {
+      border-color: var(--primary);
+      background: var(--card-bg-hover);
+    }
+
+    .etappe-btn.active {
+      background: var(--primary);
+      border-color: var(--primary);
+      color: #ffffff;
+      box-shadow: 0 2px 8px rgba(13, 148, 136, 0.25);
+    }
+
+    /* Filter & Suche */
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 14px;
+      align-items: center;
+    }
+
+    .search-input {
+      flex: 1 1 300px;
+      width: 100%;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      color: var(--text-main);
+      padding: 7px 12px;
+      border-radius: 6px;
+      font-family: inherit;
+      font-size: 0.82rem;
+      outline: none;
+      font-weight: 500;
+      box-sizing: border-box;
+    }
+
+    .search-input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 2px rgba(var(--primary-rgb), 0.15);
+    }
+
+    .filter-btn {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 5px 10px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.8rem;
+      font-weight: 600;
+      transition: all 0.15s ease;
+    }
+
+    .filter-btn:hover, .filter-btn.active {
+      background: var(--primary);
+      border-color: var(--primary);
+      color: #ffffff;
+    }
+
+    /* Tabellen Styling */
+    .table-wrapper {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow-x: auto;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.03);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 0.82rem;
+    }
+
+    th {
+      background: #e2e8f0;
+      color: var(--text-main);
+      font-weight: 800;
+      text-transform: uppercase;
+      font-size: 0.7rem;
+      letter-spacing: 0.04em;
+      padding: 6px 8px;
+      border-bottom: 2px solid var(--border);
+      white-space: nowrap;
+    }
+
+    td {
+      padding: 5px 8px;
+      border-bottom: 1px solid var(--border);
+      vertical-align: middle;
+      color: var(--text-main);
+      line-height: 1.25;
+    }
+
+    tr.clickable-row {
+      cursor: pointer;
+      transition: background 0.12s ease;
+    }
+
+    tr.clickable-row:hover td {
+      background: var(--card-bg-hover) !important;
+    }
+
+    .day-cell-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: nowrap;
+    }
+
+    .day-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      color: #ffffff;
+      background: var(--primary);
+      border-radius: 4px;
+      padding: 1px 5px;
+      font-size: 0.75rem;
+      white-space: nowrap;
+    }
+
+    /* Personen-Badges */
+    .group-badge-stefan-ines {
+      display: inline-block;
+      font-size: 0.68rem;
+      font-weight: 700;
+      padding: 1px 5px;
+      border-radius: 4px;
+      background: #ccfbf1;
+      color: #0f766e;
+      border: 1px solid #99f6e4;
+      white-space: nowrap;
+    }
+
+    .group-badge-ines-maedels {
+      display: inline-block;
+      font-size: 0.68rem;
+      font-weight: 700;
+      padding: 1px 5px;
+      border-radius: 4px;
+      background: #f3e8ff;
+      color: #6b21a8;
+      border: 1px solid #e9d5ff;
+      white-space: nowrap;
+    }
+
+    /* Region Tags */
+    .tag-region {
+      display: inline-block;
+      padding: 1px 5px;
+      border-radius: 4px;
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .tag-wtrek { background: #e0f2fe; color: #0369a1; }
+    .tag-argentinien { background: #dbeafe; color: #1d4ed8; }
+    .tag-atacama { background: #fef3c7; color: #b45309; }
+    .tag-peru { background: #d1fae5; color: #047857; }
+    .tag-bonus { background: #f3e8ff; color: #6b21a8; }
+    .tag-default { background: #f1f5f9; color: var(--text-muted); }
+
+    .route-title {
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .sub-note {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      margin-top: 1px;
+      font-weight: 500;
+      white-space: nowrap;
+    }
+
+    .transport-pill, .hotel-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      font-size: 0.74rem;
+      padding: 1px 5px;
+      border-radius: 4px;
+      background: #f8fafc;
+      color: var(--text-main);
+      font-weight: 600;
+      border: 1px solid var(--border);
+      white-space: nowrap;
+    }
+
+    .hotel-pill {
+      background: #f0fdf4;
+      border-color: #bbf7d0;
+      color: #166534;
+    }
+
+    .popup-date-badge {
+      display: inline-block;
+      background: #f1f5f9;
+      color: var(--primary);
+      border: 1px solid var(--border);
+      font-size: 0.78rem;
+      font-weight: 800;
+      padding: 2px 6px;
+      border-radius: 4px;
+      margin-bottom: 4px;
+    }
+
+    /* Interaktive Packliste Styles */
+    .info-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 14px;
+      margin-bottom: 14px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.03);
+    }
+
+    .info-card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 2px solid var(--bg);
+      padding-bottom: 8px;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .info-card h3 {
+      color: var(--text-main);
+      font-size: 1.05rem;
+      font-weight: 800;
+      margin: 0;
+    }
+
+    /* Flugliste Styling */
+    .flight-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .flight-item {
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-left: 4px solid var(--primary);
+      padding: 8px 12px;
+      border-radius: 6px;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .flight-date {
+      font-size: 0.75rem;
+      font-weight: 800;
+      color: var(--primary);
+      text-transform: uppercase;
+    }
+
+    .flight-route {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .flight-details {
+      font-size: 0.8rem;
+      color: var(--text);
+    }
+
+    .flight-price {
+      display: inline-block;
+      margin-top: 2px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      background: #ccfbf1;
+      color: #0f766e;
+      padding: 1px 6px;
+      border-radius: 4px;
+      width: fit-content;
+    }
+
+    .pack-summary {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      background: #f0fdfa;
+      border: 1px solid #99f6e4;
+      padding: 10px 12px;
+      border-radius: 6px;
+      margin-bottom: 14px;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .pack-summary-stat {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .pack-summary-val {
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: var(--primary);
+    }
+
+    .pack-summary-lbl {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    .pack-add-form {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 14px;
+      background: #f1f5f9;
+      padding: 8px;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+    }
+
+    .pack-add-form input, .pack-add-form select {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      color: var(--text-main);
+      padding: 5px 8px;
+      border-radius: 4px;
+      font-size: 0.8rem;
+      outline: none;
+      font-weight: 500;
+    }
+
+    .pack-add-form input[type="text"] { flex: 2; min-width: 140px; }
+    .pack-add-form select { flex: 1.2; min-width: 130px; }
+    .pack-add-form input[type="number"] { width: 75px; }
+
+    .btn-add {
+      background: var(--primary);
+      color: #ffffff;
+      font-weight: 800;
+      border: none;
+      padding: 5px 12px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 0.8rem;
+    }
+
+    .btn-tools { display: flex; gap: 6px; flex-wrap: wrap; }
+
+    .btn-action {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      color: var(--text-main);
+      padding: 4px 10px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 0.78rem;
+      font-weight: 700;
+      transition: all 0.15s ease;
+    }
+
+    .btn-action:hover { border-color: var(--primary); color: var(--primary); }
+
+    .qty-controls {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      background: #f1f5f9;
+      border-radius: 4px;
+      padding: 1px 4px;
+      border: 1px solid var(--border);
+    }
+
+    .qty-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-main);
+      font-weight: bold;
+      cursor: pointer;
+      padding: 0 2px;
+    }
+
+    .btn-icon {
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      font-size: 0.8rem;
+      opacity: 0.85;
+      padding: 1px 2px;
+    }
+
+    /* Select-Menüs für Gewichtstyp & Packort */
+    .table-select {
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      color: var(--text-main);
+      border-radius: 4px;
+      padding: 2px 4px;
+      font-size: 0.75rem;
+      font-family: inherit;
+      font-weight: 600;
+      outline: none;
+      cursor: pointer;
+    }
+
+    .table-select.select-am-koerper {
+      background: #fef3c7;
+      color: #92400e;
+      border-color: #fde68a;
+      font-weight: 700;
+    }
+
+    .pack-table-category {
+      background: #f1f5f9;
+      color: var(--primary);
+      font-weight: 800;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      border-left: 3px solid var(--primary);
+      padding: 4px 8px !important;
+    }
+
+    /* GEWICHTSANALYSE STYLES */
+    .analysis-table-header-stefan {
+      background: #0f766e !important;
+      color: #ffffff !important;
+      text-align: right;
+    }
+    .analysis-table-header-ines {
+      background: #0284c7 !important;
+      color: #ffffff !important;
+      text-align: right;
+    }
+    .analysis-table-header-total {
+      background: #0f172a !important;
+      color: #ffffff !important;
+      text-align: right;
+    }
+
+    .charts-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-top: 16px;
+    }
+
+    .chart-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 14px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.03);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .chart-card h4 {
+      font-size: 0.95rem;
+      font-weight: 800;
+      color: var(--text-main);
+      margin-bottom: 10px;
+    }
+
+    .chart-container {
+      position: relative;
+      width: 100%;
+      max-width: 360px;
+      height: 320px;
+    }
+
+    @media (max-width: 860px) {
+      .table-wrapper-responsive { display: none; }
+      .mobile-cards { display: flex; flex-direction: column; gap: 8px; }
+      .card {
+        background: var(--card-bg);
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        padding: 10px;
+        cursor: pointer;
+      }
+      .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
+      .charts-grid { grid-template-columns: 1fr; }
+    }
+
+    @media (min-width: 861px) {
+      .mobile-cards { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    
+    <!-- HEADER -->
+    <header>
+      <div class="title-group">
+        <h1>🏔️ Südamerika Abenteuer 2027</h1>
+        <p>Chile, Argentinien & Peru • 22.03.2027 – 22.04.2027 (+ Peru-Extension Ines)</p>
+        <div class="countdown-badge" id="countdown">⏳ Countdown wird berechnet...</div>
+      </div>
+      <div class="stats-bar">
+        <div class="stat-pill">Stefan & Ines: <strong>32</strong> Tage</div>
+        <div class="stat-pill">Ines & Mädels: <strong>Follow-up in Peru</strong></div>
+      </div>
+    </header>
+
+    <!-- TAB NAVIGATION -->
+    <div class="nav-tabs">
+      <button class="tab-btn active" onclick="switchTab('routeTab', this)">🗺️ Reiseroute & Karte</button>
+      <button class="tab-btn" onclick="switchTab('packTab', this)">🎒 Interaktive Packliste</button>
+      <button class="tab-btn" onclick="switchTab('analysisTab', this)">📊 Gewichtsanalyse</button>
+      <button class="tab-btn" onclick="switchTab('budgetTab', this)">✈️ Gebuchte Flüge</button>
+    </div>
+
+    <!-- TAB 1: REISEROUTE & KARTE -->
+    <div id="routeTab" class="tab-content active">
+      
+      <!-- Gesamte Karten-Sektion -->
+      <div class="map-section" id="mapSection">
+        <div class="map-header">
+          <h2>🗺️ Interaktive Südamerika-Karte <span style="font-size:0.8rem; font-weight:500; color:var(--text-muted);">(Tabelle anklicken zum Zoomen)</span></h2>
+          <button class="btn-fullscreen" onclick="toggleMapFullscreen()" id="fullscreenBtn">
+            <span id="fullscreenIcon">🔍</span> <span id="fullscreenText">Vollbild</span>
+          </button>
+        </div>
+        <div id="map"></div>
+      </div>
+
+      <!-- ETAPPEN AUSWAHLFELD UNTERHALB DER KARTE -->
+      <div class="etappen-switcher">
+        <button id="btnEtappe1" class="etappe-btn active" onclick="switchEtappe('etappe1')">
+          1. Patagonien & W-Trek (22.03. - 05.04.)
+        </button>
+        <button id="btnEtappe2" class="etappe-btn" onclick="switchEtappe('etappe2')">
+          2. Atacama-Wüste (06.04. - 12.04.)
+        </button>
+        <button id="btnEtappe3" class="etappe-btn" onclick="switchEtappe('etappe3')">
+          3. Peru & Machu Picchu (13.04. - 22.04.)
+        </button>
+        <button id="btnEtappeBonus" class="etappe-btn" onclick="switchEtappe('bonus')">
+          Bonus: Ines & Mädels (ab 22.04.)
+        </button>
+      </div>
+
+      <!-- Suchfeld und Filter-Buttons -->
+      <div class="controls" id="filterControls">
+        <!-- Dynamisch aus JS befüllt -->
+      </div>
+
+      <!-- Desktop Ansicht (Tabelle) -->
+      <div class="table-wrapper table-wrapper-responsive">
+        <table id="planTable">
+          <thead>
+            <tr>
+              <th>Tag / Datum</th>
+              <th>Region</th>
+              <th>Ort & Aktivität</th>
+              <th>Details & Programm</th>
+              <th>Transportmittel</th>
+              <th>Unterkunft</th>
+            </tr>
+          </thead>
+          <tbody id="planTableBody">
+            <!-- Dynamisch aus JS befüllt -->
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Mobile Cards Ansicht -->
+      <div class="mobile-cards" id="mobileCards"></div>
+    </div>
+
+    <!-- TAB 2: PACKLISTE -->
+    <div id="packTab" class="tab-content">
+      
+      <div style="display: flex; gap: 8px; margin-bottom: 14px;">
+        <button id="btnPackStefan" class="tab-btn active" onclick="switchPerson('stefan')">🎒 Packliste Stefan</button>
+        <button id="btnPackInes" class="tab-btn" onclick="switchPerson('ines')">🎒 Packliste Ines</button>
+      </div>
+
+      <div class="info-card">
+        <div class="info-card-header">
+          <h3 id="packlistTitle">🎒 Interaktive Packliste & Kilo-Rechner (Stefan)</h3>
+          <div class="btn-tools">
+            <button class="btn-action" style="background:#ccfbf1; border-color:#5eead4; color:#0f766e;" onclick="setAllPacked(true)">✅ Alle einpacken</button>
+            <button class="btn-action" style="background:#fee2e2; border-color:#fca5a5; color:#dc2626;" onclick="setAllPacked(false)">❌ Alle auspacken</button>
+            <button class="btn-action" onclick="exportPacklistCSV()">📊 Export (CSV)</button>
+            <button class="btn-action" style="color:var(--danger);" onclick="resetPacklist()">🔄 Reset</button>
+          </div>
+        </div>
+
+        <div class="pack-summary">
+          <div class="pack-summary-stat">
+            <span class="pack-summary-val" id="packWeightKg">0.00 kg</span>
+            <span class="pack-summary-lbl">Gepäck (Rucksack & Taschen)</span>
+          </div>
+          <div class="pack-summary-stat">
+            <span class="pack-summary-val" id="wornWeightKg">0.00 kg</span>
+            <span class="pack-summary-lbl">Am Körper getragen</span>
+          </div>
+          <div class="pack-summary-stat">
+            <span class="pack-summary-val" id="grandTotalKg">0.00 kg</span>
+            <span class="pack-summary-lbl">Gesamtgewicht</span>
+          </div>
+          <div class="pack-summary-stat">
+            <span class="pack-summary-val" id="totalPackedItems">0 / 0</span>
+            <span class="pack-summary-lbl">Gegenstände ausgewählt</span>
+          </div>
+        </div>
+
+        <div class="pack-add-form">
+          <input type="text" id="newItemName" placeholder="Neuer Gegenstand">
+          <select id="newItemCat">
+            <option value="Dokumente & Wertsachen">Dokumente & Wertsachen</option>
+            <option value="Rucksäcke & Trekking-Gepäck">Rucksäcke & Trekking-Gepäck</option>
+            <option value="Trekking-Ausrüstung & Bekleidung">Trekking-Ausrüstung & Bekleidung</option>
+            <option value="Kleidung (Normal/Flug)">Kleidung (Normal/Flug)</option>
+            <option value="Schuhe & Wandern">Schuhe & Wandern</option>
+            <option value="Elektronik & Kabel">Elektronik & Kabel</option>
+            <option value="Hygiene & Pflege">Hygiene & Pflege</option>
+            <option value="Gesundheit & Reiseapotheke">Gesundheit & Reiseapotheke</option>
+            <option value="Schlaf- & Trekkingkomfort">Schlaf- & Trekkingkomfort</option>
+            <option value="Organisation & Tools">Organisation & Tools</option>
+          </select>
+          <input type="number" id="newItemWeight" placeholder="Gramm/Stk" min="1">
+          <select id="newItemType">
+            <option value="Basis">Basis</option>
+            <option value="Am Körper">Am Körper</option>
+            <option value="Verbrauch">Verbrauch</option>
+          </select>
+          <select id="newItemLoc">
+            <option value="Aufgabegepäck">Aufgabegepäck</option>
+            <option value="Handgepäck">Handgepäck</option>
+            <option value="Trekking-Rucksack">Trekking-Rucksack</option>
+            <option value="Am Körper">Am Körper</option>
+          </select>
+          <button class="btn-add" onclick="addPackItem()">+ Hinzufügen</button>
+        </div>
+
+        <div class="table-wrapper">
+          <table id="packTable">
+            <thead>
+              <tr>
+                <th style="width: 35px; text-align:center;">Packen</th>
+                <th>Gegenstand</th>
+                <th style="width: 110px;">Gewichtstyp</th>
+                <th style="width: 130px;">Packort</th>
+                <th style="width: 75px; text-align:center;">Anzahl</th>
+                <th style="width: 80px; text-align:right;">Stk (g)</th>
+                <th style="width: 85px; text-align:right;">Gesamt (g)</th>
+                <th style="width: 70px; text-align:center;">Aktionen</th>
+              </tr>
+            </thead>
+            <tbody id="packTableBody">
+              <!-- JS-befüllt -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 3: GEWICHTSANALYSE -->
+    <div id="analysisTab" class="tab-content">
+      <div class="info-card">
+        <div class="info-card-header">
+          <h3>📊 GEWICHTSANALYSE JE KATEGORIE</h3>
+          <span style="font-size: 0.82rem; color: var(--text-muted); font-weight: 600;">Vergleich des Gesamtgewichts pro Kategorie für Stefan und Ines</span>
+        </div>
+
+        <div class="table-wrapper" style="margin-bottom: 20px;">
+          <table id="analysisTable">
+            <thead>
+              <tr>
+                <th style="background: #0f172a; color: white;">Kategorie</th>
+                <th class="analysis-table-header-stefan" style="width: 130px;">Stefan Gewicht (g)</th>
+                <th class="analysis-table-header-stefan" style="width: 110px;">Stefan Anteil</th>
+                <th class="analysis-table-header-ines" style="width: 130px;">Ines Gewicht (g)</th>
+                <th class="analysis-table-header-ines" style="width: 110px;">Ines Anteil</th>
+                <th class="analysis-table-header-total" style="width: 140px;">Gesamt Paar (g)</th>
+              </tr>
+            </thead>
+            <tbody id="analysisTableBody">
+              <!-- JS-befüllt -->
+            </tbody>
+          </table>
+        </div>
+
+        <div class="charts-grid">
+          <div class="chart-card">
+            <h4>Gewichtsverteilung Stefan</h4>
+            <div class="chart-container">
+              <canvas id="chartStefan"></canvas>
+            </div>
+          </div>
+          <div class="chart-card">
+            <h4>Gewichtsverteilung Ines</h4>
+            <div class="chart-container">
+              <canvas id="chartInes"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 4: FLUGÜBERSICHT -->
+    <div id="budgetTab" class="tab-content">
+      <div class="info-card">
+        <h3>✈️ Gebuchte / Geplante Flüge (Südamerika 2027)</h3>
+        <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 12px;">Übersicht über alle geplanten Langstrecken- und Inlandsflüge:</p>
+        
+        <ul class="flight-list">
+          <li class="flight-item">
+            <div class="flight-date">22.03.2027 • Langstrecke Hinreise (Stefan & Ines)</div>
+            <div class="flight-route">Europa (VIE/MUC/FRA) ➔ Santiago de Chile (SCL)</div>
+            <div class="flight-details">Nachtflug gen Südamerika • ca. 14–16 Std. Flugzeit</div>
+            <div class="flight-price">Geplant (Stefan & Ines)</div>
+          </li>
+
+          <li class="flight-item">
+            <div class="flight-date">22.03.2027 • Inlandsflug Chile (Patagonien)</div>
+            <div class="flight-route">Santiago de Chile (SCL) ➔ Punta Arenas (PUQ)</div>
+            <div class="flight-details">LATAM / Sky Airline • ca. 3,5 Std. Flugzeit in den Süden</div>
+            <div class="flight-price">Geplant (Stefan & Ines)</div>
+          </li>
+
+          <li class="flight-item">
+            <div class="flight-date">04.04.2027 • Inlandsflug Argentinien/Chile</div>
+            <div class="flight-route">El Calafate (FTE) ➔ Buenos Aires (AEP/EZE) / Santiago (SCL)</div>
+            <div class="flight-details">Aerolineas Argentinas / LATAM • Transfer aus Patagonien</div>
+            <div class="flight-price">Geplant (Stefan & Ines)</div>
+          </li>
+
+          <li class="flight-item">
+            <div class="flight-date">06.04.2027 • Inlandsflug Chile (Atacama Wüste)</div>
+            <div class="flight-route">Santiago de Chile (SCL) ➔ Calama (CJC)</div>
+            <div class="flight-details">LATAM / Sky Airline • 2 Std. Flugzeit in den Norden</div>
+            <div class="flight-price">Geplant (Stefan & Ines)</div>
+          </li>
+
+          <li class="flight-item">
+            <div class="flight-date">10.04.2027 • Inlandsflug Chile</div>
+            <div class="flight-route">Calama (CJC) ➔ Santiago de Chile (SCL)</div>
+            <div class="flight-details">Rückflug aus der Atacama Wüste nach Santiago</div>
+            <div class="flight-price">Geplant (Stefan & Ines)</div>
+          </li>
+
+          <li class="flight-item">
+            <div class="flight-date">13.04.2027 • Länderwechsel nach Peru</div>
+            <div class="flight-route">Santiago de Chile (SCL) ➔ Lima (LIM) ➔ Cusco (CUZ)</div>
+            <div class="flight-details">LATAM Airlines • Flug in die Inka-Hauptstadt der Anden</div>
+            <div class="flight-price">Geplant (Stefan & Ines)</div>
+          </li>
+
+          <li class="flight-item">
+            <div class="flight-date">22.04.2027 • Rückflug Europa (Stefan)</div>
+            <div class="flight-route">Cusco (CUZ) ➔ Lima (LIM) ➔ Europa</div>
+            <div class="flight-details">Stefan tritt die Heimreise an. Ines bleibt vor Ort in Peru!</div>
+            <div class="flight-price">Geplant (Stefan)</div>
+          </li>
+
+          <li class="flight-item">
+            <div class="flight-date">Ende April 2027 • Ankunft Mädels (Freundinnen)</div>
+            <div class="flight-route">Europa ➔ Lima (LIM) / Cusco (CUZ)</div>
+            <div class="flight-details">Ines trifft ihre Freundinnen in Peru für die Weiterreise</div>
+            <div class="flight-price">Geplant (Ines & Mädels)</div>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    let currentEtappe = 'etappe1';
+    let currentRegionFilter = 'all';
+    let map;
+    const markers = {};
+    let chartStefanInstance = null;
+    let chartInesInstance = null;
+
+    /* VOLLBILD KARTE */
+    function toggleMapFullscreen() {
+      const mapSec = document.getElementById('mapSection');
+      const text = document.getElementById('fullscreenText');
+      const icon = document.getElementById('fullscreenIcon');
+      
+      const isFullscreen = mapSec.classList.toggle('fullscreen');
+      
+      if (isFullscreen) {
+        text.innerText = 'Verkleinern';
+        icon.innerText = '❌';
+      } else {
+        text.innerText = 'Vollbild';
+        icon.innerText = '🔍';
+      }
+
+      setTimeout(() => {
+        if (map) map.invalidateSize();
+      }, 300);
+    }
+
+    /* TAGESPLAN SÜDAMERIKA 2027 DATEN */
+    const etappe1Data = [
+      { day: "Tag 1", date: "22.03. (Mo)", groupTag: "Stefan & Ines", region: "Patagonien (Chile)", regTag: "tag-wtrek", title: "Flug Europa ➔ Santiago ➔ Punta Arenas", details: "Start der Südamerika-Reise, Weiterflug nach Punta Arenas am Magellan-Sumpf", transport: "✈️ Langstrecke & Inlandsflug", hotel: "🏨 Hotel in Punta Arenas", locName: "Punta Arenas", lat: -53.003, lng: -70.855, color: "#0284c7" },
+      { day: "Tag 2", date: "23.03. (Di)", groupTag: "Stefan & Ines", region: "Patagonien (Chile)", regTag: "tag-wtrek", title: "Punta Arenas ➔ Puerto Natales", details: "Busfahrt nach Puerto Natales, Basislager-Vorbereitung für den W-Trek, Verpflegung kaufen", transport: "🚌 Bus (ca. 3h)", hotel: "🏨 Guesthouse Puerto Natales", locName: "Puerto Natales", lat: -51.727, lng: -72.506, color: "#0284c7" },
+      { day: "Tag 3", date: "24.03. (Mi)", groupTag: "Stefan & Ines", region: "W-Trek (Torres del Paine)", regTag: "tag-wtrek", title: "W-Trek Tag 1: Mirador Base de Las Torres", details: "Fahrt in den Nationalpark. Wanderung zum spektakulären Aussichtspunkt der Granittürme", transport: "🚌 Bus ➔ 🥾 Trekking", hotel: "🏕️ Refugio / Camp Central", locName: "Torres del Paine", lat: -51.253, lng: -72.880, color: "#0284c7" },
+      { day: "Tag 4", date: "25.03. (Do)", groupTag: "Stefan & Ines", region: "W-Trek (Torres del Paine)", regTag: "tag-wtrek", title: "W-Trek Tag 2: Lago Nordenskjöld ➔ Cuernos", details: "Wanderung entlang des türkisfarbenen Sees Lago Nordenskjöld bis zum Refugio Cuernos / Frances", transport: "🥾 Trekking (ca. 13 km)", hotel: "🏕️ Refugio Cuernos / Frances", locName: "Torres del Paine", lat: -51.253, lng: -72.880, color: "#0284c7" },
+      { day: "Tag 5", date: "26.03. (Fr)", groupTag: "Stefan & Ines", region: "W-Trek (Torres del Paine)", regTag: "tag-wtrek", title: "W-Trek Tag 3: Valle Francés ➔ Paine Grande", details: "Aufstieg ins herbstliche Valle Francés (Mirador Francés & Británico) mit Hängegletscher-Blick", transport: "🥾 Trekking (ca. 18 km)", hotel: "🏕️ Refugio Paine Grande", locName: "Torres del Paine", lat: -51.253, lng: -72.880, color: "#0284c7" },
+      { day: "Tag 6", date: "27.03. (Sa)", groupTag: "Stefan & Ines", region: "W-Trek (Torres del Paine)", regTag: "tag-wtrek", title: "W-Trek Tag 4: Grey Gletscher ➔ Puerto Natales", details: "Wanderung zum Grey Gletscher. Nachmittags Katamaran über den Pehoé-See & Bus nach Puerto Natales", transport: "🥾 Trekking ➔ ⛴️ Katamaran ➔ 🚌 Bus", hotel: "🏨 Guesthouse Puerto Natales", locName: "Puerto Natales", lat: -51.727, lng: -72.506, color: "#0284c7" },
+      { day: "Tag 7", date: "28.03. (So)", groupTag: "Stefan & Ines", region: "Patagonien (Chile)", regTag: "tag-wtrek", title: "Ruhetag in Puerto Natales", details: "Ausrüstung sortieren, entspannen, gut Essen gehen & Füße hochlegen", transport: "🚶 Zu Fuß", hotel: "🏨 Guesthouse Puerto Natales", locName: "Puerto Natales", lat: -51.727, lng: -72.506, color: "#0284c7" },
+      { day: "Tag 8", date: "29.03. (Mo)", groupTag: "Stefan & Ines", region: "Patagonien (Argentinien)", regTag: "tag-argentinien", title: "Grenzüberschreitung: Puerto Natales ➔ El Calafate", details: "Busfahrt durch die Pampa über die Grenze von Chile nach Argentinien (El Calafate)", transport: "🚌 Grenzüberschreitender Bus", hotel: "🏨 Hotel in El Calafate", locName: "El Calafate", lat: -50.338, lng: -72.265, color: "#2563eb" },
+      { day: "Tag 9", date: "30.03. (Di)", groupTag: "Stefan & Ines", region: "Patagonien (Argentinien)", regTag: "tag-argentinien", title: "Perito-Moreno-Gletscher Highlights", details: "Tagesausflug zum Perito Moreno Glacier: Kalbendes Eis von den Stegen beobachten & Bootstour", transport: "🚌 Ausflugsbus / ⛴️ Boot", hotel: "🏨 Hotel in El Calafate", locName: "El Calafate", lat: -50.338, lng: -72.265, color: "#2563eb" },
+      { day: "Tag 10", date: "31.03. (Mi)", groupTag: "Stefan & Ines", region: "Patagonien (Argentinien)", regTag: "tag-argentinien", title: "El Calafate ➔ El Chaltén", details: "Fahrt in die Trekking-Hauptstadt Argentiniens am Fuße des Fitz Roy", transport: "🚌 Bus (ca. 3h)", hotel: "🏨 Hostería in El Chaltén", locName: "El Chaltén", lat: -49.331, lng: -72.886, color: "#2563eb" },
+      { day: "Tag 11", date: "01.04. (Do)", groupTag: "Stefan & Ines", region: "Patagonien (Argentinien)", regTag: "tag-argentinien", title: "Laguna de los Tres (Fitz Roy Hike)", details: "Spektakuläre Tageswanderung zur Laguna de los Tres mit dem kultigen Fitz Roy Blick", transport: "🥾 Wanderung (ca. 21 km)", hotel: "🏨 Hostería in El Chaltén", locName: "El Chaltén", lat: -49.331, lng: -72.886, color: "#2563eb" },
+      { day: "Tag 12", date: "02.04. (Fr)", groupTag: "Stefan & Ines", region: "Patagonien (Argentinien)", regTag: "tag-argentinien", title: "Laguna Torre (Cerro Torre)", details: "Tageswanderung durch das Flussdelta zur Laguna Torre mit Gletscher-Eisschollen", transport: "🥾 Wanderung (ca. 18 km)", hotel: "🏨 Hostería in El Chaltén", locName: "El Chaltén", lat: -49.331, lng: -72.886, color: "#2563eb" },
+      { day: "Tag 13", date: "03.04. (Sa)", groupTag: "Stefan & Ines", region: "Patagonien (Argentinien)", regTag: "tag-argentinien", title: "El Chaltén ➔ El Calafate", details: "Entspannte Rückfahrt nach El Calafate, Empanadas & Steak genießen", transport: "🚌 Bus", hotel: "🏨 Hotel in El Calafate", locName: "El Calafate", lat: -50.338, lng: -72.265, color: "#2563eb" },
+      { day: "Tag 14", date: "04.04. (So)", groupTag: "Stefan & Ines", region: "Patagonien ➔ Nord", regTag: "tag-default", title: "Flug El Calafate ➔ Santiago / Buenos Aires", details: "Rückflug aus dem tiefen Süden Südamerikas gen Norden", transport: "✈️ Flugzeug", hotel: "🏨 Transit-Hotel", locName: "Santiago de Chile", lat: -33.393, lng: -70.786, color: "#0d9488" },
+      { day: "Tag 15", date: "05.04. (Mo)", groupTag: "Stefan & Ines", region: "Patagonien ➔ Nord", regTag: "tag-default", title: "Puffertag & Zwischenstopp", details: "Erholungstag zwischen den Etappen, Wäsche waschen & Großstadt genießen", transport: "🏙️ Stadt-Spaziergang", hotel: "🏨 Hotel in Santiago", locName: "Santiago de Chile", lat: -33.393, lng: -70.786, color: "#0d9488" }
+    ];
+
+    const etappe2Data = [
+      { day: "Tag 16", date: "06.04. (Di)", groupTag: "Stefan & Ines", region: "Atacama-Wüste", regTag: "tag-atacama", title: "Flug Calama ➔ San Pedro de Atacama", details: "Ankunft in der trockensten Wüste der Welt. Akklimatisierung auf 2.400 m", transport: "✈️ Flug ➔ 🚐 Shuttle", hotel: "🏨 Adobe Hotel San Pedro", locName: "San Pedro de Atacama", lat: -22.908, lng: -68.199, color: "#d97706" },
+      { day: "Tag 17", date: "07.04. (Mi)", groupTag: "Stefan & Ines", region: "Atacama-Wüste", regTag: "tag-atacama", title: "Valle de la Luna & Valle de la Muerte", details: "Spektakuläre Mondlandschaft, Salzformationen und Sonnenuntergang über den Dünen", transport: "🚐 Tour-Bus / Fahrrad", hotel: "🏨 Adobe Hotel San Pedro", locName: "San Pedro de Atacama", lat: -22.908, lng: -68.199, color: "#d97706" },
+      { day: "Tag 18", date: "08.04. (Do)", groupTag: "Stefan & Ines", region: "Atacama-Wüste", regTag: "tag-atacama", title: "El Tatio Geysire & Termas de Puritama", details: "Frühaufstehen für die fauchenden Geysire auf 4.300 m, danach entspannen in heißen Thermen", transport: "🚐 Früh-Morgen-Tour", hotel: "🏨 Adobe Hotel San Pedro", locName: "San Pedro de Atacama", lat: -22.908, lng: -68.199, color: "#d97706" },
+      { day: "Tag 19", date: "09.04. (Fr)", groupTag: "Stefan & Ines", region: "Atacama-Wüste", regTag: "tag-atacama", title: "Lagunas Altiplánicas & Salar de Atacama", details: "Königsblaue Bergseen Miscanti & Miñiques sowie Flamingos im Salzsee", transport: "🚐 Tagesausflug", hotel: "🏨 Adobe Hotel San Pedro", locName: "San Pedro de Atacama", lat: -22.908, lng: -68.199, color: "#d97706" },
+      { day: "Tag 20", date: "10.04. (Sa)", groupTag: "Stefan & Ines", region: "Chile Zentrum", regTag: "tag-default", title: "San Pedro ➔ Calama ➔ Santiago", details: "Rückfahrt nach Calama und Flug zurück in die chilenische Hauptstadt Santiago", transport: "🚐 Shuttle ➔ ✈️ Flug", hotel: "🏨 Hotel in Santiago", locName: "Santiago de Chile", lat: -33.393, lng: -70.786, color: "#0d9488" },
+      { day: "Tag 21", date: "11.04. (So)", groupTag: "Stefan & Ines", region: "Chile Zentrum", regTag: "tag-default", title: "Santiago de Chile Kultur & Kulinarik", details: "San Cristóbal Hügel mit Seilbahn, Künstlerviertel Barrio Lastarria & gutes Essen", transport: "🚇 Metro / Cable Car", hotel: "🏨 Hotel in Santiago", locName: "Santiago de Chile", lat: -33.393, lng: -70.786, color: "#0d9488" },
+      { day: "Tag 22", date: "12.04. (Mo)", groupTag: "Stefan & Ines", region: "Chile Zentrum", regTag: "tag-default", title: "Vorbereitung Weiterreise Peru", details: "Koffer umpacken, Dokumente checken, entspannte Stunden vor der Peru-Etappe", transport: "🚶 Spaziergang", hotel: "🏨 Hotel in Santiago", locName: "Santiago de Chile", lat: -33.393, lng: -70.786, color: "#0d9488" }
+    ];
+
+    const etappe3Data = [
+      { day: "Tag 23", date: "13.04. (Di)", groupTag: "Stefan & Ines", region: "Heiliges Tal (Peru)", regTag: "tag-peru", title: "Flug Santiago ➔ Lima ➔ Cusco ➔ Valle Sagrado", details: "Ankunft in den peruanischen Anden. Direkt ins tiefere Heilige Tal (Ollantaytambo) zur Akklimatisierung!", transport: "✈️ Flug ➔ 🚕 Taxi", hotel: "🏨 Hotel in Ollantaytambo", locName: "Ollantaytambo", lat: -13.258, lng: -72.263, color: "#059669" },
+      { day: "Tag 24", date: "14.04. (Mi)", groupTag: "Stefan & Ines", region: "Heiliges Tal (Peru)", regTag: "tag-peru", title: "Inka-Kultur: Maras Salzterrassen & Moray", details: "Erkundung der terrassenförmigen Inka-Agrarlabore Moray und der schimmernden Salineras de Maras", transport: "🛺 Colectivo / Taxi", hotel: "🏨 Hotel in Ollantaytambo", locName: "Ollantaytambo", lat: -13.258, lng: -72.263, color: "#059669" },
+      { day: "Tag 25", date: "15.04. (Do)", groupTag: "Stefan & Ines", region: "Heiliges Tal (Peru)", regTag: "tag-peru", title: "Ollantaytambo Festung & Pisac Markt", details: "Besichtigung der gewaltigen Inka-Festung Ollantaytambo & bunter Markt in Pisac", transport: "🚌 Local Bus / Colectivo", hotel: "🏨 Hotel in Ollantaytambo", locName: "Ollantaytambo", lat: -13.258, lng: -72.263, color: "#059669" },
+      { day: "Tag 26", date: "16.04. (Fr)", groupTag: "Stefan & Ines", region: "Machu Picchu Region", regTag: "tag-peru", title: "Panoramazug ➔ Aguas Calientes", details: "Fahrt mit dem berühmten Panoramazug (Inca Rail/PeruRail) durch die Urubamba-Schlucht", transport: "🚆 Panoramazug", hotel: "🏨 Hotel in Aguas Calientes", locName: "Machu Picchu", lat: -13.163, lng: -72.545, color: "#059669" },
+      { day: "Tag 27", date: "17.04. (Sa)", groupTag: "Stefan & Ines", region: "Machu Picchu Region", regTag: "tag-peru", title: "🌟 HIGHLIGHT: MACHU PICCHU", details: "Früher Morgen-Slot im Inka-Weltwunder Machu Picchu (+ optional Huayna Picchu Climb). Abends Zug nach Cusco", transport: "🚌 Shuttle-Bus ➔ 🚆 Zug ➔ 🚕 Taxi", hotel: "🏨 Boutique Hotel Cusco", locName: "Machu Picchu", lat: -13.163, lng: -72.545, color: "#059669" },
+      { day: "Tag 28", date: "18.04. (So)", groupTag: "Stefan & Ines", region: "Cusco & Anden", regTag: "tag-peru", title: "Cusco Inka-Hauptstadt", details: "Plaza de Armas, Sonnentempel Qorikancha, Mercado San Pedro und Festung Sacsayhuamán", transport: "🚶 Spaziergang", hotel: "🏨 Boutique Hotel Cusco", locName: "Cusco", lat: -13.535, lng: -71.967, color: "#059669" },
+      { day: "Tag 29", date: "19.04. (Mo)", groupTag: "Stefan & Ines", region: "Cusco & Anden", regTag: "tag-peru", title: "Tagestour: Vinicunca Rainbow Mountain", details: "Tagesausflug zum 5.000 m hohen Regenbogenberg Vinicunca oder azurblauem Humantay See", transport: "🚐 Tour-Bus", hotel: "🏨 Boutique Hotel Cusco", locName: "Cusco", lat: -13.535, lng: -71.967, color: "#059669" },
+      { day: "Tag 30", date: "20.04. (Di)", groupTag: "Stefan & Ines", region: "Cusco & Anden", regTag: "tag-peru", title: "Künstlerviertel San Blas & Genuss", details: "Gassen von San Blas erkunden, Kaffeeverkostung und Schokoladenmuseum ChocoMuseo", transport: "🚶 Spaziergang", hotel: "🏨 Boutique Hotel Cusco", locName: "Cusco", lat: -13.535, lng: -71.967, color: "#059669" },
+      { day: "Tag 31", date: "21.04. (Mi)", groupTag: "Stefan & Ines", region: "Cusco & Anden", regTag: "tag-peru", title: "Abschiedsabendessen mit Ines", details: "Letzte Souvenirs besorgen, Pisco Sour trinken und peruanische Spitzenküche genießen", transport: "🚶 Spaziergang", hotel: "🏨 Boutique Hotel Cusco", locName: "Cusco", lat: -13.535, lng: -71.967, color: "#059669" },
+      { day: "Tag 32", date: "22.04. (Do)", groupTag: "Stefan & Ines", region: "Abreise / Übergabe", regTag: "tag-default", title: "Stefan Heimflug ➔ Ines bleibt in Peru!", details: "Stefan fliegt via Lima zurück nach Europa. Ines bleibt in Cusco/Peru und erwartet ihre Mädels!", transport: "✈️ Flugzeug (Stefan)", hotel: "✈️ Flug / Hotel Ines", locName: "Cusco", lat: -13.535, lng: -71.967, color: "#059669" }
+    ];
+
+    const bonusData = [
+      { day: "Woche 1", date: "ab 23.04.", groupTag: "Ines & Mädels", region: "Süd-Peru Option", regTag: "tag-bonus", title: "Arequipa & Colca-Canyon", details: "Weiße Stadt Arequipa erkunden & Kondor-Beobachtung im tiefen Colca Canyon", transport: "🚌 Tour-Bus", hotel: "🏨 Hotel in Arequipa", locName: "Arequipa", lat: -16.409, lng: -71.537, color: "#7c3aed" },
+      { day: "Woche 2", date: "Ende April", groupTag: "Ines & Mädels", region: "Süd-Peru Option", regTag: "tag-bonus", title: "Titicacasee & Schwimmende Inseln", details: "Puno am Titicacasee besuchen, Uros Schilfinseln & Taquile Erkundung", transport: "🚌 Bus ➔ 🚤 Boot", hotel: "🏨 Hotel in Puno", locName: "Cusco", lat: -13.535, lng: -71.967, color: "#7c3aed" },
+      { day: "Woche 3", date: "Anfang Mai", groupTag: "Ines & Mädels", region: "Dschungel Option", regTag: "tag-bonus", title: "Amazonas Regenwald (Puerto Maldonado)", details: "Flug ab Cusco nach Puerto Maldonado: Eco-Lodge, Kaimane, Papageien & Canopy Walks", transport: "✈️ Flug ➔ 🚤 Dschungelboot", hotel: "🌿 Eco-Lodge Dschungel", locName: "Puerto Maldonado", lat: -12.593, lng: -69.189, color: "#7c3aed" },
+      { day: "Woche 4", date: "Mai 2027", groupTag: "Ines & Mädels", region: "Küste Option", regTag: "tag-bonus", title: "Huacachina Oase & Paracas / Lima", details: "Sandboarding in der Oase Huacachina, Ballestas Inseln & Kulinarik-Finale in Lima", transport: "🚌 Bus", hotel: "🏨 Hotel in Lima", locName: "Lima", lat: -12.022, lng: -77.114, color: "#7c3aed" }
+    ];
+
+    function switchEtappe(etappe) {
+      currentEtappe = etappe;
+      currentRegionFilter = 'all';
+
+      document.getElementById('btnEtappe1').classList.toggle('active', etappe === 'etappe1');
+      document.getElementById('btnEtappe2').classList.toggle('active', etappe === 'etappe2');
+      document.getElementById('btnEtappe3').classList.toggle('active', etappe === 'etappe3');
+      document.getElementById('btnEtappeBonus').classList.toggle('active', etappe === 'bonus');
+
+      renderFilters();
+      renderTableAndCards();
+    }
+
+    function renderFilters() {
+      const controls = document.getElementById('filterControls');
+      const placeholderText = "Nach Ort, Aktivität, Trekking oder Flug suchen...";
+
+      if (currentEtappe === 'etappe1') {
+        controls.innerHTML = `
+          <input type="text" id="searchInput" class="search-input" placeholder="${placeholderText}" onkeyup="filterPlan()">
+          <button class="filter-btn active" onclick="setFilter('all', this)">Alle</button>
+          <button class="filter-btn" onclick="setFilter('W-Trek', this)">W-Trek / Torres</button>
+          <button class="filter-btn" onclick="setFilter('Puerto Natales', this)">Puerto Natales</button>
+          <button class="filter-btn" onclick="setFilter('El Calafate', this)">El Calafate (Gletscher)</button>
+          <button class="filter-btn" onclick="setFilter('El Chaltén', this)">El Chaltén (Fitz Roy)</button>
+        `;
+      } else if (currentEtappe === 'etappe2') {
+        controls.innerHTML = `
+          <input type="text" id="searchInput" class="search-input" placeholder="${placeholderText}" onkeyup="filterPlan()">
+          <button class="filter-btn active" onclick="setFilter('all', this)">Alle</button>
+          <button class="filter-btn" onclick="setFilter('San Pedro', this)">San Pedro de Atacama</button>
+          <button class="filter-btn" onclick="setFilter('Geysire', this)">Geysire & Thermen</button>
+          <button class="filter-btn" onclick="setFilter('Santiago', this)">Santiago de Chile</button>
+        `;
+      } else if (currentEtappe === 'etappe3') {
+        controls.innerHTML = `
+          <input type="text" id="searchInput" class="search-input" placeholder="${placeholderText}" onkeyup="filterPlan()">
+          <button class="filter-btn active" onclick="setFilter('all', this)">Alle</button>
+          <button class="filter-btn" onclick="setFilter('Heiliges Tal', this)">Valle Sagrado</button>
+          <button class="filter-btn" onclick="setFilter('Machu Picchu', this)">Machu Picchu</button>
+          <button class="filter-btn" onclick="setFilter('Cusco', this)">Cusco & Anden</button>
+        `;
+      } else {
+        controls.innerHTML = `
+          <input type="text" id="searchInput" class="search-input" placeholder="${placeholderText}" onkeyup="filterPlan()">
+          <button class="filter-btn active" onclick="setFilter('all', this)">Alle Options-Routen</button>
+          <button class="filter-btn" onclick="setFilter('Arequipa', this)">Arequipa & Colca</button>
+          <button class="filter-btn" onclick="setFilter('Amazonas', this)">Amazonas-Dschungel</button>
+          <button class="filter-btn" onclick="setFilter('Küste', this)">Huacachina & Lima</button>
+        `;
+      }
+    }
+
+    function renderTableAndCards() {
+      let data = etappe1Data;
+      if (currentEtappe === 'etappe2') data = etappe2Data;
+      if (currentEtappe === 'etappe3') data = etappe3Data;
+      if (currentEtappe === 'bonus') data = bonusData;
+
+      const tbody = document.getElementById('planTableBody');
+      tbody.innerHTML = '';
+
+      data.forEach(item => {
+        const tr = document.createElement('tr');
+        tr.className = 'clickable-row';
+        tr.setAttribute('data-region', item.region);
+        tr.setAttribute('data-group', item.groupTag || '');
+        tr.setAttribute('data-location', item.locName);
+        tr.onclick = () => focusMap(item.locName);
+
+        let groupClass = 'group-badge-stefan-ines';
+        if (item.groupTag === 'Ines & Mädels') groupClass = 'group-badge-ines-maedels';
+
+        const groupBadgeHtml = item.groupTag ? `<span class="${groupClass}">${item.groupTag}</span>` : '';
+
+        tr.innerHTML = `
+          <td>
+            <div class="day-cell-wrapper">
+              <span class="day-badge">${item.day}</span>
+              ${groupBadgeHtml}
+            </div>
+            <div class="sub-note">${item.date}</div>
+          </td>
+          <td><span class="tag-region ${item.regTag}">${item.region}</span></td>
+          <td><div class="route-title">${item.title}</div></td>
+          <td>${item.details}</td>
+          <td><span class="transport-pill">${item.transport}</span></td>
+          <td><span class="hotel-pill">${item.hotel}</span></td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      filterPlan();
+    }
+
+    function setFilter(filterVal, btn) {
+      currentRegionFilter = filterVal;
+      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      filterPlan();
+    }
+
+    function filterPlan() {
+      const qInput = document.getElementById('searchInput');
+      const q = qInput ? qInput.value.toLowerCase() : '';
+      const rows = document.querySelectorAll('#planTable tbody tr');
+
+      rows.forEach(row => {
+        const text = row.innerText.toLowerCase();
+        const region = row.getAttribute('data-region') || '';
+        const group = row.getAttribute('data-group') || '';
+        const matchesSearch = text.includes(q);
+        const matchesFilter = currentRegionFilter === 'all' || region.includes(currentRegionFilter) || group.includes(currentRegionFilter) || text.includes(currentRegionFilter.toLowerCase());
+
+        row.style.display = (matchesSearch && matchesFilter) ? '' : 'none';
+      });
+
+      renderMobileCards();
+    }
+
+    function renderMobileCards() {
+      const container = document.getElementById('mobileCards');
+      container.innerHTML = '';
+      const visibleRows = document.querySelectorAll('#planTable tbody tr');
+
+      visibleRows.forEach(row => {
+        if (row.style.display === 'none') return;
+
+        const cells = row.querySelectorAll('td');
+        const locName = row.getAttribute('data-location');
+        const card = document.createElement('div');
+        card.className = 'card';
+        card.onclick = () => focusMap(locName);
+
+        card.innerHTML = `
+          <div class="card-header">
+            <div>${cells[0].innerHTML}</div>
+            <div>${cells[1].innerHTML}</div>
+          </div>
+          <div style="font-size: 0.9rem; font-weight: 700; color: var(--text-main); margin-bottom: 4px;">
+            ${cells[2].innerText}
+          </div>
+          <div style="font-size: 0.82rem; color: var(--text); margin-bottom: 6px;">
+            ${cells[3].innerHTML}
+          </div>
+          <div style="display: flex; flex-wrap: wrap; gap: 4px;">
+            ${cells[4].innerHTML}
+            ${cells[5].innerHTML}
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    /* MAP INITIALISATION FOR SÜDAMERIKA */
+    function initMap() {
+      const osmMap = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { 
+        maxZoom: 19, 
+        attribution: '&copy; OpenStreetMap' 
+      });
+
+      const esriStreet = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', {
+        maxZoom: 19,
+        attribution: 'Tiles &copy; Esri'
+      });
+
+      const openTopo = L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
+        maxZoom: 17,
+        attribution: '&copy; OpenTopoMap'
+      });
+
+      map = L.map('map', { layers: [esriStreet] });
+
+      L.control.layers({
+        "🗺️ Esri Street (International)": esriStreet,
+        "🌏 OSM Standard": osmMap,
+        "⛰️ OpenTopoMap (Topographie & Berge)": openTopo
+      }, null, { collapsed: true, position: 'topright' }).addTo(map);
+
+      // Südamerika Wegpunkte
+      const points = {
+        santiago: { name: "Santiago de Chile", date: "22.03. | 05.04. | 10.04.2027", lat: -33.393, lng: -70.786, desc: "<b>🇨🇱 Haupt-Drehkreuz Chile</b><br>Flughafen SCL & Großstadt-Flair", color: "#0d9488" },
+        punta_arenas: { name: "Punta Arenas", date: "22.03. – 23.03.2027", lat: -53.003, lng: -70.855, desc: "<b>🇨🇱 Magallanes Region</b><br>Südlichste Großstadt Patagoniens", color: "#0284c7" },
+        puerto_natales: { name: "Puerto Natales", date: "23.03. | 27.03. – 29.03.", lat: -51.727, lng: -72.506, desc: "<b>🇨🇱 Tor zum Torres del Paine</b><br>Basislager & Verpflegung für den W-Trek", color: "#0284c7" },
+        torres: { name: "Torres del Paine", date: "24.03. – 27.03.2027", lat: -51.253, lng: -72.880, desc: "<b>🏔️ W-Trek Highlight</b><br>Base de las Torres, Valle Francés & Grey Gletscher", color: "#0284c7" },
+        calafate: { name: "El Calafate", date: "29.03. – 31.03. | 03.04.", lat: -50.338, lng: -72.265, desc: "<b>🇦🇷 Argentinisches Patagonien</b><br>Perito Moreno Gletscher Abenteuer", color: "#2563eb" },
+        chalten: { name: "El Chaltén", date: "31.03. – 03.04.2027", lat: -49.331, lng: -72.886, desc: "<b>🏔️ Trekking-Hauptstadt</b><br>Fitz Roy & Cerro Torre Wanderungen", color: "#2563eb" },
+        atacama: { name: "San Pedro de Atacama", date: "06.04. – 10.04.2027", lat: -22.908, lng: -68.199, desc: "<b>🌵 Atacama-Wüste</b><br>Mondtal, El Tatio Geysire & Salzseen", color: "#d97706" },
+        lima: { name: "Lima", date: "13.04. & Mai 2027", lat: -12.022, lng: -77.114, desc: "<b>🇵🇪 Hauptstadt Peru</b><br>Gastronomie & Pazifik-Küste", color: "#059669" },
+        cusco: { name: "Cusco", date: "13.04. – 22.04.2027", lat: -13.535, lng: -71.967, desc: "<b>🇵🇪 Inka-Hauptstadt der Anden</b><br>3.400 m Höhe, San Blas & Ausflüge", color: "#059669" },
+        ollantaytambo: { name: "Ollantaytambo", date: "13.04. – 16.04.2027", lat: -13.258, lng: -72.263, desc: "<b>🏛️ Heiliges Tal (Valle Sagrado)</b><br>Akklimatisierung, Maras & Moray", color: "#059669" },
+        machu_picchu: { name: "Machu Picchu", date: "16.04. – 17.04.2027", lat: -13.163, lng: -72.545, desc: "<b>🌟 INKA-WELTWUNDER</b><br>Aguas Calientes & Machu Picchu Zitadelle", color: "#059669" },
+        arequipa: { name: "Arequipa", date: "Bonus Option", lat: -16.409, lng: -71.537, desc: "<b>🇵🇪 Weiße Stadt & Colca Canyon</b><br>Kondore beobachten", color: "#7c3aed" },
+        amazonas: { name: "Puerto Maldonado", date: "Bonus Option", lat: -12.593, lng: -69.189, desc: "<b>🌿 Amazonas Dschungel</b><br>Lodge-Aufenthalt & Kaimane", color: "#7c3aed" }
+      };
+
+      const southAmericaBounds = [
+        [-55.0, -78.0], 
+        [-10.0, -65.0]
+      ];
+
+      const flightStyle = { color: '#059669', weight: 2, opacity: 0.85, dashArray: '5, 5' };
+      const overlandStyle = { color: '#0284c7', weight: 3, opacity: 0.9 };
+      const bonusStyle = { color: '#7c3aed', weight: 2.5, opacity: 0.8, dashArray: '3, 3' };
+
+      // Fluglinien
+      L.polyline([[points.santiago.lat, points.santiago.lng], [points.punta_arenas.lat, points.punta_arenas.lng]], flightStyle).addTo(map);
+      L.polyline([[points.calafate.lat, points.calafate.lng], [points.santiago.lat, points.santiago.lng]], flightStyle).addTo(map);
+      L.polyline([[points.santiago.lat, points.santiago.lng], [points.atacama.lat, points.atacama.lng]], flightStyle).addTo(map);
+      L.polyline([[points.santiago.lat, points.santiago.lng], [points.lima.lat, points.lima.lng], [points.cusco.lat, points.cusco.lng]], flightStyle).addTo(map);
+      L.polyline([[points.cusco.lat, points.cusco.lng], [points.amazonas.lat, points.amazonas.lng]], bonusStyle).addTo(map);
+
+      // Landwege
+      L.polyline([[points.punta_arenas.lat, points.punta_arenas.lng], [points.puerto_natales.lat, points.puerto_natales.lng], [points.torres.lat, points.torres.lng]], overlandStyle).addTo(map);
+      L.polyline([[points.puerto_natales.lat, points.puerto_natales.lng], [points.calafate.lat, points.calafate.lng], [points.chalten.lat, points.chalten.lng]], { color: '#2563eb', weight: 3 }).addTo(map);
+      L.polyline([[points.cusco.lat, points.cusco.lng], [points.ollantaytambo.lat, points.ollantaytambo.lng], [points.machu_picchu.lat, points.machu_picchu.lng]], { color: '#059669', weight: 3 }).addTo(map);
+
+      // Marker
+      const markerGroup = L.featureGroup();
+
+      Object.keys(points).forEach(key => {
+        const p = points[key];
+        const pt = [p.lat, p.lng];
+
+        const popupContent = `
+          <div style="color: #0f172a; font-family: 'Plus Jakarta Sans', sans-serif; min-width: 200px;">
+            <h3 style="margin: 0 0 4px 0; font-size: 1.05rem; color: ${p.color}; border-bottom: 1px solid #cbd5e1; padding-bottom: 4px;">📍 ${p.name}</h3>
+            <span class="popup-date-badge">📅 ${p.date}</span>
+            <div style="font-size: 0.85rem; color: #334155; margin-top: 4px;">${p.desc}</div>
+          </div>
+        `;
+
+        const marker = L.circleMarker(pt, {
+          color: p.color,
+          fillColor: p.color,
+          fillOpacity: 0.9,
+          radius: 7,
+          weight: 2
+        }).bindPopup(popupContent);
+
+        markerGroup.addLayer(marker);
+        markers[p.name] = { marker, lat: p.lat, lng: p.lng };
+        markers[key] = { marker, lat: p.lat, lng: p.lng };
+      });
+
+      markerGroup.addTo(map);
+
+      // Legende
+      const legend = L.control({ position: 'bottomright' });
+      legend.onAdd = function() {
+        const div = L.DomUtil.create('div', 'custom-legend');
+        div.innerHTML = `
+          <div class="legend-header" onclick="toggleLegendBody()">
+            <span>📌 Etappen-Legende</span>
+            <span id="legendToggleIcon">▼</span>
+          </div>
+          <div class="legend-body" id="legendBody" style="display: none;">
+            <div class="legend-item"><span class="legend-color" style="background:#0284c7;"></span> 1. Patagonien & W-Trek</div>
+            <div class="legend-item"><span class="legend-color" style="background:#2563eb;"></span> 1. El Calafate & Fitz Roy</div>
+            <div class="legend-item"><span class="legend-color" style="background:#d97706;"></span> 2. Atacama-Wüste</div>
+            <div class="legend-item"><span class="legend-color" style="background:#059669;"></span> 3. Peru & Machu Picchu</div>
+            <div class="legend-item"><span class="legend-color" style="background:#7c3aed;"></span> Bonus: Ines & Mädels</div>
+            <div class="legend-item"><span class="legend-line" style="border-top: 2px dashed #059669;"></span> Inlands- & Verbindungsflüge</div>
+          </div>
+        `;
+        L.DomEvent.disableClickPropagation(div);
+        return div;
+      };
+      legend.addTo(map);
+
+      map.fitBounds(southAmericaBounds, { padding: [20, 20] });
+    }
+
+    function toggleLegendBody() {
+      const body = document.getElementById('legendBody');
+      const icon = document.getElementById('legendToggleIcon');
+      if (!body) return;
+      
+      const isHidden = window.getComputedStyle(body).display === 'none';
+      if (isHidden) {
+        body.style.display = 'flex';
+        icon.innerText = '▲';
+      } else {
+        body.style.display = 'none';
+        icon.innerText = '▼';
+      }
+    }
+
+    function focusMap(locationName) {
+      let targetMarker = null;
+
+      if (locationName.includes("Punta Arenas")) targetMarker = markers["punta_arenas"];
+      else if (locationName.includes("Puerto Natales")) targetMarker = markers["puerto_natales"];
+      else if (locationName.includes("Torres del Paine")) targetMarker = markers["torres"];
+      else if (locationName.includes("El Calafate")) targetMarker = markers["calafate"];
+      else if (locationName.includes("El Chaltén")) targetMarker = markers["chalten"];
+      else if (locationName.includes("San Pedro")) targetMarker = markers["atacama"];
+      else if (locationName.includes("Santiago")) targetMarker = markers["santiago"];
+      else if (locationName.includes("Ollantaytambo")) targetMarker = markers["ollantaytambo"];
+      else if (locationName.includes("Machu Picchu")) targetMarker = markers["machu_picchu"];
+      else if (locationName.includes("Cusco")) targetMarker = markers["cusco"];
+      else if (locationName.includes("Arequipa")) targetMarker = markers["arequipa"];
+      else if (locationName.includes("Puerto Maldonado")) targetMarker = markers["amazonas"];
+      else if (locationName.includes("Lima")) targetMarker = markers["lima"];
+      else targetMarker = markers[locationName];
+
+      if (targetMarker) {
+        map.flyTo([targetMarker.lat, targetMarker.lng], 9, { duration: 1.2 });
+        targetMarker.marker.openPopup();
+        document.querySelector('.map-section').scrollIntoView({ behavior: 'smooth' });
+      }
+    }
+
+    /* COUNTDOWN SÜDAMERIKA (22.03.2027 10:00 UTC+1) */
+    function updateCountdown() {
+      const flightTime = Date.UTC(2027, 2, 22, 9, 0, 0); // 22.03.2027 10:00 CET (09:00 UTC)
+      const now = Date.now();
+      const diff = flightTime - now;
+      const el = document.getElementById('countdown');
+
+      if (!el) return;
+
+      if (diff > 0) {
+        const totalSecs = Math.floor(diff / 1000);
+        const secs = totalSecs % 60;
+        const totalMins = Math.floor(totalSecs / 60);
+        const mins = totalMins % 60;
+        const totalHours = Math.floor(totalMins / 60);
+        const hours = totalHours % 24;
+        const days = Math.floor(totalHours / 24);
+        el.innerHTML = `⏳ Noch <strong>${days}</strong> Tage, <strong>${hours}</strong> Std., <strong>${mins}</strong> Min. & <strong>${secs}</strong> Sek. bis zum Abflug!`;
+      } else {
+        el.innerHTML = `🎉 Gute Reise! Das Südamerika-Abenteuer läuft!`;
+      }
+    }
+
+    /* PACKLISTEN MIT TREKKING & PATAGONIEN SPEZIFIKA */
+    let currentPerson = 'stefan';
+
+    const rawItemsStefan = [
+      ["Dokumente & Wertsachen", "Reisepass", 1, 41, "Am Körper", "Am Körper"],
+      ["Dokumente & Wertsachen", "Kopien Reisepass & PNT-Tickets", 1, 30, "Basis", "Handgepäck"],
+      ["Dokumente & Wertsachen", "Geldbörse & Kreditkarten (Visa/MC)", 1, 90, "Am Körper", "Am Körper"],
+      ["Dokumente & Wertsachen", "PNA & Machu Picchu Eintrittskarten", 1, 20, "Basis", "Handgepäck"],
+      ["Rucksäcke & Trekking-Gepäck", "Trekking-Rucksack (50–60 Liter)", 1, 2100, "Basis", "Aufgabegepäck"],
+      ["Rucksäcke & Trekking-Gepäck", "Regenhülle für Rucksack", 1, 110, "Basis", "Trekking-Rucksack"],
+      ["Rucksäcke & Trekking-Gepäck", "Tagesrucksack faltbar (20 Liter)", 1, 250, "Basis", "Handgepäck"],
+      ["Trekking-Ausrüstung & Bekleidung", "Trekkingstöcke (faltbar)", 1, 480, "Basis", "Aufgabegepäck"],
+      ["Trekking-Ausrüstung & Bekleidung", "Hardshell-Regenjacke (Gore-Tex)", 1, 420, "Basis", "Trekking-Rucksack"],
+      ["Trekking-Ausrüstung & Bekleidung", "Regenhose / Überhose", 1, 280, "Basis", "Trekking-Rucksack"],
+      ["Trekking-Ausrüstung & Bekleidung", "Daunenjacke / Isoweste", 1, 380, "Basis", "Trekking-Rucksack"],
+      ["Trekking-Ausrüstung & Bekleidung", "Fleece- / Midlayer-Pulli", 2, 310, "Basis", "Trekking-Rucksack"],
+      ["Trekking-Ausrüstung & Bekleidung", "Wanderhose abzipbar / Stretch", 2, 340, "Am Körper", "Am Körper"],
+      ["Trekking-Ausrüstung & Bekleidung", "Merino Longsleeve (Funktionswäsche)", 2, 190, "Basis", "Trekking-Rucksack"],
+      ["Trekking-Ausrüstung & Bekleidung", "Merino T-Shirts", 3, 130, "Basis", "Trekking-Rucksack"],
+      ["Trekking-Ausrüstung & Bekleidung", "Merino Wandersocken (dick)", 4, 65, "Basis", "Trekking-Rucksack"],
+      ["Trekking-Ausrüstung & Bekleidung", "Winddichte Handschuhe & Mütze", 1, 110, "Basis", "Trekking-Rucksack"],
+      ["Trekking-Ausrüstung & Bekleidung", "Buff / Halstuch Merino", 2, 45, "Basis", "Trekking-Rucksack"],
+      ["Kleidung (Normal/Flug)", "Jeans / Freizeit-Hose", 1, 480, "Am Körper", "Am Körper"],
+      ["Kleidung (Normal/Flug)", "Freizeit T-Shirts", 3, 140, "Basis", "Aufgabegepäck"],
+      ["Kleidung (Normal/Flug)", "Unterwäsche", 7, 50, "Basis", "Trekking-Rucksack"],
+      ["Schuhe & Wandern", "Knöchelhohe Wanderschuhe (GoreTex)", 1, 1350, "Am Körper", "Am Körper"],
+      ["Schuhe & Wandern", "Leichte Sneaker / Hüttenschuhe", 1, 550, "Basis", "Aufgabegepäck"],
+      ["Elektronik & Kabel", "Smartphone + Hülle", 1, 210, "Am Körper", "Am Körper"],
+      ["Elektronik & Kabel", "Powerbank 20.000 mAh (für W-Trek!)", 1, 360, "Basis", "Handgepäck"],
+      ["Elektronik & Kabel", "Stirnlampe mit Rotlicht", 1, 85, "Basis", "Trekking-Rucksack"],
+      ["Elektronik & Kabel", "Reiseadapter Weltweit", 1, 130, "Basis", "Handgepäck"],
+      ["Elektronik & Kabel", "Ladekabel USB-C", 2, 30, "Basis", "Handgepäck"],
+      ["Hygiene & Pflege", "Kulturbeutel komprimierbar", 1, 150, "Basis", "Trekking-Rucksack"],
+      ["Hygiene & Pflege", "Festes Shampoo & Seife", 1, 110, "Verbrauch", "Trekking-Rucksack"],
+      ["Hygiene & Pflege", "Zahnbürste & Zahnpasta", 1, 80, "Verbrauch", "Trekking-Rucksack"],
+      ["Hygiene & Pflege", "Sonnencreme LSF 50 (Patagonien UV)", 1, 150, "Verbrauch", "Trekking-Rucksack"],
+      ["Hygiene & Pflege", "Lippenbalsam mit LSF", 1, 12, "Am Körper", "Am Körper"],
+      ["Hygiene & Pflege", "Blasenpflaster (Compeed) & Hirschtalg", 1, 60, "Verbrauch", "Trekking-Rucksack"],
+      ["Gesundheit & Reiseapotheke", "Personal First-Aid-Kit (Ibu, Kohle)", 1, 180, "Basis", "Trekking-Rucksack"],
+      ["Gesundheit & Reiseapotheke", "Höhenkrankheit-Mittel (Höhen-Apotheke)", 1, 40, "Basis", "Handgepäck"],
+      ["Schlaf- & Trekkingkomfort", "Mikrofaser-Handtuch schnelltrocknend", 1, 160, "Basis", "Trekking-Rucksack"],
+      ["Schlaf- & Trekkingkomfort", "Trinkflasche / Nalgene 1 Liter", 1, 140, "Basis", "Trekking-Rucksack"],
+      ["Schlaf- & Trekkingkomfort", "Ohrstöpsel & Schlafmaske (Hütten)", 1, 25, "Basis", "Trekking-Rucksack"],
+      ["Organisation & Tools", "Drybags / Wasserdichte Packbeutel", 3, 45, "Basis", "Trekking-Rucksack"],
+      ["Organisation & Tools", "Taschenmesser / Schweizer Messer", 1, 95, "Basis", "Aufgabegepäck"],
+      ["Organisation & Tools", "Panzertape um Trekkingstock gewickelt", 1, 25, "Basis", "Trekking-Rucksack"]
+    ];
+
+    const rawItemsInes = [
+      ["Dokumente & Wertsachen", "Reisepass", 1, 41, "Am Körper", "Am Körper"],
+      ["Dokumente & Wertsachen", "Dokumenten-Kopien & PNT-Reservierung", 1, 30, "Basis", "Handgepäck"],
+      ["Dokumente & Wertsachen", "Geldbörse & Kreditkarten", 1, 85, "Am Körper", "Am Körper"],
+      ["Rucksäcke & Trekking-Gepäck", "Backpacking / Trekking-Rucksack", 1, 1950, "Basis", "Aufgabegepäck"],
+      ["Rucksäcke & Trekking-Gepäck", "Regenhülle Rucksack", 1, 100, "Basis", "Trekking-Rucksack"],
+      ["Rucksäcke & Trekking-Gepäck", "Tagesrucksack", 1, 280, "Basis", "Handgepäck"],
+      ["Trekking-Ausrüstung & Bekleidung", "Trekkingstöcke", 1, 450, "Basis", "Aufgabegepäck"],
+      ["Trekking-Ausrüstung & Bekleidung", "Hardshell Regenjacke", 1, 380, "Basis", "Trekking-Rucksack"],
+      ["Trekking-Ausrüstung & Bekleidung", "Regenhose", 1, 240, "Basis", "Trekking-Rucksack"],
+      ["Trekking-Ausrüstung & Bekleidung", "Warme Daunenjacke", 1, 350, "Basis", "Trekking-Rucksack"],
+      ["Trekking-Ausrüstung & Bekleidung", "Fleecejacke", 1, 290, "Basis", "Trekking-Rucksack"],
+      ["Trekking-Ausrüstung & Bekleidung", "Wanderhosen bequem", 2, 310, "Am Körper", "Am Körper"],
+      ["Trekking-Ausrüstung & Bekleidung", "Merino Thermo-Unterschicht", 2, 160, "Basis", "Trekking-Rucksack"],
+      ["Trekking-Ausrüstung & Bekleidung", "Merino Tops & Shirts", 4, 110, "Basis", "Trekking-Rucksack"],
+      ["Trekking-Ausrüstung & Bekleidung", "Wandersocken dicker", 4, 55, "Basis", "Trekking-Rucksack"],
+      ["Trekking-Ausrüstung & Bekleidung", "Mütze, Handschuhe & Stirnband", 1, 100, "Basis", "Trekking-Rucksack"],
+      ["Kleidung (Normal/Flug)", "Leichte Sommerkleider / Tops (für Peru)", 3, 140, "Basis", "Aufgabegepäck"],
+      ["Kleidung (Normal/Flug)", "Freizeit-Hose / Leggings", 2, 220, "Am Körper", "Am Körper"],
+      ["Kleidung (Normal/Flug)", "Unterwäsche & Sport-BHs", 7, 40, "Basis", "Trekking-Rucksack"],
+      ["Schuhe & Wandern", "Wanderschuhe eingelaufen", 1, 1150, "Am Körper", "Am Körper"],
+      ["Schuhe & Wandern", "Teva Sandalen / Bequeme Sneaker", 1, 420, "Basis", "Aufgabegepäck"],
+      ["Elektronik & Kabel", "Smartphone", 1, 180, "Am Körper", "Am Körper"],
+      ["Elektronik & Kabel", "Powerbank 20.000 mAh", 1, 360, "Basis", "Handgepäck"],
+      ["Elektronik & Kabel", "Kopfhörer AirPods", 1, 40, "Am Körper", "Am Körper"],
+      ["Elektronik & Kabel", "Kabel & Stecker", 1, 150, "Basis", "Handgepäck"],
+      ["Hygiene & Pflege", "Kulturbeutel", 1, 130, "Basis", "Trekking-Rucksack"],
+      ["Hygiene & Pflege", "Shampoo, Spülung, Pflege", 1, 250, "Verbrauch", "Trekking-Rucksack"],
+      ["Hygiene & Pflege", "Sonnencreme & Feuchtigkeitscreme", 1, 180, "Verbrauch", "Trekking-Rucksack"],
+      ["Hygiene & Pflege", "Blasenpflaster & Körperpflege", 1, 70, "Verbrauch", "Trekking-Rucksack"],
+      ["Gesundheit & Reiseapotheke", "Reiseapotheke Persönlich", 1, 120, "Basis", "Trekking-Rucksack"],
+      ["Schlaf- & Trekkingkomfort", "Mikrofaser Handtuch", 1, 140, "Basis", "Trekking-Rucksack"],
+      ["Schlaf- & Trekkingkomfort", "Trinkflasche / Thermos", 1, 220, "Basis", "Trekking-Rucksack"],
+      ["Schlaf- & Trekkingkomfort", "Schlafmaske & Ohrstöpsel", 1, 25, "Basis", "Handgepäck"],
+      ["Organisation & Tools", "Packing Cubes Beutel-Set", 1, 150, "Basis", "Aufgabegepäck"]
+    ];
+
+    const defaultStefan = rawItemsStefan.map(item => ({
+      cat: item[0], name: item[1], qty: item[2], weight: item[3], type: item[4], loc: item[5], packed: true
+    }));
+
+    const defaultInes = rawItemsInes.map(item => ({
+      cat: item[0], name: item[1], qty: item[2], weight: item[3], type: item[4], loc: item[5], packed: true
+    }));
+
+    let packlists = { stefan: [], ines: [] };
+
+    function switchPerson(person) {
+      currentPerson = person;
+      document.getElementById('btnPackStefan').classList.toggle('active', person === 'stefan');
+      document.getElementById('btnPackInes').classList.toggle('active', person === 'ines');
+      document.getElementById('packlistTitle').innerText = `🎒 Interaktive Packliste & Kilo-Rechner (${person === 'stefan' ? 'Stefan' : 'Ines'})`;
+      renderPacklist();
+    }
+
+    function loadPacklist() {
+      const savedStefan = localStorage.getItem('suedamerika_packlist_stefan_v1');
+      const savedInes = localStorage.getItem('suedamerika_packlist_ines_v1');
+
+      packlists.stefan = savedStefan ? JSON.parse(savedStefan) : JSON.parse(JSON.stringify(defaultStefan));
+      packlists.ines = savedInes ? JSON.parse(savedInes) : JSON.parse(JSON.stringify(defaultInes));
+
+      renderPacklist();
+      renderAnalysis();
+    }
+
+    function savePacklist() {
+      localStorage.setItem(`suedamerika_packlist_${currentPerson}_v1`, JSON.stringify(packlists[currentPerson]));
+      renderPacklist();
+      renderAnalysis();
+    }
+
+    function setAllPacked(status) {
+      packlists[currentPerson].forEach(item => { item.packed = status; });
+      savePacklist();
+    }
+
+    function exportPacklistCSV() {
+      const list = packlists[currentPerson];
+      let csvContent = "Kategorie;Gegenstand;Anzahl;Gewicht / Stk. (g);Gesamtgewicht (g);Gewichtstyp;Packort;Gepackt\n";
+
+      list.forEach(item => {
+        const totalWeight = (item.weight || 0) * (item.qty || 1);
+        const packedStr = item.packed ? "Ja" : "Nein";
+        const cleanName = `"${item.name.replace(/"/g, '""')}"`;
+        const cleanCat = `"${item.cat.replace(/"/g, '""')}"`;
+
+        csvContent += `${cleanCat};${cleanName};${item.qty || 1};${item.weight || 0};${totalWeight};"${item.type}";"${item.loc}";${packedStr}\n`;
+      });
+
+      const blob = new Blob(["\ufeff" + csvContent], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const downloadAnchor = document.createElement('a');
+      downloadAnchor.setAttribute("href", url);
+      downloadAnchor.setAttribute("download", `packliste_suedamerika_${currentPerson}_2027.csv`);
+      document.body.appendChild(downloadAnchor);
+      downloadAnchor.click();
+      downloadAnchor.remove();
+    }
+
+    function resetPacklist() {
+      const name = currentPerson === 'stefan' ? 'Stefan' : 'Ines';
+      if (confirm(`Packliste von ${name} auf Originalzustand zurücksetzen?`)) {
+        packlists[currentPerson] = currentPerson === 'stefan' ? JSON.parse(JSON.stringify(defaultStefan)) : JSON.parse(JSON.stringify(defaultInes));
+        savePacklist();
+      }
+    }
+
+    function renderPacklist() {
+      const tbody = document.getElementById('packTableBody');
+      if (!tbody) return;
+      tbody.innerHTML = '';
+
+      const list = packlists[currentPerson];
+      let packWeightG = 0, wornWeightG = 0, packedCount = 0;
+      const categories = {};
+
+      list.forEach((item, index) => {
+        item._origIndex = index;
+        if (!categories[item.cat]) categories[item.cat] = [];
+        categories[item.cat].push(item);
+
+        if (item.packed) {
+          const itemTotal = (item.weight || 0) * (item.qty || 1);
+          if (item.type === "Am Körper" || item.loc === "Am Körper") {
+            wornWeightG += itemTotal;
+          } else {
+            packWeightG += itemTotal;
+          }
+          packedCount++;
+        }
+      });
+
+      document.getElementById('packWeightKg').innerText = `${(packWeightG / 1000).toFixed(2)} kg`;
+      document.getElementById('wornWeightKg').innerText = `${(wornWeightG / 1000).toFixed(2)} kg`;
+      document.getElementById('grandTotalKg').innerText = `${((packWeightG + wornWeightG) / 1000).toFixed(2)} kg`;
+      document.getElementById('totalPackedItems').innerText = `${packedCount} / ${list.length}`;
+
+      Object.keys(categories).forEach(cat => {
+        const catRow = document.createElement('tr');
+        catRow.innerHTML = `<td colspan="8" class="pack-table-category">${cat}</td>`;
+        tbody.appendChild(catRow);
+
+        categories[cat].forEach(item => {
+          const idx = item._origIndex;
+          const totalItemWeight = (item.weight || 0) * (item.qty || 1);
+          const tr = document.createElement('tr');
+
+          const isWorn = item.type === "Am Körper" || item.loc === "Am Körper";
+          const typeSelectClass = isWorn ? "table-select select-am-koerper" : "table-select";
+
+          tr.innerHTML = `
+            <td style="text-align:center;">
+              <input type="checkbox" ${item.packed ? 'checked' : ''} onchange="togglePacked(${idx})" style="accent-color: var(--primary); width:14px; height:14px; cursor:pointer;">
+            </td>
+            <td><strong style="color: ${item.packed ? 'var(--text-main)' : 'var(--text-muted)'}; ${!item.packed ? 'text-decoration: line-through;' : ''}">${item.name}</strong></td>
+            <td>
+              <select class="${typeSelectClass}" onchange="changeType(${idx}, this.value)">
+                <option value="Basis" ${item.type === 'Basis' ? 'selected' : ''}>Basis</option>
+                <option value="Am Körper" ${item.type === 'Am Körper' ? 'selected' : ''}>Am Körper</option>
+                <option value="Verbrauch" ${item.type === 'Verbrauch' ? 'selected' : ''}>Verbrauch</option>
+              </select>
+            </td>
+            <td>
+              <select class="table-select" onchange="changeLoc(${idx}, this.value)">
+                <option value="Aufgabegepäck" ${item.loc === 'Aufgabegepäck' ? 'selected' : ''}>Aufgabegepäck</option>
+                <option value="Trekking-Rucksack" ${item.loc === 'Trekking-Rucksack' ? 'selected' : ''}>Trekking-Rucksack</option>
+                <option value="Handgepäck" ${item.loc === 'Handgepäck' ? 'selected' : ''}>Handgepäck</option>
+                <option value="Am Körper" ${item.loc === 'Am Körper' ? 'selected' : ''}>Am Körper</option>
+              </select>
+            </td>
+            <td style="text-align:center;">
+              <div class="qty-controls">
+                <button class="qty-btn" onclick="changeQty(${idx}, -1)">-</button>
+                <span>${item.qty || 1}</span>
+                <button class="qty-btn" onclick="changeQty(${idx}, 1)">+</button>
+              </div>
+            </td>
+            <td style="text-align:right;">${item.weight || 0} g</td>
+            <td style="text-align:right; font-weight:700; color:var(--primary);">${totalItemWeight} g</td>
+            <td style="text-align:center;">
+              <button class="btn-icon" title="Bearbeiten" onclick="editPackItem(${idx})">✏️</button>
+              <button class="btn-icon" title="Löschen" onclick="deletePackItem(${idx})">🗑️</button>
+            </td>
+          `;
+          tbody.appendChild(tr);
+        });
+      });
+    }
+
+    function togglePacked(idx) { packlists[currentPerson][idx].packed = !packlists[currentPerson][idx].packed; savePacklist(); }
+    function changeQty(idx, delta) { packlists[currentPerson][idx].qty = Math.max(1, (packlists[currentPerson][idx].qty || 1) + delta); savePacklist(); }
+    function changeType(idx, val) { packlists[currentPerson][idx].type = val; savePacklist(); }
+    function changeLoc(idx, val) { packlists[currentPerson][idx].loc = val; savePacklist(); }
+
+    function addPackItem() {
+      const name = document.getElementById('newItemName').value.trim();
+      const cat = document.getElementById('newItemCat').value;
+      const weight = parseInt(document.getElementById('newItemWeight').value) || 0;
+      const type = document.getElementById('newItemType').value;
+      const loc = document.getElementById('newItemLoc').value;
+
+      if (!name) return alert("Bitte Name eingeben!");
+      packlists[currentPerson].push({ name, cat, weight, qty: 1, type, loc, packed: true });
+      document.getElementById('newItemName').value = '';
+      document.getElementById('newItemWeight').value = '';
+      savePacklist();
+    }
+
+    function deletePackItem(idx) {
+      if (confirm(`"${packlists[currentPerson][idx].name}" löschen?`)) { 
+        packlists[currentPerson].splice(idx, 1); 
+        savePacklist(); 
+      }
+    }
+
+    function editPackItem(idx) {
+      const item = packlists[currentPerson][idx];
+      const newName = prompt("Name des Gegenstands:", item.name);
+      if (newName === null) return;
+      const newWeightStr = prompt("Gewicht in Gramm (Stück):", item.weight);
+      if (newWeightStr === null) return;
+      item.name = newName.trim() || item.name;
+      item.weight = parseInt(newWeightStr) || 0;
+      savePacklist();
+    }
+
+    /* DYNAMISCHE GEWICHTSANALYSE & CHARTS */
+    const allCategories = [
+      "Dokumente & Wertsachen",
+      "Rucksäcke & Trekking-Gepäck",
+      "Trekking-Ausrüstung & Bekleidung",
+      "Kleidung (Normal/Flug)",
+      "Schuhe & Wandern",
+      "Elektronik & Kabel",
+      "Hygiene & Pflege",
+      "Gesundheit & Reiseapotheke",
+      "Schlaf- & Trekkingkomfort",
+      "Organisation & Tools"
+    ];
+
+    const chartColors = [
+      '#3b82f6', '#0284c7', '#0d9488', '#a855f7', '#06b6d4', 
+      '#f97316', '#ef4444', '#b45309', '#65a30d', '#4c1d95'
+    ];
+
+    function renderAnalysis() {
+      const tbody = document.getElementById('analysisTableBody');
+      if (!tbody) return;
+      tbody.innerHTML = '';
+
+      const stefanTotals = {}, inesTotals = {};
+      allCategories.forEach(cat => { stefanTotals[cat] = 0; inesTotals[cat] = 0; });
+
+      let sumStefan = 0, sumInes = 0;
+
+      packlists.stefan.forEach(item => {
+        const w = (item.weight || 0) * (item.qty || 1);
+        if (stefanTotals[item.cat] !== undefined) stefanTotals[item.cat] += w;
+        else stefanTotals[item.cat] = w;
+        sumStefan += w;
+      });
+
+      packlists.ines.forEach(item => {
+        const w = (item.weight || 0) * (item.qty || 1);
+        if (inesTotals[item.cat] !== undefined) inesTotals[item.cat] += w;
+        else inesTotals[item.cat] = w;
+        sumInes += w;
+      });
+
+      const grandTotalPair = sumStefan + sumInes;
+
+      allCategories.forEach(cat => {
+        const valS = stefanTotals[cat] || 0;
+        const valI = inesTotals[cat] || 0;
+        const pctS = sumStefan > 0 ? ((valS / sumStefan) * 100).toFixed(1) + '%' : '0.0%';
+        const pctI = sumInes > 0 ? ((valI / sumInes) * 100).toFixed(1) + '%' : '0.0%';
+        const totalCat = valS + valI;
+
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td><strong>${cat}</strong></td>
+          <td style="text-align:right;">${valS.toLocaleString('de-DE')} g</td>
+          <td style="text-align:right; color:var(--text-muted);">${pctS}</td>
+          <td style="text-align:right;">${valI.toLocaleString('de-DE')} g</td>
+          <td style="text-align:right; color:var(--text-muted);">${pctI}</td>
+          <td style="text-align:right; font-weight:700;">${totalCat.toLocaleString('de-DE')} g</td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      const trTotal = document.createElement('tr');
+      trTotal.style.background = '#f1f5f9';
+      trTotal.style.borderTop = '2px solid var(--border)';
+      trTotal.innerHTML = `
+        <td><strong style="font-size:0.9rem;">Gesamtsumme</strong></td>
+        <td style="text-align:right; font-weight:800; color:#0f766e; font-size:0.9rem;">${sumStefan.toLocaleString('de-DE')} g</td>
+        <td style="text-align:right; font-weight:800; color:#0f766e; font-size:0.9rem;">100,0%</td>
+        <td style="text-align:right; font-weight:800; color:#0284c7; font-size:0.9rem;">${sumInes.toLocaleString('de-DE')} g</td>
+        <td style="text-align:right; font-weight:800; color:#0284c7; font-size:0.9rem;">100,0%</td>
+        <td style="text-align:right; font-weight:800; color:var(--text-main); font-size:0.95rem;">${grandTotalPair.toLocaleString('de-DE')} g</td>
+      `;
+      tbody.appendChild(trTotal);
+
+      updateCharts(stefanTotals, inesTotals);
+    }
+
+    function updateCharts(stefanData, inesData) {
+      const labels = allCategories;
+      const dataS = labels.map(c => stefanData[c] || 0);
+      const dataI = labels.map(c => inesData[c] || 0);
+
+      const ctxS = document.getElementById('chartStefan');
+      if (ctxS) {
+        if (chartStefanInstance) chartStefanInstance.destroy();
+        chartStefanInstance = new Chart(ctxS, {
+          type: 'pie',
+          data: {
+            labels: labels,
+            datasets: [{ data: dataS, backgroundColor: chartColors }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 10 } } } }
+          }
+        });
+      }
+
+      const ctxI = document.getElementById('chartInes');
+      if (ctxI) {
+        if (chartInesInstance) chartInesInstance.destroy();
+        chartInesInstance = new Chart(ctxI, {
+          type: 'pie',
+          data: {
+            labels: labels,
+            datasets: [{ data: dataI, backgroundColor: chartColors }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 10 } } } }
+          }
+        });
+      }
+    }
+
+    function switchTab(tabId, btn) {
+      document.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active'));
+      document.querySelectorAll('.tab-btn').forEach(tb => tb.classList.remove('active'));
+      document.getElementById(tabId).classList.add('active');
+      btn.classList.add('active');
+      if (tabId === 'routeTab' && map) setTimeout(() => { map.invalidateSize(); }, 150);
+      if (tabId === 'analysisTab') renderAnalysis();
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      switchEtappe('etappe1');
+      initMap();
+      loadPacklist();
+      updateCountdown();
+      setInterval(updateCountdown, 1000);
+    });
+  </script>
+</body>
+</html>
