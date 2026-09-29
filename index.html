@@ -691,7 +691,6 @@
       border-right: none;
     }
 
-    /* Aufenthaltsbalken & Flugtage-Style */
     .calendar-bar {
       height: 24px;
       border-radius: 4px;
@@ -706,7 +705,6 @@
       cursor: pointer;
     }
 
-    /* Nicht ausgefüllte / Gestrichelte Kästchen für Flugtage */
     .calendar-bar.flight-day {
       background-color: transparent !important;
       border: 2px dashed currentColor;
@@ -735,7 +733,6 @@
       gap: 6px;
     }
 
-    /* Interaktive Packliste Styles */
     .info-card {
       background: var(--card-bg);
       border: 1px solid var(--border);
@@ -763,7 +760,6 @@
       margin: 0;
     }
 
-    /* Flugliste Styling */
     .flight-list {
       list-style: none;
       padding: 0;
@@ -956,7 +952,6 @@
       padding: 4px 8px !important;
     }
 
-    /* GEWICHTSANALYSE STYLES */
     .analysis-table-header-stefan { background: #1e3a8a !important; color: #ffffff !important; text-align: right; }
     .analysis-table-header-ines { background: #064e3b !important; color: #ffffff !important; text-align: right; }
     .analysis-table-header-total { background: #0f172a !important; color: #ffffff !important; text-align: right; }
@@ -1568,7 +1563,6 @@
 
       let html = `<div style="min-width: 600px;">`;
       
-      // Header-Zeile mit Personen
       html += `<div class="calendar-v-header">`;
       html += `<div class="calendar-v-header-cell">Tag / Datum</div>`;
       people.forEach(p => {
@@ -1576,7 +1570,6 @@
       });
       html += `</div>`;
 
-      // Tage als Zeilen untereinander (1 bis 68)
       allDaysData.forEach((item, index) => {
         const dayNum = index + 1;
         const isWeekend = item.date.includes("Sa") || item.date.includes("So");
@@ -1595,7 +1588,7 @@
           html += `<div class="calendar-person-cell">`;
           if (active) {
             if (isFlightDay) {
-              html += `<div class="calendar-bar ${p.class} flight-day" title="${p.name}: Flugtag (Tag ${personDayNum} von ${p.end - p.start + 1})">✈️ ${personDayNum}</div>`;
+              html += `<div class="calendar-bar ${p.class} flight-day" title="${p.name}: Flugtag (Tag ${personDayNum} von ${p.end - p.start + 1})">✈️️ ${personDayNum}</div>`;
             } else {
               html += `<div class="calendar-bar ${p.class}" title="${p.name}: Tag ${personDayNum} vor Ort">${personDayNum}</div>`;
             }
@@ -1610,9 +1603,8 @@
       container.innerHTML = html;
     }
 
-    /* KARTEN INITIALISIERUNG */
+    /* KARTEN INITIALISIERUNG MIT DIREKT GEZEICHNETEN LINIEN */
     function initMap() {
-      // 5 KARTENANBIETER FÜR DIE LAYER-SELEKTION
       const osmDe = L.tileLayer('https://tile.openstreetmap.de/{z}/{x}/{y}.png', { maxZoom: 19, attribution: '&copy; OpenStreetMap DE' });
       const osmStd = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, attribution: '&copy; OpenStreetMap' });
       const esriStreet = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', { maxZoom: 19, attribution: 'Tiles &copy; Esri' });
@@ -1621,18 +1613,17 @@
 
       map = L.map('map', { layers: [osmDe] });
 
-      // ATLANTIK ENDPUNKTE FÜR FLÜGE
-      const atlanticInbound = [12.0, -28.0];  
-      const atlanticOutbound = [18.0, -25.0]; 
+      const atlanticInbound = [-12.0, -28.0];  
+      const atlanticOutbound = [-18.0, -25.0]; 
 
-      // MARKER-PUNKTE (#1 BIS #12 VOLLSTÄNDIG)
+      // AKKURATE KOORDINATEN FÜR ALLE 12 STATIONEN
       const points = {
         atacama: { num: 1, name: "San Pedro de Atacama", date: "Tage 1-3 • Nordchile", lat: -22.9087, lng: -68.1997, desc: "Ankunft mit Stefan, Atacama Wüste, Mondtal & Geysire", color: "#16a34a" },
-        jujuy: { num: 2, name: "Nordargentinien (Jujuy & Salta)", date: "Tage 4-7 • Nordargentinien", lat: -23.7472, lng: -65.4981, desc: "Purmamarca 7-Farben-Berg, Salinas Grandes Salzwüste & Salta", color: "#16a34a" },
+        jujuy: { num: 2, name: "Nordargentinien (Jujuy & Salta)", date: "Tage 4-7 • Nordargentinien", lat: -24.7859, lng: -65.4117, desc: "Purmamarca 7-Farben-Berg, Salinas Grandes Salzwüste & Salta", color: "#16a34a" },
         uyuni: { num: 3, name: "Salar de Uyuni (Bolivien)", date: "Tage 8-9 & 53-56 • Bolivien", lat: -20.1338, lng: -67.4891, desc: "Spektakuläre Salzwüste & 4x4 Jeep-Expeditionen mit Stefan & Verena", color: "#e11d48" },
         titicaca: { num: 4, name: "Titicacasee (Copacabana & Isla del Sol)", date: "Tage 14-17 & 40-41 • Bolivien/Peru", lat: -16.1667, lng: -69.0833, desc: "Copacabana, Isla del Sol Wanderung & Grenzübergang nach Peru", color: "#0284c7" },
         cusco: { num: 5, name: "Cusco & Heiliges Tal", date: "Tage 18-26 • Peru", lat: -13.5319, lng: -71.9675, desc: "Kultur, Heiliges Tal, Maras & Treffen mit Tanja", color: "#15803d" },
-        salkantay: { num: 6, name: "Salkantay Trek & Machu Picchu", date: "Tage 27-30 • Peru", lat: -13.2500, lng: -72.5667, desc: "4-Tage Trekking über den Salkantay-Pass (4.630m) nach Machu Picchu", color: "#15803d" },
+        salkantay: { num: 6, name: "Salkantay Trek & Machu Picchu", date: "Tage 27-30 • Peru", lat: -13.1631, lng: -72.5450, desc: "4-Tage Trekking über den Salkantay-Pass (4.630m) nach Machu Picchu", color: "#15803d" },
         arequipa: { num: 7, name: "Arequipa & Colca Canyon", date: "Tage 33-39 • Peru", lat: -16.4090, lng: -71.5375, desc: "Ines & Tanja in Peru: Colca Canyon, Kondore & Weiße Stadt", color: "#7c3aed" },
         lapaz: { num: 8, name: "La Paz & Bolivien", date: "Tage 12-13, 41-44, 47-49 & 57-63 • Bolivien", lat: -16.5000, lng: -68.1500, desc: "Empfang Verena, Seilbahnen, Death Road & Sajama Vulkane", color: "#e11d48" },
         amazonas: { num: 9, name: "Amazonas Dschungel (Rurrenabaque)", date: "Tage 45-47 • Bolivien Dschungel", lat: -14.4333, lng: -67.5333, desc: "Ines, Tanja & Verena: Flussdelfine & Pampa-Safari", color: "#059669" },
@@ -1641,9 +1632,7 @@
         lima: { num: 12, name: "Lima (Pazifikküste & Finale)", date: "Tage 64-68 • Peru Finale", lat: -12.0464, lng: -77.0428, desc: "Reisefinale mit Verena: Miraflores, Ceviche & Heimflug", color: "#6b21a8" }
       };
 
-      const markerGroup = L.featureGroup();
-      const inesRouteGroup = L.featureGroup();
-
+      // MARKER SETZEN
       Object.keys(points).forEach(key => {
         const p = points[key];
         const numberIcon = L.divIcon({
@@ -1661,15 +1650,12 @@
           </div>
         `;
 
-        const marker = L.marker([p.lat, p.lng], { icon: numberIcon }).bindPopup(popupContent);
-        markerGroup.addLayer(marker);
+        const marker = L.marker([p.lat, p.lng], { icon: numberIcon }).bindPopup(popupContent).addTo(map);
         markers[p.name] = { marker, lat: p.lat, lng: p.lng };
       });
 
-      markerGroup.addTo(map);
-
-      /* LÜCKENLOSE INES GESAMTROUTE */
-      const inesWaypoints = [
+      /* LÜCKENLOSE WEGHAUPTLINIE INES (DIREKT DIREKT AUF DIE KARTE ZEICHNEN) */
+      const routeCoords = [
         [points.atacama.lat, points.atacama.lng],
         [points.jujuy.lat, points.jujuy.lng],
         [points.uyuni.lat, points.uyuni.lng],
@@ -1692,56 +1678,50 @@
         [points.lima.lat, points.lima.lng]
       ];
 
-      // Gelbe Glow-Untergrundlinie
-      L.polyline(inesWaypoints, { color: '#eab308', weight: 8, opacity: 0.5 }).addTo(inesRouteGroup);
-      
-      // Grüne Hauptlinie
-      const inesLineMain = L.polyline(inesWaypoints, { color: '#16a34a', weight: 4, opacity: 0.95 }).addTo(inesRouteGroup);
+      // Dicker gelber Hintergrund-Glow
+      L.polyline(routeCoords, { color: '#eab308', weight: 8, opacity: 0.65 }).addTo(map);
 
-      // Pfeil-Dekoration falls Plugin geladen ist
-      try {
-        if (typeof L.polylineDecorator === 'function') {
-          L.polylineDecorator(inesLineMain, {
+      // Grüne Hauptlinie mit hoher Deckkraft
+      const mainPolyline = L.polyline(routeCoords, { color: '#15803d', weight: 4, opacity: 0.95 }).addTo(map);
+
+      // Pfeile auf der Linie anzeigen
+      if (typeof L.polylineDecorator === 'function') {
+        try {
+          L.polylineDecorator(mainPolyline, {
             patterns: [
-              { offset: '5%', repeat: '8%', symbol: L.Symbol.arrowHead({ pixelSize: 9, polygon: false, pathOptions: { color: '#16a34a', stroke: true, weight: 2.5 } }) }
+              { offset: '5%', repeat: '8%', symbol: L.Symbol.arrowHead({ pixelSize: 10, polygon: false, pathOptions: { color: '#15803d', stroke: true, weight: 2.5 } }) }
             ]
-          }).addTo(inesRouteGroup);
-        }
-      } catch (e) {
-        console.warn("PolylineDecorator konnte nicht geladen werden:", e);
+          }).addTo(map);
+        } catch(e) {}
       }
 
-      inesRouteGroup.addTo(map);
-
-      /* TRANSATLANTIK FLÜGE (GESTROCHELT) */
-      function createFlightLine(coords, color) {
-        const line = L.polyline(coords, { color: color, weight: 2.5, opacity: 0.7, dashArray: '6,6' }).addTo(map);
-        try {
-          if (typeof L.polylineDecorator === 'function') {
+      /* FLUGVERBINDUNGEN DIREKT AUF KARTE */
+      function drawFlight(coords, color) {
+        const line = L.polyline(coords, { color: color, weight: 2.5, opacity: 0.75, dashArray: '6,6' }).addTo(map);
+        if (typeof L.polylineDecorator === 'function') {
+          try {
             L.polylineDecorator(line, {
               patterns: [
                 { offset: '40%', repeat: '50%', symbol: L.Symbol.arrowHead({ pixelSize: 8, polygon: false, pathOptions: { color: color, stroke: true, weight: 2 } }) }
               ]
             }).addTo(map);
-          }
-        } catch (e) {}
+          } catch(e) {}
+        }
       }
 
-      createFlightLine([atlanticInbound, [points.atacama.lat, points.atacama.lng]], '#2563eb');
-      createFlightLine([atlanticInbound, [points.cusco.lat, points.cusco.lng]], '#d97706');
-      createFlightLine([atlanticInbound, [points.lapaz.lat, points.lapaz.lng]], '#9333ea');
-      createFlightLine([[points.lima.lat, points.lima.lng], atlanticOutbound], '#dc2626');
+      drawFlight([atlanticInbound, [points.atacama.lat, points.atacama.lng]], '#2563eb');
+      drawFlight([atlanticInbound, [points.cusco.lat, points.cusco.lng]], '#d97706');
+      drawFlight([atlanticInbound, [points.lapaz.lat, points.lapaz.lng]], '#9333ea');
+      drawFlight([[points.lima.lat, points.lima.lng], atlanticOutbound], '#dc2626');
 
-      // EINKLAPPBARE KARTENSTEUERUNG (collapsed: true)
+      // KARTENANBIETER STEUERUNG (EINKLAPPBAR)
       L.control.layers({
-        "🇩🇪 OSM Deutsch (Deutsch / Landessprache)": osmDe,
-        "🌏 OSM Standard (NUR Landessprache)": osmStd,
-        "🗺️ Esri Street (Englisch)": esriStreet,
-        "⛰️ Topografisch (CyclOSM)": cyclOsm,
-        "⛰️ OpenTopoMap (Gelände)": openTopo
-      }, {
-        "🟢 Ines Gesamtreiseroute (68 Tage)": inesRouteGroup
-      }, { collapsed: true, position: 'topright' }).addTo(map);
+        "🇩🇪 OSM Deutsch": osmDe,
+        "🌏 OSM Standard": osmStd,
+        "🗺️ Esri Street": esriStreet,
+        "⛰️ CyclOSM": cyclOsm,
+        "⛰️ OpenTopoMap": openTopo
+      }, null, { collapsed: true, position: 'topright' }).addTo(map);
 
       // LEGENDE
       const legend = L.control({ position: 'bottomright' });
@@ -1753,9 +1733,9 @@
             <span id="legendToggleIcon">▼</span>
           </div>
           <div class="legend-body" id="legendBody" style="display: flex;">
-            <div class="legend-item"><span class="legend-line" style="background:#16a34a; border:1px solid #eab308;"></span> <strong>Ines' Gesamtroute (Tag 1–68)</strong></div>
+            <div class="legend-item"><span class="legend-line" style="background:#15803d; border:1px solid #eab308;"></span> <strong>Ines' Gesamtroute (Tag 1–68)</strong></div>
             <div class="legend-item"><span class="legend-line" style="border-top: 2px dashed #dc2626; background:transparent;"></span> Transatlantik-Flüge</div>
-            <div class="legend-item"><span class="legend-color" style="background:#16a34a;"></span> Station #1-#12 Ines' Reiserihenfolge</div>
+            <div class="legend-item"><span class="legend-color" style="background:#15803d;"></span> Station #1-#12 Ines' Reiserihenfolge</div>
           </div>
         `;
         L.DomEvent.disableClickPropagation(div);
@@ -1845,8 +1825,8 @@
     }
 
     function loadPacklist() {
-      const savedStefan = localStorage.getItem('sa_packlist_stefan_v13');
-      const savedInes = localStorage.getItem('sa_packlist_ines_v13');
+      const savedStefan = localStorage.getItem('sa_packlist_stefan_v14');
+      const savedInes = localStorage.getItem('sa_packlist_ines_v14');
 
       packlists.stefan = savedStefan ? JSON.parse(savedStefan) : JSON.parse(JSON.stringify(defaultStefan));
       packlists.ines = savedInes ? JSON.parse(savedInes) : JSON.parse(JSON.stringify(defaultInes));
@@ -1856,7 +1836,7 @@
     }
 
     function savePacklist() {
-      localStorage.setItem(`sa_packlist_${currentPerson}_v13`, JSON.stringify(packlists[currentPerson]));
+      localStorage.setItem(`sa_packlist_${currentPerson}_v14`, JSON.stringify(packlists[currentPerson]));
       renderPacklist();
       renderAnalysis();
     }
