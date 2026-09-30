@@ -82,17 +82,83 @@ ul.fl strong{font-size:.9rem;color:var(--ink)}
 ul.fl span{display:block;font-size:.8rem}
 ul.tips{padding-left:18px;font-size:.85rem;display:flex;flex-direction:column;gap:5px}
 @media(max-width:860px){
-  .tw{display:none}
-  .cards{display:flex}
-  .switch{grid-template-columns:1fr}
-  /* Anwesenheit: alle 4 Personen gleichzeitig auf dem Handy sichtbar */
+  body{padding:10px 8px}
+  .wrap{width:100%}
+
+  /* Kopfbereich: weniger Höhe, aber gut lesbar */
+  header{gap:7px;padding-bottom:9px;margin-bottom:10px}
+  h1{font-size:1.35rem}
+  header p{font-size:.76rem;line-height:1.35}
+  #countdown{font-size:.72rem;padding:3px 8px}
+  .stats{width:100%;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:5px}
+  .stat{padding:5px 7px;font-size:.68rem;min-width:0}
+  .stat b{font-size:.72rem}
+
+  /* Tabs: vollständig sichtbar und platzsparend */
+  .tabs{gap:5px;margin-bottom:10px}
+  .tab{flex:1 1 0;padding:7px 5px;font-size:.72rem;text-align:center}
+
+  .box{padding:9px;margin-bottom:10px}
+  .mh{margin-bottom:7px}
+  .mh h2,.box h3{font-size:.95rem}
+  .mh button{padding:4px 7px;font-size:.7rem}
+
+  /* Karte */
+  #map{height:390px}
+  .legend{font-size:.7rem;padding:6px 8px}
+
+  /* Bereichsauswahl */
+  .switch{gap:6px;margin-bottom:9px}
+  .ph{padding:7px 8px;font-size:.78rem}
+  .ph small{font-size:.64rem;line-height:1.3;margin-top:2px}
+
+  /* Suche und Filter */
+  .controls{gap:5px;margin-bottom:9px}
+  #q{flex:1 1 100%;padding:7px 10px;font-size:.78rem}
+  .f{padding:5px 8px;font-size:.7rem}
+
+  /* Mobile Aktivitätskarten */
+  .cards{gap:6px}
+  .card{padding:8px;font-size:.77rem}
+  .card .tt{font-size:.82rem}
+  .card .pill{font-size:.68rem}
+
+  /* Anwesenheit: alle 4 Personen gleichzeitig sichtbar */
   .cal{width:100%;max-width:100%;overflow-x:hidden}
-  .cr{grid-template-columns:34px repeat(4,minmax(0,1fr))}
-  .cr.hd div{padding:6px 1px;font-size:.62rem;white-space:nowrap;overflow:hidden}
-  .cd{padding:3px 2px;font-size:.58rem}
-  .cd small{font-size:.49rem}
-  .cc{padding:2px 1px;height:25px}
-  .bar{font-size:.58rem;border-radius:3px}
+  /* Anwesenheit: Tag-Spalte breit genug für „Tag 75“, Namen maximal kompakt */
+  .cr{grid-template-columns:48px repeat(4,minmax(0,1fr))}
+  .cr.hd div{padding:6px 1px;font-size:.62rem;white-space:nowrap;overflow:hidden;text-overflow:clip}
+  .cr.hd div:not(:first-child){font-size:.58rem;letter-spacing:-.03em}
+  .cd{padding:3px 2px;font-size:.58rem;white-space:nowrap}
+  .cd small{font-size:.49rem;white-space:nowrap}
+  .cc{padding:2px 1px;height:25px;min-width:0}
+  .bar{font-size:.58rem;border-radius:3px;min-width:0}
+
+  /* Flüge/Hinweise */
+  ul.fl{gap:6px}
+  ul.fl li{padding:7px 9px}
+  ul.fl strong{font-size:.82rem}
+  ul.fl span{font-size:.74rem}
+  ul.tips{font-size:.76rem;padding-left:16px;gap:4px}
+  .note{font-size:.74rem}
+}
+
+@media(max-width:420px){
+  body{padding:8px 6px}
+  h1{font-size:1.22rem}
+  header p{font-size:.7rem}
+  .stat{padding:4px 6px;font-size:.64rem}
+  .stat b{font-size:.68rem}
+  .tab{font-size:.67rem;padding:7px 3px}
+  .ph{font-size:.74rem;padding:7px 6px}
+  .ph small{font-size:.59rem}
+  #map{height:340px}
+  .cr{grid-template-columns:46px repeat(4,minmax(0,1fr))}
+  .cr.hd div{font-size:.58rem}
+  .cr.hd div:not(:first-child){font-size:.55rem}
+  .cd{font-size:.55rem;white-space:nowrap}
+  .cd small{font-size:.46rem;white-space:nowrap}
+  .bar{font-size:.55rem}
 }
 </style>
 </head>
