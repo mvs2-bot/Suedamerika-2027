@@ -77,7 +77,6 @@ header p { font-size: .92rem; font-weight: 600; color: var(--mute); margin-top: 
 .mh h2, .box h3 { font-size: 1.1rem; font-weight: 800; color: var(--ink); }
 .mh button { font: inherit; font-size: .8rem; font-weight: 700; color: var(--p1); background: var(--card); border: 1px solid var(--line); border-radius: 7px; padding: 7px 12px; }
 
-/* KARTEN-STYLING EXAKT WIE BEI THAILAND / SRI LANKA */
 #map { height: 540px; width: 100%; border-radius: 8px; border: 1px solid var(--line); overflow: hidden; position: relative; }
 .box.full #map { height: calc(100vh - 86px); }
 
@@ -171,7 +170,7 @@ ul.tips { padding-left: 20px; font-size: .85rem; display: flex; flex-direction: 
   <div class="tabs" role="tablist">
     <button class="tab on" data-t="route">🗺️ Route & Karte</button>
     <button class="tab" data-t="cal">🗓️ Anwesenheit</button>
-    <button class="tab" data-t="info">✈️ Flüge & Hinweise</button>
+    <button class="tab" data-t="info">✈️️ Flüge & Hinweise</button>
   </div>
 
   <div id="route" class="pane on">
@@ -184,7 +183,7 @@ ul.tips { padding-left: 20px; font-size: .85rem; display: flex; flex-direction: 
     </div>
 
     <div class="switch">
-      <button class="ph on" data-p="1">Bereich 1 · mit Stefan<small>15.03. – 15.04. · Santiago, Mendoza, Salta, Atacama, Iquique, Cusco</small></button>
+      <button class="ph on" data-p="1">Bereich 1 · mit Stefan<small>15.03. – 15.04. · Santiago, Mendoza, Salta, Atacama, Iquique, Cusco, Machu Picchu</small></button>
       <button class="ph two" data-p="2">Bereich 2 · ohne Stefan<small>16.04. – 28.05. · Südküste Peru, Colca, Titicaca, Bolivien</small></button>
     </div>
 
@@ -264,6 +263,7 @@ const wd = md => new Date(ts(md)).toLocaleDateString('de-DE', { weekday: 'short'
 const LAST1 = '04-15';
 const rgHtml = s => s.split(',').map(k => `<span class="rg r-${k}">${REG[k]}</span>`).join(' ');
 
+// Definition der Haltepunkte mit eigenem Punkt für Machu Picchu
 const STOPS = {
   scl1: ['Santiago de Chile', -33.45, -70.57, 1, 'Ankommen, Valparaíso, Cajón del Maipo'],
   mdz:  ['Mendoza', -32.89, -68.85, 1, 'Weinberge, Thermen, Hochanden'],
@@ -271,7 +271,8 @@ const STOPS = {
   spa:  ['San Pedro de Atacama', -22.91, -68.2, 1, 'Mondtal, Geysire, Lagunas'],
   iqq:  ['Iquique', -20.23, -70.14, 1, 'Pazifik, Humberstone'],
   scl2: ['Santiago de Chile #2', -33.38, -70.75, 1, 'Ruhetage vor Peru'],
-  cuz:  ['Cusco & Machu Picchu', -13.53, -71.97, 1, 'Heiliges Tal, Salkantay Trek, Machu Picchu'],
+  cuz:  ['Cusco & Heiliges Tal', -13.53, -71.97, 1, 'Inka-Hauptstadt, Vorbereitung & Eingewöhnung'],
+  mp:   ['Machu Picchu (Aguas Calientes)', -13.163, -72.545, 1, 'Salkantay Trekking, Aguas Calientes, Inka-Zitadelle'],
   lim:  ['Lima', -12.05, -77.04, 1, 'Stefans Heimflug, Start Bereich 2'],
   par:  ['Paracas', -13.83, -76.25, 2, 'Ballestas-Inseln'],
   ica:  ['Ica / Huacachina', -14.09, -75.76, 2, 'Dünen, Sandboarding'],
@@ -287,6 +288,50 @@ const STOPS = {
   sam:  ['Samaipata', -18.18, -63.87, 2, 'El Fuerte, Amboró'],
   scz:  ['Santa Cruz de la Sierra', -17.78, -63.18, 2, 'Rückflug 28.05.']
 };
+
+// Relevante Flughäfen für realistisches Flugrouting
+const AIRPORTS = {
+  scl1: [-33.393, -70.786], // SCL Arturo Merino Benítez
+  scl2: [-33.393, -70.786], 
+  mdz:  [-32.831, -68.792], // MDZ El Plumerillo
+  sla:  [-24.856, -65.486], // SLA Martin Miguel de Güemes
+  iqq:  [-20.535, -70.181], // IQQ Diego Aracena
+  cuz:  [-13.535, -71.938], // CUZ Alejandro Velasco Astete
+  lim:  [-12.022, -77.114], // LIM Jorge Chávez
+  aqp:  [-16.341, -71.583], // AQP Rodríguez Ballón
+  lpb:  [-16.513, -68.192], // LPB El Alto
+  scz:  [-17.644, -63.135]  // VVI Viru Viru
+};
+
+// Liste aller Verbindungs-Legs mit Modus (flight vs. road)
+const ROUTE_LEGS = [
+  // Bereich 1
+  { from: 'scl1', to: 'mdz', mode: 'road' },  // Anden-Überquerung per Bus
+  { from: 'mdz', to: 'sla', mode: 'flight' }, // Flug Mendoza -> Salta
+  { from: 'sla', to: 'spa', mode: 'road' },   // Bus über Paso de Jama
+  { from: 'spa', to: 'iqq', mode: 'road' },   // Bus San Pedro -> Iquique
+  { from: 'iqq', to: 'scl2', mode: 'flight' },// Flug Iquique -> Santiago
+  { from: 'scl2', to: 'cuz', mode: 'flight' },// Flug Santiago -> Cusco
+  { from: 'cuz', to: 'mp', mode: 'road' },    // Cusco -> Machu Picchu (Trek / Heiliges Tal)
+  { from: 'mp', to: 'cuz', mode: 'road' },    // Rückfahrt Aguas Calientes / Zug -> Cusco
+  { from: 'cuz', to: 'lim', mode: 'flight' }, // Inlandsflug Cusco -> Lima
+
+  // Bereich 2
+  { from: 'lim', to: 'par', mode: 'road' },
+  { from: 'par', to: 'ica', mode: 'road' },
+  { from: 'ica', to: 'nas', mode: 'road' },
+  { from: 'nas', to: 'aqp', mode: 'road' },
+  { from: 'aqp', to: 'col', mode: 'road' },
+  { from: 'col', to: 'pun', mode: 'road' },
+  { from: 'pun', to: 'lpb', mode: 'road' },
+  { from: 'lpb', to: 'uyu', mode: 'road' },
+  { from: 'uyu', to: 'tup', mode: 'road' },
+  { from: 'tup', to: 'pot', mode: 'road' },
+  { from: 'pot', to: 'suc', mode: 'road' },
+  { from: 'suc', to: 'sam', mode: 'road' },
+  { from: 'sam', to: 'scz', mode: 'road' }
+];
+
 const KEYS = Object.keys(STOPS);
 
 const ROWS = [
@@ -317,10 +362,10 @@ const ROWS = [
   ['04-08','','SIT','peru','cuz','Tanja landet in Cusco','Trio vereint, ruhiger Tag zum Eingewöhnen.','🚕 Taxi','Cusco'],
   ['04-09','','SIT','peru','cuz','Heiliges Tal','Pisac und Ollantaytambo auf 2.800 m, gut zur Anpassung.','🚐 Tour','Cusco'],
   ['04-10','','SIT','peru','cuz','Maras, Moray & Trek-Briefing','Salzterrassen, Ausrüstung prüfen, früh schlafen.','🚐 Tour','Cusco'],
-  ['04-11','','SIT','peru','cuz','Salkantay Tag 1: Humantay','Fahrt nach Mollepata, Wanderung zur Laguna Humantay (4.200 m).','🚐 · 🥾','Camp Soraypampa'],
-  ['04-12','','SIT','peru','cuz','Salkantay Tag 2: Pass 4.630 m','Passüberquerung, Abstieg in den Nebelwald.','🥾 Trekking','Lodge Chaullay'],
-  ['04-13','','SIT','peru','cuz','Salkantay Tag 3: Dschungel','Kaffeeplantagen, Hidroeléctrica, Weg nach Aguas Calientes.','🥾 · 🚶','Aguas Calientes'],
-  ['04-14','','SIT','peru','cuz','Salkantay Tag 4: Machu Picchu','Morgens Machu Picchu, abends Zug Ollantaytambo und Bus nach Cusco.','🚌 · 🚆','Cusco'],
+  ['04-11','','SIT','peru','mp','Salkantay Tag 1: Humantay','Fahrt nach Mollepata, Wanderung zur Laguna Humantay (4.200 m).','🚐 · 🥾','Camp Soraypampa'],
+  ['04-12','','SIT','peru','mp','Salkantay Tag 2: Pass 4.630 m','Passüberquerung, Abstieg in den Nebelwald.','🥾 Trekking','Lodge Chaullay'],
+  ['04-13','','SIT','peru','mp','Salkantay Tag 3: Dschungel','Kaffeeplantagen, Hidroeléctrica, Weg nach Aguas Calientes.','🥾 · 🚶','Aguas Calientes'],
+  ['04-14','','SIT','peru','mp','Salkantay Tag 4: Machu Picchu','Morgens Machu Picchu, abends Zug Ollantaytambo und Bus nach Cusco.','🚌 · 🚆','Cusco'],
   ['04-15','','SIT','peru','lim','Cusco ➔ Lima','Gemeinsamer Flug. Stefan fliegt abends heim, Ines & Tanja bleiben.','✈ Flug','Lima (Ines, Tanja)'],
   ['04-16','05-01','IT','peru,titi','par,ica,nas,aqp,col,pun','Ines + Tanja','Südküste, Arequipa, Colca & Puno · 16.04.–01.05.','🚌 Bus · 🛥️ Boot · ✈️ Kleinflugzeug','Paracas, Ica, Nasca, Arequipa, Chivay, Puno'],
   ['05-02','05-09','ITV','titi,bol','pun,lpb','Ines, Tanja, Verena','Titicacasee & La Paz · 02.05.–09.05.','🚌 Bus · 🛥️ Boot · 🚡 Gondel','Puno, Taquile, La Paz'],
@@ -443,39 +488,71 @@ function renderCal() {
   if(cb) cb.innerHTML = h;
 }
 
-/* KARTEN-INITIALISIERUNG EXAKT WIE BEI THAILAND / SRI LANKA */
+/* OSRM ROUTEN-BERECHNUNG FÜR REALSE WEGE */
+async function drawLeg(leg) {
+  const fromStop = STOPS[leg.from];
+  const toStop = STOPS[leg.to];
+  const ph = fromStop[3];
+  const color = ph === 1 ? '#15803d' : '#7c3aed';
+
+  if (leg.mode === 'flight') {
+    // Flughafen-Routing mit gestrichelter Linie
+    const startAir = AIRPORTS[leg.from] || [fromStop[1], fromStop[2]];
+    const endAir = AIRPORTS[leg.to] || [toStop[1], toStop[2]];
+
+    // Zubringer von der Stadt zum Flughafen (dünner)
+    L.polyline([[fromStop[1], fromStop[2]], startAir], { color: '#64748b', weight: 2, dashArray: '3,3', opacity: 0.6 }).addTo(map);
+    // Hauptflugstrecke gestrichelt
+    L.polyline([startAir, endAir], { color, weight: 3.5, opacity: 0.85, dashArray: '8,8' }).addTo(map);
+    // Transfer vom Zielflughafen in die Stadt
+    L.polyline([endAir, [toStop[1], toStop[2]]], { color: '#64748b', weight: 2, dashArray: '3,3', opacity: 0.6 }).addTo(map);
+  } else {
+    // Straßen-Routing über die OSRM API für echten Straßenverlauf
+    const url = `https://router.project-osrm.org/route/v1/driving/${fromStop[2]},${fromStop[1]};${toStop[2]},${toStop[1]}?overview=full&geometries=geojson`;
+    try {
+      const response = await fetch(url);
+      const data = await response.json();
+      if (data.routes && data.routes.length > 0) {
+        const coords = data.routes[0].geometry.coordinates.map(c => [c[1], c[0]]);
+        L.polyline(coords, { color, weight: 4, opacity: 0.85 }).addTo(map);
+      } else {
+        throw new Error('Keine OSRM Route');
+      }
+    } catch (err) {
+      // Fallback: Luftlinie, falls OSRM offline oder unerreichbar ist
+      L.polyline([[fromStop[1], fromStop[2]], [toStop[1], toStop[2]]], { color, weight: 4, opacity: 0.85 }).addTo(map);
+    }
+  }
+}
+
+/* KARTEN-INITIALISIERUNG */
 function initMap() {
   const createLayer = (url, attribution, maxZoom = 19) => L.tileLayer(url, { maxZoom, attribution });
 
-  // Standard OpenStreetMap URL verwendet (verhindert 403-Fehler von OSM.de)
   const baseLayers = {
-    "🇩🇪 OSM Deutsch (Deutsch / Landessprache)": createLayer('https://tile.openstreetmap.de/{z}/{x}/{y}.png', '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> (Deutscher Stil)'),
-    "🌏 OSM Standard (NUR Landessprache)": createLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', '&copy; OpenStreetMap'),
-    "🗺️ Esri Street (Englisch)": createLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', 'Tiles &copy; Esri'),
-    "⛰️ Topografisch (CyclOSM)": createLayer('https://{s}.tile-cyclosm.openstreetmap.fr/cyclosm/{z}/{x}/{y}.png', '&copy; OpenStreetMap / CyclOSM', 18),
-    "⛰️ OpenTopoMap (Gelände)": createLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', '&copy; OpenTopoMap', 17)
+    "🌏 OpenStreetMap Standard": createLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', '&copy; OpenStreetMap contributors'),
+    "🗺 Esri Street": createLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', 'Tiles &copy; Esri'),
+    "⛰️ Topografisch (CyclOSM)": createLayer('https://{s}.tile-cyclosm.openstreetmap.fr/cyclosm/{z}/{x}/{y}.png', '&copy; OpenStreetMap / CyclOSM', 18)
   };
 
-  map = L.map('map', { layers: [baseLayers["🇩🇪 OSM Deutsch (Deutsch / Landessprache)"]] });
+  map = L.map('map', { layers: [baseLayers["🌏 OpenStreetMap Standard"]] });
   L.control.layers(baseLayers, null, { collapsed: true, position: 'topright' }).addTo(map);
 
+  // Marker zeichnen
   KEYS.forEach((k, i) => {
     const [name, lat, lng, ph, info] = STOPS[k];
     const icon = L.divIcon({ className: 'nm p' + ph, html: i + 1, iconSize: [24, 24], iconAnchor: [12, 12] });
     markers[k] = L.marker([lat, lng], { icon }).addTo(map).bindPopup(`<b>#${i + 1} ${name}</b><br>${info}`);
   });
   
-  const pts = k => [STOPS[k][1], STOPS[k][2]];
-  const r1 = KEYS.filter(k => STOPS[k][3] === 1);
-  const r2 = ['lim', ...KEYS.filter(k => STOPS[k][3] === 2)];
+  // Realistische Verbindungsstrecken zeichnen
+  ROUTE_LEGS.forEach(drawLeg);
   
-  L.polyline(r1.map(pts), { color: '#15803d', weight: 4, opacity: .9 }).addTo(map);
-  L.polyline(r2.map(pts), { color: '#7c3aed', weight: 3.5, opacity: .9, dashArray: '8,6' }).addTo(map);
-  
+  // Legende
   const lg = L.control({ position: 'bottomright' });
   lg.onAdd = () => {
     const d = L.DomUtil.create('div', 'legend');
-    d.innerHTML = '<div class="lh" style="cursor:pointer;font-weight:800">📌 Legende <span>▼</span></div><div class="lb" style="display:none"><span style="color:#15803d">━</span> Bereich 1 (#1–#8)<br><span style="color:#7c3aed">┅</span> Bereich 2 (#9–#' + KEYS.length + ')</div>';
+    d.innerHTML = '<div class="lh" style="cursor:pointer;font-weight:800">📌 Legende <span>▼</span></div><div class="lb" style="display:none"><span style="color:#15803d">━</span> Straße / Landweg<br><span style="color:#15803d">┅</span> Flugstrecke (gestrichelt)<br><br><span style="color:#15803d">●</span> Bereich 1 (#1–#8)<br><span style="color:#7c3aed">●</span> Bereich 2 (#9–#' + KEYS.length + ')</div>';
     L.DomEvent.disableClickPropagation(d);
     
     d.querySelector('.lh').onclick = () => {
@@ -546,7 +623,7 @@ document.addEventListener('keydown', e => {
   if (e.key === 'Escape' && $('#mapBox').classList.contains('full')) $('#fs').click();
 });
 
-/* SAUBERE LAUNCH-INITIALISIERUNG */
+/* LAUNCH-INITIALISIERUNG */
 window.addEventListener('DOMContentLoaded', () => {
   renderStats();
   renderCal();
