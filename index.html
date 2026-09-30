@@ -170,7 +170,7 @@ ul.tips { padding-left: 20px; font-size: .85rem; display: flex; flex-direction: 
   <div class="tabs" role="tablist">
     <button class="tab on" data-t="route">🗺️ Route & Karte</button>
     <button class="tab" data-t="cal">🗓️ Anwesenheit</button>
-    <button class="tab" data-t="info">✈️️ Flüge & Hinweise</button>
+    <button class="tab" data-t="info">✈️ Flüge & Hinweise</button>
   </div>
 
   <div id="route" class="pane on">
@@ -263,7 +263,7 @@ const wd = md => new Date(ts(md)).toLocaleDateString('de-DE', { weekday: 'short'
 const LAST1 = '04-15';
 const rgHtml = s => s.split(',').map(k => `<span class="rg r-${k}">${REG[k]}</span>`).join(' ');
 
-// Definition der Haltepunkte mit eigenem Punkt für Machu Picchu
+// Definition der Haltepunkte
 const STOPS = {
   scl1: ['Santiago de Chile', -33.45, -70.57, 1, 'Ankommen, Valparaíso, Cajón del Maipo'],
   mdz:  ['Mendoza', -32.89, -68.85, 1, 'Weinberge, Thermen, Hochanden'],
@@ -273,7 +273,7 @@ const STOPS = {
   scl2: ['Santiago de Chile #2', -33.38, -70.75, 1, 'Ruhetage vor Peru'],
   cuz:  ['Cusco & Heiliges Tal', -13.53, -71.97, 1, 'Inka-Hauptstadt, Vorbereitung & Eingewöhnung'],
   mp:   ['Machu Picchu (Aguas Calientes)', -13.163, -72.545, 1, 'Salkantay Trekking, Aguas Calientes, Inka-Zitadelle'],
-  lim:  ['Lima', -12.05, -77.04, 1, 'Stefans Heimflug, Start Bereich 2'],
+  lim:  ['Lima', -12.05, -77.04, 2, 'Stefans Heimflug, Start Bereich 2'],
   par:  ['Paracas', -13.83, -76.25, 2, 'Ballestas-Inseln'],
   ica:  ['Ica / Huacachina', -14.09, -75.76, 2, 'Dünen, Sandboarding'],
   nas:  ['Nasca', -14.83, -74.94, 2, 'Nasca-Linien'],
@@ -303,33 +303,34 @@ const AIRPORTS = {
   scz:  [-17.644, -63.135]  // VVI Viru Viru
 };
 
-// Liste aller Verbindungs-Legs mit Modus (flight vs. road)
+// Liste aller Verbindungs-Legs mit Modus und expliziter Farbe
 const ROUTE_LEGS = [
-  // Bereich 1
-  { from: 'scl1', to: 'mdz', mode: 'road' },  // Anden-Überquerung per Bus
-  { from: 'mdz', to: 'sla', mode: 'flight' }, // Flug Mendoza -> Salta
-  { from: 'sla', to: 'spa', mode: 'road' },   // Bus über Paso de Jama
-  { from: 'spa', to: 'iqq', mode: 'road' },   // Bus San Pedro -> Iquique
-  { from: 'iqq', to: 'scl2', mode: 'flight' },// Flug Iquique -> Santiago
-  { from: 'scl2', to: 'cuz', mode: 'flight' },// Flug Santiago -> Cusco
-  { from: 'cuz', to: 'mp', mode: 'road' },    // Cusco -> Machu Picchu (Trek / Heiliges Tal)
-  { from: 'mp', to: 'cuz', mode: 'road' },    // Rückfahrt Aguas Calientes / Zug -> Cusco
-  { from: 'cuz', to: 'lim', mode: 'flight' }, // Inlandsflug Cusco -> Lima
+  // Bereich 1 (Grün)
+  { from: 'scl1', to: 'mdz', mode: 'road', color: '#15803d' },  // Anden-Überquerung per Bus
+  { from: 'mdz', to: 'sla', mode: 'flight', color: '#15803d' }, // Flug Mendoza -> Salta
+  { from: 'sla', to: 'spa', mode: 'road', color: '#15803d' },   // Bus über Paso de Jama
+  { from: 'spa', to: 'iqq', mode: 'road', color: '#15803d' },   // Bus San Pedro -> Iquique
+  { from: 'iqq', to: 'scl2', mode: 'flight', color: '#15803d' },// Flug Iquique -> Santiago
+  { from: 'scl2', to: 'cuz', mode: 'flight', color: '#15803d' },// Flug Santiago -> Cusco
+  { from: 'cuz', to: 'mp', mode: 'road', color: '#15803d' },    // Cusco -> Machu Picchu
 
-  // Bereich 2
-  { from: 'lim', to: 'par', mode: 'road' },
-  { from: 'par', to: 'ica', mode: 'road' },
-  { from: 'ica', to: 'nas', mode: 'road' },
-  { from: 'nas', to: 'aqp', mode: 'road' },
-  { from: 'aqp', to: 'col', mode: 'road' },
-  { from: 'col', to: 'pun', mode: 'road' },
-  { from: 'pun', to: 'lpb', mode: 'road' },
-  { from: 'lpb', to: 'uyu', mode: 'road' },
-  { from: 'uyu', to: 'tup', mode: 'road' },
-  { from: 'tup', to: 'pot', mode: 'road' },
-  { from: 'pot', to: 'suc', mode: 'road' },
-  { from: 'suc', to: 'sam', mode: 'road' },
-  { from: 'sam', to: 'scz', mode: 'road' }
+  // Verbindung Punkt 9 (Machu Picchu/Cusco) ➔ Punkt 10 (Lima) in Lila
+  { from: 'mp', to: 'lim', mode: 'flight', airFrom: 'cuz', color: '#7c3aed' },
+
+  // Bereich 2 (Lila)
+  { from: 'lim', to: 'par', mode: 'road', color: '#7c3aed' },
+  { from: 'par', to: 'ica', mode: 'road', color: '#7c3aed' },
+  { from: 'ica', to: 'nas', mode: 'road', color: '#7c3aed' },
+  { from: 'nas', to: 'aqp', mode: 'road', color: '#7c3aed' },
+  { from: 'aqp', to: 'col', mode: 'road', color: '#7c3aed' },
+  { from: 'col', to: 'pun', mode: 'road', color: '#7c3aed' },
+  { from: 'pun', to: 'lpb', mode: 'road', color: '#7c3aed' },
+  { from: 'lpb', to: 'uyu', mode: 'road', color: '#7c3aed' },
+  { from: 'uyu', to: 'tup', mode: 'road', color: '#7c3aed' },
+  { from: 'tup', to: 'pot', mode: 'road', color: '#7c3aed' },
+  { from: 'pot', to: 'suc', mode: 'road', color: '#7c3aed' },
+  { from: 'suc', to: 'sam', mode: 'road', color: '#7c3aed' },
+  { from: 'sam', to: 'scz', mode: 'road', color: '#7c3aed' }
 ];
 
 const KEYS = Object.keys(STOPS);
@@ -488,23 +489,22 @@ function renderCal() {
   if(cb) cb.innerHTML = h;
 }
 
-/* OSRM ROUTEN-BERECHNUNG FÜR REALSE WEGE */
+/* OSRM ROUTEN-BERECHNUNG FÜR REALISTISCHE WEGE */
 async function drawLeg(leg) {
   const fromStop = STOPS[leg.from];
   const toStop = STOPS[leg.to];
-  const ph = fromStop[3];
-  const color = ph === 1 ? '#15803d' : '#7c3aed';
+  const color = leg.color || (fromStop[3] === 1 ? '#15803d' : '#7c3aed');
 
   if (leg.mode === 'flight') {
     // Flughafen-Routing mit gestrichelter Linie
-    const startAir = AIRPORTS[leg.from] || [fromStop[1], fromStop[2]];
+    const startAir = AIRPORTS[leg.airFrom || leg.from] || [fromStop[1], fromStop[2]];
     const endAir = AIRPORTS[leg.to] || [toStop[1], toStop[2]];
 
-    // Zubringer von der Stadt zum Flughafen (dünner)
+    // Zubringer von der Stadt/Sehenswürdigkeit zum Flughafen
     L.polyline([[fromStop[1], fromStop[2]], startAir], { color: '#64748b', weight: 2, dashArray: '3,3', opacity: 0.6 }).addTo(map);
     // Hauptflugstrecke gestrichelt
     L.polyline([startAir, endAir], { color, weight: 3.5, opacity: 0.85, dashArray: '8,8' }).addTo(map);
-    // Transfer vom Zielflughafen in die Stadt
+    // Transfer vom Zielflughafen in die Zielstadt
     L.polyline([endAir, [toStop[1], toStop[2]]], { color: '#64748b', weight: 2, dashArray: '3,3', opacity: 0.6 }).addTo(map);
   } else {
     // Straßen-Routing über die OSRM API für echten Straßenverlauf
@@ -519,7 +519,7 @@ async function drawLeg(leg) {
         throw new Error('Keine OSRM Route');
       }
     } catch (err) {
-      // Fallback: Luftlinie, falls OSRM offline oder unerreichbar ist
+      // Fallback: Luftlinie
       L.polyline([[fromStop[1], fromStop[2]], [toStop[1], toStop[2]]], { color, weight: 4, opacity: 0.85 }).addTo(map);
     }
   }
@@ -530,12 +530,14 @@ function initMap() {
   const createLayer = (url, attribution, maxZoom = 19) => L.tileLayer(url, { maxZoom, attribution });
 
   const baseLayers = {
-    "🌏 OpenStreetMap Standard": createLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', '&copy; OpenStreetMap contributors'),
-    "🗺 Esri Street": createLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', 'Tiles &copy; Esri'),
-    "⛰️ Topografisch (CyclOSM)": createLayer('https://{s}.tile-cyclosm.openstreetmap.fr/cyclosm/{z}/{x}/{y}.png', '&copy; OpenStreetMap / CyclOSM', 18)
+    "🇩🇪 OSM Deutsch (Deutsch / Landessprache)": createLayer('https://tile.openstreetmap.de/{z}/{x}/{y}.png', '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> (Deutscher Stil)'),
+    "🌏 OSM Standard (NUR Landessprache)": createLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', '&copy; OpenStreetMap'),
+    "🗺️ Esri Street (Englisch)": createLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', 'Tiles &copy; Esri'),
+    "⛰️ Topografisch (CyclOSM)": createLayer('https://{s}.tile-cyclosm.openstreetmap.fr/cyclosm/{z}/{x}/{y}.png', '&copy; OpenStreetMap / CyclOSM', 18),
+    "⛰️ OpenTopoMap (Gelände)": createLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', '&copy; OpenTopoMap', 17)
   };
 
-  map = L.map('map', { layers: [baseLayers["🌏 OpenStreetMap Standard"]] });
+  map = L.map('map', { layers: [baseLayers["⛰️ Topografisch (CyclOSM)"]] });
   L.control.layers(baseLayers, null, { collapsed: true, position: 'topright' }).addTo(map);
 
   // Marker zeichnen
@@ -552,7 +554,7 @@ function initMap() {
   const lg = L.control({ position: 'bottomright' });
   lg.onAdd = () => {
     const d = L.DomUtil.create('div', 'legend');
-    d.innerHTML = '<div class="lh" style="cursor:pointer;font-weight:800">📌 Legende <span>▼</span></div><div class="lb" style="display:none"><span style="color:#15803d">━</span> Straße / Landweg<br><span style="color:#15803d">┅</span> Flugstrecke (gestrichelt)<br><br><span style="color:#15803d">●</span> Bereich 1 (#1–#8)<br><span style="color:#7c3aed">●</span> Bereich 2 (#9–#' + KEYS.length + ')</div>';
+    d.innerHTML = '<div class="lh" style="cursor:pointer;font-weight:800">📌 Legende <span>▼</span></div><div class="lb" style="display:none"><span style="color:#15803d">━</span> Landweg<br><span style="color:#15803d">┅</span> Flugstrecke (gestrichelt)<br><br><span style="color:#15803d">●</span> Bereich 1 (#1–#8)<br><span style="color:#7c3aed">●</span> Bereich 2 (#9–#' + KEYS.length + ')</div>';
     L.DomEvent.disableClickPropagation(d);
     
     d.querySelector('.lh').onclick = () => {
