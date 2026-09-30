@@ -2,510 +2,116 @@
 <html lang="de">
 <head>
 <meta charset="UTF-8">
-<!-- Responsive Viewport für mobile Endgeräte -->
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<!-- Verhindert die Indizierung durch Suchmaschinen -->
 <meta name="robots" content="noindex, nofollow">
-<!-- Theme-Farbe für mobile Browser-Titelleisten -->
 <meta name="theme-color" content="#15803d">
 <title>Südamerika 2027 · Stefan, Ines, Tanja & Verena</title>
 
 <!-- Lama-Emoji -->
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🦙</text></svg>">
 
-<!-- Externe Schriftarten (Google Fonts: Plus Jakarta Sans) -->
+<!-- Externe Schriftarten -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
 
-<!-- Leaflet CSS & JavaScript für die interaktive Karte -->
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<!-- Leaflet CSS & JS -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
 <style>
-/* ==========================================================================
-   1. CSS-VARIABLEN & GLOBALE STYLES
-   ========================================================================== */
 :root {
-  /* Farbpalette */
-  --bg: #f4f7f4;          /* Haupthintergrund */
-  --card: #ffffff;        /* Karten- & Boxenhintergrund */
-  --hover: #f0fdf4;      /* Hover-Effekt für Tabellenzeilen & Buttons */
-  --line: #cbd5e1;        /* Rahmen- und Trennlinien */
-  --ink: #0f172a;         /* Haupt-Textfarbe (Dunkel) */
-  --text: #334155;        /* Normaler Text */
-  --mute: #64748b;        /* Dezent-grauer Text */
-  
-  /* Primärfarben für Reisebereiche */
-  --p1: #15803d;          /* Bereich 1 (Grün) */
-  --p2: #7c3aed;          /* Bereich 2 (Violett) */
-  
-  /* Personenspezifische Akzentfarben */
-  --S: #2563eb;           /* Stefan (Blau) */
-  --I: #16a34a;           /* Ines (Grün) */
-  --T: #d97706;           /* Tanja (Orange) */
-  --V: #9333ea;           /* Verena (Violett) */
-  
-  /* Radien & Schatten */
+  --bg: #f4f7f4;
+  --card: #ffffff;
+  --hover: #f0fdf4;
+  --line: #cbd5e1;
+  --ink: #0f172a;
+  --text: #334155;
+  --mute: #64748b;
+  --p1: #15803d;
+  --p2: #7c3aed;
+  --S: #2563eb;
+  --I: #16a34a;
+  --T: #d97706;
+  --V: #9333ea;
   --radius: 12px;
   --shadow: 0 4px 12px rgba(15, 23, 42, 0.05);
 }
 
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body { font-family: 'Plus Jakarta Sans', system-ui, sans-serif; background: var(--bg); color: var(--text); line-height: 1.5; padding: 32px 24px 48px; }
+button, input { font: inherit; }
+button { cursor: pointer; }
+.wrap { max-width: 1280px; margin: 0 auto; }
 
-html {
-  scroll-behavior: smooth;
-}
-
-body {
-  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
-  background: var(--bg);
-  color: var(--text);
-  line-height: 1.5;
-  padding: 32px 24px 48px; /* Desktop-Optimiertes Außen-Padding */
-}
-
-button, input {
-  font: inherit;
-}
-
-button {
-  cursor: pointer;
-}
-
-/* Haupt-Container Zentrierung & Max-Breite */
-.wrap {
-  max-width: 1280px;
-  margin: 0 auto;
-}
-
-/* Fokus-Rahmen für Barrierefreiheit */
-:focus-visible {
-  outline: 3px solid #0d9488;
-  outline-offset: 2px;
-}
-
-/* ==========================================================================
-   2. HEADER & STATISTIKEN (DESKTOP-FEINJUSTIERUNG)
-   ========================================================================== */
 header {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  align-items: end;
-  gap: 32px;
-  border-bottom: 3px solid var(--p1);
-  padding: 0 2px 20px;
-  margin-bottom: 24px;
+  display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: end; gap: 32px;
+  border-bottom: 3px solid var(--p1); padding: 0 2px 20px; margin-bottom: 24px;
 }
+h1 { font-size: clamp(1.65rem, 2.5vw, 2.2rem); line-height: 1.15; font-weight: 800; color: var(--ink); }
+header p { font-size: .92rem; font-weight: 600; color: var(--mute); margin-top: 6px; }
 
-h1 {
-  font-size: clamp(1.65rem, 2.5vw, 2.2rem);
-  line-height: 1.15;
-  font-weight: 800;
-  letter-spacing: -.025em;
-  color: var(--ink);
-}
-
-header p {
-  font-size: .92rem;
-  font-weight: 600;
-  color: var(--mute);
-  margin-top: 6px;
-}
-
-/* Live-Countdown Badge */
 #countdown {
-  display: inline-block;
-  margin-top: 10px;
-  background: #dcfce7;
-  border: 1px solid #86efac;
-  color: var(--p1);
-  padding: 5px 14px;
-  border-radius: 999px;
-  font-size: .82rem;
-  font-weight: 800;
+  display: inline-block; margin-top: 10px; background: #dcfce7; border: 1px solid #86efac;
+  color: var(--p1); padding: 5px 14px; border-radius: 999px; font-size: .82rem; font-weight: 800;
 }
 
-/* Stat-Karten oben rechts: 4-Spalten-Grid für Desktop nebeneinander */
-.stats {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(110px, 1fr));
-  gap: 10px;
-  max-width: 680px;
-  width: 100%;
-}
+.stats { display: grid; grid-template-columns: repeat(4, minmax(110px, 1fr)); gap: 10px; max-width: 680px; width: 100%; }
+.stat { background: var(--card); border: 1px solid var(--line); border-radius: 8px; padding: 9px 12px; font-size: .76rem; font-weight: 600; color: var(--ink); box-shadow: var(--shadow); white-space: nowrap; }
+.stat b { display: block; font-weight: 800; margin-top: 2px; font-size: .82rem; }
 
-.stat {
-  background: var(--card);
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  padding: 9px 12px;
-  font-size: .76rem;
-  font-weight: 600;
-  color: var(--ink);
-  box-shadow: var(--shadow);
-  white-space: nowrap;
-}
+.tabs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 24px; }
+.tab, .ph, .f { font: inherit; cursor: pointer; background: var(--card); border: 1px solid var(--line); color: var(--text); border-radius: 8px; font-weight: 700; }
+.tab { min-height: 44px; padding: 10px 16px; font-size: .88rem; white-space: nowrap; transition: all .15s; }
+.tab.on, .tab:hover, .f.on, .f:hover { background: var(--p1); border-color: var(--p1); color: #fff; }
 
-.stat b {
-  display: block;
-  font-weight: 800;
-  margin-top: 2px;
-  font-size: .82rem;
-}
+.pane { display: none; }
+.pane.on { display: block; }
 
-/* ==========================================================================
-   3. HAUPT-NAVIGATION (TABS)
-   ========================================================================== */
-.tabs {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 12px;
-  margin-bottom: 24px;
-}
+.box { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 20px; margin-bottom: 20px; box-shadow: var(--shadow); }
+.box.map { border-top: 4px solid var(--p1); padding-top: 16px; }
+.box.full { position: fixed; inset: 0; z-index: 9999; border-radius: 0; margin: 0; overflow: auto; background: var(--bg); padding: 20px; }
 
-.tab, .ph, .f {
-  font: inherit;
-  cursor: pointer;
-  background: var(--card);
-  border: 1px solid var(--line);
-  color: var(--text);
-  border-radius: 8px;
-  font-weight: 700;
-}
+.mh { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 14px; }
+.mh h2, .box h3 { font-size: 1.1rem; font-weight: 800; color: var(--ink); }
+.mh button { font: inherit; font-size: .8rem; font-weight: 700; color: var(--p1); background: var(--card); border: 1px solid var(--line); border-radius: 7px; padding: 7px 12px; }
 
-.tab {
-  min-height: 44px;
-  padding: 10px 16px;
-  font-size: .88rem;
-  white-space: nowrap;
-  transition: background .15s, border-color .15s, color .15s, transform .15s;
-}
+/* KARTEN-STYLING EXAKT WIE BEI THAILAND / SRI LANKA */
+#map { height: 540px; width: 100%; border-radius: 8px; border: 1px solid var(--line); overflow: hidden; position: relative; }
+.box.full #map { height: calc(100vh - 86px); }
 
-.tab.on, .tab:hover, .f.on, .f:hover {
-  background: var(--p1);
-  border-color: var(--p1);
-  color: #fff;
-}
-
-.tab:hover {
-  transform: translateY(-1px);
-}
-
-/* Pane-Steuerung (Tabs ein-/ausblenden) */
-.pane {
-  display: none;
-}
-.pane.on {
-  display: block;
-}
-
-/* ==========================================================================
-   4. INHALTS-CONTAINER (BOXEN)
-   ========================================================================== */
-.box {
-  background: var(--card);
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
-  padding: 20px;
-  margin-bottom: 20px;
-  box-shadow: var(--shadow);
-}
-
-.box.map {
-  border-top: 4px solid var(--p1);
-  padding-top: 16px;
-}
-
-/* Vollbild-Modus für die Karte */
-.box.full {
-  position: fixed;
-  inset: 0;
-  z-index: 9999;
-  border-radius: 0;
-  margin: 0;
-  overflow: auto;
-  background: var(--bg);
-  padding: 20px;
-}
-
-.mh {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 14px;
-}
-
-.mh h2, .box h3 {
-  font-size: 1.1rem;
-  line-height: 1.25;
-  font-weight: 800;
-  color: var(--ink);
-}
-
-.mh button {
-  flex: 0 0 auto;
-  font: inherit;
-  font-size: .8rem;
-  font-weight: 700;
-  color: var(--p1);
-  background: var(--card);
-  border: 1px solid var(--line);
-  border-radius: 7px;
-  padding: 7px 12px;
-  cursor: pointer;
-}
-
-.mh button:hover {
-  background: var(--hover);
-  border-color: #86efac;
-}
-
-/* ==========================================================================
-   5. KARTEN-STYLING (LEAFLET CUSTOMISATIONS)
-   ========================================================================== */
-#map {
-  height: 560px;
-  width: 100%;
-  min-height: 300px;
-  border-radius: 8px;
-  border: 1px solid var(--line);
-  overflow: hidden;
-  position: relative;
-}
-
-.box.full #map {
-  height: calc(100vh - 86px);
-}
-
-/* Custom Marker-Icons auf der Karte */
-.nm {
-  border: 2px solid #fff;
-  border-radius: 50%;
-  color: #fff;
-  font-weight: 800;
-  font-size: 11px;
-  display: flex !important;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 2px 5px rgba(0,0,0,.3);
-}
-
+.nm { border: 2px solid #fff; border-radius: 50%; color: #fff; font-weight: 800; font-size: 11px; display: flex !important; align-items: center; justify-content: center; box-shadow: 0 2px 5px rgba(0,0,0,.3); }
 .nm.p1 { background: var(--p1); }
 .nm.p2 { background: var(--p2); }
 
-/* Kartenlegende unten rechts */
-.legend {
-  background: #fff;
-  border: 1px solid var(--line);
-  border-radius: 7px;
-  padding: 8px 12px;
-  font-size: .78rem;
-  color: var(--ink);
-  line-height: 1.6;
-  box-shadow: 0 2px 6px rgba(15,23,42,.1);
-}
+.legend { background: #fff; border: 1px solid var(--line); border-radius: 7px; padding: 8px 12px; font-size: .78rem; color: var(--ink); line-height: 1.6; box-shadow: 0 2px 6px rgba(15,23,42,.1); }
+.legend .lh { font: inherit; color: inherit; background: none; border: 0; padding: 0; width: 100%; text-align: left; }
 
-.legend .lh {
-  font: inherit;
-  color: inherit;
-  background: none;
-  border: 0;
-  padding: 0;
-  width: 100%;
-  text-align: left;
-}
+.switch { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 0 0 18px; }
+.ph { padding: 12px 16px; border-width: 2px; text-align: center; color: var(--ink); font-weight: 800; font-size: .9rem; transition: all .15s; }
+.ph small { display: block; font-size: .73rem; font-weight: 600; opacity: .85; margin-top: 3px; }
+.ph.on { background: var(--p1); border-color: var(--p1); color: #fff; }
+.ph.two.on { background: var(--p2); border-color: var(--p2); }
 
-/* ==========================================================================
-   6. BEREICHS-SWITCHER (PHASEN)
-   ========================================================================== */
-.switch {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
-  margin: 0 0 18px;
-}
+.controls { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 14px; }
+#q { flex: 1 1 300px; min-width: 240px; background: var(--card); border: 1px solid var(--line); border-radius: 7px; padding: 9px 13px; font: inherit; font-size: .84rem; color: var(--ink); }
+.f { padding: 7px 12px; font-size: .76rem; font-weight: 700; }
 
-.ph {
-  padding: 12px 16px;
-  border-width: 2px;
-  text-align: center;
-  color: var(--ink);
-  font-weight: 800;
-  font-size: .9rem;
-  line-height: 1.35;
-  transition: background .15s, border-color .15s, transform .15s;
-}
+.tw { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); overflow-x: auto; box-shadow: var(--shadow); }
+table { width: 100%; border-collapse: collapse; font-size: .83rem; text-align: left; }
+th { position: sticky; top: 0; background: #e2e8f0; color: var(--ink); font-size: .72rem; font-weight: 800; padding: 10px 12px; border-bottom: 2px solid var(--line); white-space: nowrap; }
+td { padding: 10px 12px; border-bottom: 1px solid #e2e8f0; vertical-align: top; color: var(--ink); }
+tr.row { cursor: pointer; }
+tr.row:hover td { background: var(--hover); }
 
-.ph small {
-  display: block;
-  font-size: .73rem;
-  line-height: 1.35;
-  font-weight: 600;
-  opacity: .85;
-  margin-top: 3px;
-}
+.dn { display: inline-block; background: var(--p1); color: #fff; font-weight: 800; font-size: .72rem; border-radius: 5px; padding: 2px 7px; white-space: nowrap; }
+.two-c .dn { background: var(--p2); }
+.dt { font-size: .71rem; color: var(--mute); font-weight: 600; margin-top: 3px; }
+.who { display: inline-flex; gap: 4px; align-items: center; font-size: .67rem; font-weight: 700; background: #f1f5f9; border: 1px solid var(--line); border-radius: 4px; padding: 2px 6px; margin-top: 4px; white-space: nowrap; }
+.who i { width: 7px; height: 7px; border-radius: 50%; display: inline-block; }
 
-.ph:hover {
-  background: var(--hover);
-  transform: translateY(-1px);
-}
-
-.ph.on {
-  background: var(--p1);
-  border-color: var(--p1);
-  color: #fff;
-}
-
-.ph.two.on {
-  background: var(--p2);
-  border-color: var(--p2);
-}
-
-/* ==========================================================================
-   7. SUCHE & FILTER-BUTTONS
-   ========================================================================== */
-.controls {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  align-items: center;
-  margin-bottom: 14px;
-}
-
-#q {
-  flex: 1 1 300px;
-  min-width: 240px;
-  background: var(--card);
-  border: 1px solid var(--line);
-  border-radius: 7px;
-  padding: 9px 13px;
-  font: inherit;
-  font-size: .84rem;
-  color: var(--ink);
-}
-
-#q:focus {
-  border-color: #86efac;
-  outline: 3px solid rgba(13,148,136,.15);
-}
-
-.f {
-  padding: 7px 12px;
-  font-size: .76rem;
-  font-weight: 700;
-}
-
-/* ==========================================================================
-   8. DESKTOP AKTIVITÄTEN-TABELLE
-   ========================================================================== */
-.tw {
-  background: var(--card);
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
-  overflow-x: auto;
-  box-shadow: var(--shadow);
-}
-
-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: .83rem;
-  text-align: left;
-}
-
-th {
-  position: sticky;
-  top: 0;
-  background: #e2e8f0;
-  color: var(--ink);
-  font-size: .72rem;
-  font-weight: 800;
-  padding: 10px 12px;
-  border-bottom: 2px solid var(--line);
-  white-space: nowrap;
-  z-index: 1;
-}
-
-td {
-  padding: 10px 12px;
-  border-bottom: 1px solid #e2e8f0;
-  vertical-align: top;
-  color: var(--ink);
-}
-
-tr.row {
-  cursor: pointer;
-}
-
-tr.row:hover td {
-  background: var(--hover);
-}
-
-tr.row:last-child td {
-  border-bottom: 0;
-}
-
-/* Tag-Badges & Personen-Badges */
-.dn {
-  display: inline-block;
-  background: var(--p1);
-  color: #fff;
-  font-weight: 800;
-  font-size: .72rem;
-  border-radius: 5px;
-  padding: 2px 7px;
-  white-space: nowrap;
-}
-
-.two-c .dn {
-  background: var(--p2);
-}
-
-.dt {
-  font-size: .71rem;
-  color: var(--mute);
-  font-weight: 600;
-  margin-top: 3px;
-}
-
-.who {
-  display: inline-flex;
-  gap: 4px;
-  align-items: center;
-  font-size: .67rem;
-  font-weight: 700;
-  background: #f1f5f9;
-  border: 1px solid var(--line);
-  border-radius: 4px;
-  padding: 2px 6px;
-  margin-top: 4px;
-  white-space: nowrap;
-}
-
-.who i {
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  display: inline-block;
-}
-
-/* Regionen-Badges */
-.rg {
-  display: inline-block;
-  font-size: .68rem;
-  font-weight: 700;
-  border-radius: 4px;
-  padding: 2px 6px;
-  white-space: nowrap;
-  margin-bottom: 2px;
-}
-
+.rg { display: inline-block; font-size: .68rem; font-weight: 700; border-radius: 4px; padding: 2px 6px; white-space: nowrap; margin-bottom: 2px; }
 .r-chile { background: #fef3c7; color: #b45309; }
 .r-arg   { background: #f3e8ff; color: #7c3aed; }
 .r-peru  { background: #dcfce7; color: #15803d; }
@@ -513,271 +119,46 @@ tr.row:last-child td {
 .r-bol   { background: #ffe4e6; color: #e11d48; }
 
 .tt { font-weight: 700; }
+.pill { display: inline-block; font-size: .72rem; font-weight: 600; background: #f8fafc; border: 1px solid var(--line); border-radius: 5px; padding: 3px 6px; margin: 1px 0; }
 
-.pill {
-  display: inline-block;
-  font-size: .72rem;
-  font-weight: 600;
-  background: #f8fafc;
-  border: 1px solid var(--line);
-  border-radius: 5px;
-  padding: 3px 6px;
-  margin: 1px 0;
-}
+.cards { display: none; flex-direction: column; gap: 8px; }
+.card { background: var(--card); border: 1px solid var(--line); border-radius: 8px; padding: 12px; cursor: pointer; font-size: .8rem; box-shadow: var(--shadow); }
 
-/* Mobil-Karten (standardmäßig auf Desktop verborgen) */
-.cards {
-  display: none;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.card {
-  background: var(--card);
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  padding: 12px;
-  cursor: pointer;
-  font-size: .8rem;
-  box-shadow: var(--shadow);
-}
-
-.card:hover { background: var(--hover); }
-.card .tt { font-size: .85rem; }
-.card .pill { font-size: .69rem; }
-
-/* ==========================================================================
-   9. ANWESENHEITSKALENDER
-   ========================================================================== */
-.cal {
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
-  overflow: auto;
-  max-height: 560px;
-  background: #fff;
-  box-shadow: var(--shadow);
-}
-
-.cr {
-  display: grid;
-  grid-template-columns: 70px repeat(4, 1fr);
-  border-bottom: 1px solid #f1f5f9;
-  align-items: center;
-}
-
+.cal { border: 1px solid var(--line); border-radius: var(--radius); overflow: auto; max-height: 560px; background: #fff; box-shadow: var(--shadow); }
+.cr { display: grid; grid-template-columns: 70px repeat(4, 1fr); border-bottom: 1px solid #f1f5f9; align-items: center; }
 .cr.we { background: #f1f5f9; }
-.cr.we .cd { color: #dc2626; }
+.cr.hd { position: sticky; top: 0; background: #e2e8f0; z-index: 2; font-weight: 800; text-align: center; font-size: .84rem; }
+.cr.hd div { padding: 10px 4px; font-size: .76rem; }
+.cd { padding: 4px 6px; font-weight: 800; font-size: .7rem; border-right: 2px solid var(--line); }
+.cd small { display: block; font-size: .6rem; font-weight: 500; }
+.cc { padding: 3px; height: 30px; display: flex; }
+.bar { flex: 1; min-width: 0; border-radius: 4px; color: #fff; font-size: .7rem; font-weight: 800; display: flex; align-items: center; justify-content: center; }
+.bar.fl { background: transparent !important; border: 1.5px dashed; box-shadow: none; }
 
-.cr.hd {
-  position: sticky;
-  top: 0;
-  background: #e2e8f0;
-  z-index: 2;
-  font-weight: 800;
-  text-align: center;
-  font-size: .84rem;
-}
+ul.fl { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+ul.fl li { background: #f8fafc; border: 1px solid var(--line); border-left: 4px solid var(--p1); border-radius: 8px; padding: 10px 14px; }
+ul.fl b { display: block; font-size: .75rem; color: var(--p1); margin-bottom: 2px; }
+ul.fl strong { font-size: .9rem; color: var(--ink); }
+ul.fl span { display: block; font-size: .8rem; }
+ul.tips { padding-left: 20px; font-size: .85rem; display: flex; flex-direction: column; gap: 8px; }
 
-.cr.hd div {
-  padding: 10px 4px;
-  font-size: .76rem;
-}
-
-.cd {
-  padding: 4px 6px;
-  font-weight: 800;
-  font-size: .7rem;
-  border-right: 2px solid var(--line);
-}
-
-.cd small {
-  display: block;
-  font-size: .6rem;
-  font-weight: 500;
-}
-
-.cc {
-  padding: 3px;
-  height: 30px;
-  display: flex;
-}
-
-.bar {
-  flex: 1;
-  min-width: 0;
-  border-radius: 4px;
-  color: #fff;
-  font-size: .7rem;
-  font-weight: 800;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.bar.fl {
-  background: transparent !important;
-  border: 1.5px dashed;
-  box-shadow: none;
-}
-
-/* ==========================================================================
-   10. INFO-PANEL & FLÜGE
-   ========================================================================== */
-.note {
-  color: var(--mute);
-  font-size: .85rem;
-  margin: 4px 0 12px;
-}
-
-ul.fl {
-  list-style: none;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-ul.fl li {
-  background: #f8fafc;
-  border: 1px solid var(--line);
-  border-left: 4px solid var(--p1);
-  border-radius: 8px;
-  padding: 10px 14px;
-}
-
-ul.fl b {
-  display: block;
-  font-size: .75rem;
-  color: var(--p1);
-  margin-bottom: 2px;
-}
-
-ul.fl strong {
-  font-size: .9rem;
-  color: var(--ink);
-}
-
-ul.fl span {
-  display: block;
-  font-size: .8rem;
-}
-
-ul.tips {
-  padding-left: 20px;
-  font-size: .85rem;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-ul.tips li {
-  padding-left: 2px;
-}
-
-/* ==========================================================================
-   11. RESPONSIVE ANPASSUNGEN (MOBILE & TABLET)
-   ========================================================================== */
 @media (max-width: 860px) {
   body { padding: 12px 8px 22px; }
-  header {
-    grid-template-columns: 1fr;
-    gap: 9px;
-    padding: 0 1px 11px;
-    margin-bottom: 12px;
-  }
+  header { grid-template-columns: 1fr; gap: 9px; padding: 0 1px 11px; margin-bottom: 12px; }
   h1 { font-size: 1.38rem; }
-  header p { font-size: .74rem; line-height: 1.35; margin-top: 4px; }
-  #countdown { font-size: .7rem; padding: 3px 8px; margin-top: 6px; }
-  .stats {
-    width: 100%;
-    max-width: none;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 5px;
-  }
-  .stat {
-    padding: 5px 4px;
-    text-align: center;
-    font-size: .61rem;
-    border-radius: 7px;
-  }
-  .stat b { font-size: .67rem; }
+  .stats { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 5px; }
+  .stat { padding: 5px 4px; text-align: center; font-size: .61rem; }
   .tabs { gap: 5px; margin-bottom: 12px; }
   .tab { min-height: 36px; padding: 6px 4px; font-size: .69rem; }
-  .box { padding: 10px; margin-bottom: 10px; border-radius: 8px; }
-  .box.map { padding-top: 8px; }
-  .mh { margin-bottom: 8px; }
-  .mh h2, .box h3 { font-size: .92rem; }
-  .mh h2 { max-width: 72%; }
-  .mh button { padding: 5px 7px; font-size: .67rem; }
   #map { height: 380px; }
-  .box.full { padding: 10px; }
-  .box.full #map { height: calc(100vh - 66px); }
-  .legend { font-size: .67rem; padding: 5px 7px; }
-  .switch { gap: 5px; margin-bottom: 9px; }
-  .ph { padding: 7px 5px; font-size: .73rem; border-radius: 7px; }
-  .ph small { font-size: .58rem; line-height: 1.25; margin-top: 2px; }
-  .controls { gap: 5px; margin-bottom: 8px; }
-  #q { flex: 1 1 100%; min-width: 0; padding: 7px 9px; font-size: .75rem; }
-  .f { padding: 5px 7px; font-size: .67rem; }
   .tw { display: none; }
   .cards { display: flex; }
-  .card { padding: 8px; font-size: .73rem; }
-  .card .tt { font-size: .78rem; }
-  .card .pill { font-size: .64rem; }
-  .cal { width: 100%; max-width: 100%; overflow-x: hidden; }
   .cr { grid-template-columns: 48px repeat(4, minmax(0, 1fr)); }
-  .cr.hd div { padding: 6px 1px; font-size: .6rem; white-space: nowrap; overflow: hidden; text-overflow: clip; }
-  .cr.hd div:not(:first-child) { font-size: .56rem; letter-spacing: -.03em; }
-  .cd { padding: 3px 2px; font-size: .56rem; white-space: nowrap; }
-  .cd small { font-size: .48rem; white-space: nowrap; }
-  .cc { padding: 2px 1px; height: 25px; min-width: 0; }
-  .bar { font-size: .56rem; border-radius: 3px; min-width: 0; }
-  .note { font-size: .7rem; margin-bottom: 8px; }
-  ul.fl { gap: 5px; }
-  ul.fl li { padding: 7px 8px; }
-  ul.fl b { font-size: .67rem; }
-  ul.fl strong { font-size: .78rem; }
-  ul.fl span { font-size: .7rem; }
-  ul.tips { font-size: .71rem; padding-left: 16px; gap: 4px; }
-}
-
-@media (max-width: 420px) {
-  body { padding: 9px 6px 18px; }
-  h1 { font-size: 1.22rem; }
-  header p { font-size: .68rem; }
-  #countdown { font-size: .65rem; }
-  .stats { gap: 4px; }
-  .stat { padding: 4px 2px; font-size: .56rem; }
-  .stat b { font-size: .61rem; }
-  .tabs { gap: 4px; }
-  .tab { min-height: 34px; font-size: .64rem; padding: 6px 2px; }
-  .box { padding: 8px; }
-  .mh h2, .box h3 { font-size: .87rem; }
-  .mh h2 { max-width: 68%; }
-  .mh button { font-size: .63rem; padding: 4px 6px; }
-  #map { height: 335px; }
-  .ph { font-size: .69rem; padding: 6px 4px; }
-  .ph small { font-size: .54rem; }
-  .f { font-size: .63rem; padding: 5px 6px; }
-  .card { padding: 7px; font-size: .69rem; }
-  .card .tt { font-size: .74rem; }
-  .card .pill { font-size: .6rem; }
-  .cr { grid-template-columns: 46px repeat(4, minmax(0, 1fr)); }
-  .cr.hd div { font-size: .56rem; }
-  .cr.hd div:not(:first-child) { font-size: .53rem; }
-  .cd { font-size: .53rem; }
-  .cd small { font-size: .45rem; }
-  .bar { font-size: .53rem; }
-  ul.fl li { padding: 6px 7px; }
-  ul.fl b { font-size: .62rem; }
-  ul.fl strong { font-size: .73rem; }
-  ul.fl span { font-size: .66rem; }
-  ul.tips { font-size: .67rem; }
 }
 </style>
 </head>
 <body>
 <div class="wrap">
-  <!-- Headerbereich mit Titel, Verbleibs-Countdown & Personen-Statistiken -->
   <header>
     <div>
       <h1>🏔️ Südamerika 2027</h1>
@@ -787,16 +168,13 @@ ul.tips li {
     <div class="stats" id="stats"></div>
   </header>
 
-  <!-- Haupt-Tab-Navigation -->
   <div class="tabs" role="tablist">
     <button class="tab on" data-t="route">🗺️ Route & Karte</button>
     <button class="tab" data-t="cal">🗓️ Anwesenheit</button>
     <button class="tab" data-t="info">✈️ Flüge & Hinweise</button>
   </div>
 
-  <!-- TAB 1: ROUTE & KARTE -->
   <div id="route" class="pane on">
-    <!-- Kartenbox -->
     <div class="box map" id="mapBox">
       <div class="mh">
         <h2>Karte</h2>
@@ -805,19 +183,16 @@ ul.tips li {
       <div id="map"></div>
     </div>
 
-    <!-- Phasen-Umschalter (Bereich 1 vs Bereich 2) -->
     <div class="switch">
       <button class="ph on" data-p="1">Bereich 1 · mit Stefan<small>15.03. – 15.04. · Santiago, Mendoza, Salta, Atacama, Iquique, Cusco</small></button>
       <button class="ph two" data-p="2">Bereich 2 · ohne Stefan<small>16.04. – 28.05. · Südküste Peru, Colca, Titicaca, Bolivien</small></button>
     </div>
 
-    <!-- Suchfeld & dynamische Filter-Buttons -->
     <div class="controls">
       <input id="q" type="search" placeholder="Nach Ort, Aktivität oder Transport suchen …" aria-label="Suche">
       <span id="filters" style="display:contents"></span>
     </div>
 
-    <!-- Tabellenansicht (Desktop) -->
     <div class="tw">
       <table>
         <thead>
@@ -834,11 +209,9 @@ ul.tips li {
       </table>
     </div>
 
-    <!-- Kartenansicht (Mobil) -->
     <div class="cards" id="cards"></div>
   </div>
 
-  <!-- TAB 2: ANWESENHEITSKALENDER -->
   <div id="cal" class="pane">
     <div class="box">
       <h3>Anwesenheit · 75 Tage</h3>
@@ -847,7 +220,6 @@ ul.tips li {
     </div>
   </div>
 
-  <!-- TAB 3: FLÜGE & PLANNING-HINWEISE -->
   <div id="info" class="pane">
     <div class="box">
       <h3>Flüge</h3>
@@ -874,11 +246,6 @@ ul.tips li {
 </div>
 
 <script>
-/* ==========================================================================
-   1. DATENSTRUKTUREN & KONSTANTEN
-   ========================================================================== */
-
-// Personenkonfiguration (Name, Farbe, Start- & Enddatum)
 const P = {
   S: { n: 'Stefan', c: '#2563eb', s: '03-15', e: '04-15' },
   I: { n: 'Ines',   c: '#16a34a', s: '03-15', e: '05-28' },
@@ -886,27 +253,19 @@ const P = {
   V: { n: 'Verena', c: '#9333ea', s: '05-01', e: '05-28' }
 };
 
-// Regionen-Zuordnung für Filter-Badges
 const REG = { chile: 'Chile', arg: 'Argentinien', peru: 'Peru', titi: 'Titicacasee', bol: 'Bolivien' };
-
-// Startdatum der Gesamtreise als UTC-Timestamp (15. März 2027)
 const D0 = Date.UTC(2027, 2, 15);
 
-// Datumskonvertierungshilfen
 const ts = md => { const [m, d] = md.split('-'); return Date.UTC(2027, m - 1, d); };
 const dn = md => Math.round((ts(md) - D0) / 864e5) + 1;
 const fmt = md => md.slice(3) + '.' + md.slice(0, 2) + '.';
 const wd = md => new Date(ts(md)).toLocaleDateString('de-DE', { weekday: 'short', timeZone: 'UTC' });
 
-// Stichtag für Bereichstrennung
 const LAST1 = '04-15';
-
-// Hilfsfunktion zur Erzeugung von Regionen-Badges
 const rgHtml = s => s.split(',').map(k => `<span class="rg r-${k}">${REG[k]}</span>`).join(' ');
 
-// Haltepunkte auf der Karte: Schlüssel -> [Name, Breitengrad, Längengrad, Bereich, Beschreibung]
 const STOPS = {
-  scl1: ['Santiago de Chile', -33.45, -70.67, 1, 'Ankommen, Valparaíso, Cajón del Maipo'],
+  scl1: ['Santiago de Chile', -33.45, -70.57, 1, 'Ankommen, Valparaíso, Cajón del Maipo'],
   mdz:  ['Mendoza', -32.89, -68.85, 1, 'Weinberge, Thermen, Hochanden'],
   sla:  ['Salta', -24.79, -65.41, 1, 'Jujuy, Salinas Grandes, Cafayate'],
   spa:  ['San Pedro de Atacama', -22.91, -68.2, 1, 'Mondtal, Geysire, Lagunas'],
@@ -930,7 +289,6 @@ const STOPS = {
 };
 const KEYS = Object.keys(STOPS);
 
-// Routenzeilen: [Startdatum, Enddatum, Anwesende Personen, Region, StationKey, Titel, Details, Transport, Unterkunft]
 const ROWS = [
   ['03-15','','SI','chile','scl1','Ankunft Santiago','Ankommen, Jetlag auskurieren, Innenstadt.','✈️ Flug · 🚕 Taxi','Santiago'],
   ['03-16','','SI','chile','scl1','Valparaíso','Tagesausflug an die bunte Pazifikküste.','🚌 Bus','Santiago'],
@@ -969,92 +327,87 @@ const ROWS = [
   ['05-10','05-28','IV','bol','uyu,tup,pot,suc,sam,scz','Ines + Verena','Bolivien-Rundreise · 10.05.–28.05.','🚌 Bus · 🚙 4x4 · ✈️ Flug','Uyuni, Tupiza, Potosí, Sucre, Samaipata, Santa Cruz']
 ];
 
-/* ==========================================================================
-   2. ANWENDUNGS-ZUSTAND & HELFER
-   ========================================================================== */
 let phase = 1, region = 'all', map;
 const markers = {};
 const $ = s => document.querySelector(s);
 
-// Rendert die Statistiken der Teilnehmer im Header
 function renderStats() {
-  $('#stats').innerHTML = Object.entries(P).map(([k, p]) => {
+  const el = $('#stats');
+  if(!el) return;
+  el.innerHTML = Object.entries(P).map(([k, p]) => {
     const n = dn(p.e) - dn(p.s) + 1;
     return `<div class="stat"><span style="color:${p.c}">●</span> ${p.n}<b>${n} Tage</b>${fmt(p.s)} – ${fmt(p.e)}</div>`;
   }).join('');
 }
 
-// Live-Countdown mit Sekundenanzeige
 function countdown() {
-  const diff = new Date(2027, 2, 15, 12) - Date.now(); // Ziel: 15.03.2027, 12:00 Uhr UTC
+  const diff = new Date(2027, 2, 15, 12) - Date.now();
   const el = $('#countdown');
-  
+  if(!el) return;
   if (diff <= 0) {
     el.textContent = '🎉 Die Reise läuft!';
     return;
   }
-  
   const totalSeconds = Math.floor(diff / 1000);
   const days = Math.floor(totalSeconds / 86400);
   const hours = Math.floor((totalSeconds % 86400) / 3600);
   const minutes = Math.floor((totalSeconds % 3600) / 60);
   const seconds = totalSeconds % 60;
-  
   el.innerHTML = `⏳ Noch <b>${days}</b> Tage, <b>${hours}</b> Std., <b>${minutes}</b> Min. & <b>${seconds}</b> Sek.`;
 }
 
-/* ==========================================================================
-   3. DYNAMISCHES RENDERING (TABELLE, CARDS & FILTER)
-   ========================================================================== */
 const whoHtml = w => `<span class="who">${[...w].map(c => `<i style="background:${P[c].c}"></i>`).join('')}${[...w].map(c => P[c].n).join(', ')}</span>`;
 const dayLabel = (s, e) => e ? `Tag ${dn(s)}–${dn(e)}` : `Tag ${dn(s)}`;
 const dateLabel = (s, e) => e ? `${fmt(s)} – ${fmt(e)}` : `${fmt(s)} (${wd(s)})`;
 
 function render() {
-  const q = $('#q').value.toLowerCase();
-  
-  // Filtern der Zeilen nach Phase, Region und Suchbegriff
+  const qEl = $('#q');
+  const q = qEl ? qEl.value.toLowerCase() : '';
   const list = ROWS.filter(r => {
     if ((r[0] <= LAST1 ? 1 : 2) !== phase) return false;
     if (region !== 'all' && !r[3].split(',').includes(region)) return false;
     return !q || r.join(' ').toLowerCase().includes(q);
   });
   
-  // Tabellenansicht rendern
-  $('#tb').innerHTML = list.map(r => `
-    <tr class="row ${phase === 2 ? 'two-c' : ''}" tabindex="0" data-s="${r[4]}">
-      <td><span class="dn">${dayLabel(r[0], r[1])}</span><div class="dt">${dateLabel(r[0], r[1])}</div>${whoHtml(r[2])}</td>
-      <td>${rgHtml(r[3])}</td>
-      <td class="tt">${r[5]}</td>
-      <td>${r[6]}</td>
-      <td><span class="pill">${r[7]}</span></td>
-      <td><span class="pill">🏨 ${r[8]}</span></td>
-    </tr>
-  `).join('') || '<tr><td colspan="6">Keine Treffer.</td></tr>';
+  const tb = $('#tb');
+  if(tb) {
+    tb.innerHTML = list.map(r => `
+      <tr class="row ${phase === 2 ? 'two-c' : ''}" tabindex="0" data-s="${r[4]}">
+        <td><span class="dn">${dayLabel(r[0], r[1])}</span><div class="dt">${dateLabel(r[0], r[1])}</div>${whoHtml(r[2])}</td>
+        <td>${rgHtml(r[3])}</td>
+        <td class="tt">${r[5]}</td>
+        <td>${r[6]}</td>
+        <td><span class="pill">${r[7]}</span></td>
+        <td><span class="pill">🏨 ${r[8]}</span></td>
+      </tr>
+    `).join('') || '<tr><td colspan="6">Keine Treffer.</td></tr>';
+  }
   
-  // Kartenansicht (Mobil) rendern
-  $('#cards').innerHTML = list.map(r => `
-    <div class="card ${phase === 2 ? 'two-c' : ''}" tabindex="0" data-s="${r[4]}">
-      <div style="display:flex;justify-content:space-between;gap:6px;align-items:flex-start">
-        <div><span class="dn">${dayLabel(r[0], r[1])}</span><div class="dt">${dateLabel(r[0], r[1])}</div>${whoHtml(r[2])}</div>
-        <span>${rgHtml(r[3])}</span>
+  const cards = $('#cards');
+  if(cards) {
+    cards.innerHTML = list.map(r => `
+      <div class="card ${phase === 2 ? 'two-c' : ''}" tabindex="0" data-s="${r[4]}">
+        <div style="display:flex;justify-content:space-between;gap:6px;align-items:flex-start">
+          <div><span class="dn">${dayLabel(r[0], r[1])}</span><div class="dt">${dateLabel(r[0], r[1])}</div>${whoHtml(r[2])}</div>
+          <span>${rgHtml(r[3])}</span>
+        </div>
+        <div class="tt" style="margin:6px 0 2px;color:var(--ink)">${r[5]}</div>
+        <div style="margin-bottom:6px">${r[6]}</div>
+        <span class="pill">${r[7]}</span> <span class="pill">🏨 ${r[8]}</span>
       </div>
-      <div class="tt" style="margin:6px 0 2px;color:var(--ink)">${r[5]}</div>
-      <div style="margin-bottom:6px">${r[6]}</div>
-      <span class="pill">${r[7]}</span> <span class="pill">🏨 ${r[8]}</span>
-    </div>
-  `).join('');
+    `).join('');
+  }
 }
 
-// Generiert die Regionen-Filterbuttons passend zur aktuellen Phase
 function renderFilters() {
   const regs = [...new Set(ROWS.filter(r => (r[0] <= LAST1 ? 1 : 2) === phase).flatMap(r => r[3].split(',')))];
-  $('#filters').innerHTML = ['all', ...regs].map(k => `
+  const el = $('#filters');
+  if(!el) return;
+  el.innerHTML = ['all', ...regs].map(k => `
     <button class="f ${k === region ? 'on' : ''}" data-r="${k}">${k === 'all' ? 'Alle' : REG[k]}</button>
   `).join('');
 }
 
-// Umschalten der Reisephase (Bereich 1 / 2)
 function setPhase(p) {
   phase = p; 
   region = 'all';
@@ -1063,17 +416,13 @@ function setPhase(p) {
   render();
 }
 
-/* ==========================================================================
-   4. ANWESENHEITSKALENDER
-   ========================================================================== */
 function renderCal() {
   const keys = Object.keys(P);
   let h = `<div class="cr hd"><div>Tag</div>${keys.map(k => `<div style="color:${P[k].c}">${P[k].n}</div>`).join('')}</div>`;
   
-  // Generierung der 75 Reisetage
   for (let d = 1; d <= 75; d++) {
     const dt = new Date(D0 + (d - 1) * 864e5);
-    const we = [0, 6].includes(dt.getUTCDay()); // Wochenende hervorheben
+    const we = [0, 6].includes(dt.getUTCDay());
     const lab = dt.toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', weekday: 'short', timeZone: 'UTC' });
     
     h += `<div class="cr ${we ? 'we' : ''}"><div class="cd">Tag ${d}<small>${lab}</small></div>`;
@@ -1090,35 +439,30 @@ function renderCal() {
     
     h += '</div>';
   }
-  $('#calBody').innerHTML = h;
+  const cb = $('#calBody');
+  if(cb) cb.innerHTML = h;
 }
 
-/* ==========================================================================
-   5. INTERAKTIVE LEAFLET-KARTE
-   ========================================================================== */
+/* KARTEN-INITIALISIERUNG EXAKT WIE BEI THAILAND / SRI LANKA */
 function initMap() {
   const createLayer = (url, attribution, maxZoom = 19) => L.tileLayer(url, { maxZoom, attribution });
 
+  // Standard OpenStreetMap URL verwendet (verhindert 403-Fehler von OSM.de)
   const baseLayers = {
-    "🇩🇪 OSM Deutsch (Deutsch / Landessprache)": createLayer('https://tile.openstreetmap.de/{z}/{x}/{y}.png', '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> (Deutscher Stil)'),
-    "🌏 OSM Standard (NUR Landessprache)": createLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', '&copy; OpenStreetMap'),
-    "🗺️ Esri Street (Englisch)": createLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', 'Tiles &copy; Esri'),
-    "⛰️ Topografisch (CyclOSM)": createLayer('https://{s}.tile-cyclosm.openstreetmap.fr/cyclosm/{z}/{x}/{y}.png', '&copy; OpenStreetMap / CyclOSM', 18),
-    "⛰️ OpenTopoMap (Gelände)": createLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', '&copy; OpenTopoMap', 17)
+    "🌏 OpenStreetMap Standard": createLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', '&copy; OpenStreetMap contributors'),
+    "🗺️️ Esri Street": createLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', 'Tiles &copy; Esri'),
+    "⛰️ Topografisch (CyclOSM)": createLayer('https://{s}.tile-cyclosm.openstreetmap.fr/cyclosm/{z}/{x}/{y}.png', '&copy; OpenStreetMap / CyclOSM', 18)
   };
 
-  map = L.map('map', { layers: [baseLayers["🇩🇪 OSM Deutsch (Deutsch / Landessprache)"]] });
-
+  map = L.map('map', { layers: [baseLayers["🌏 OpenStreetMap Standard"]] });
   L.control.layers(baseLayers, null, { collapsed: true, position: 'topright' }).addTo(map);
 
-  // Marker für alle Haltepunkte erzeugen
   KEYS.forEach((k, i) => {
     const [name, lat, lng, ph, info] = STOPS[k];
     const icon = L.divIcon({ className: 'nm p' + ph, html: i + 1, iconSize: [24, 24], iconAnchor: [12, 12] });
     markers[k] = L.marker([lat, lng], { icon }).addTo(map).bindPopup(`<b>#${i + 1} ${name}</b><br>${info}`);
   });
   
-  // Routenlinien erzeugen (Grün für Bereich 1, Violett gestrichelt für Bereich 2)
   const pts = k => [STOPS[k][1], STOPS[k][2]];
   const r1 = KEYS.filter(k => STOPS[k][3] === 1);
   const r2 = ['lim', ...KEYS.filter(k => STOPS[k][3] === 2)];
@@ -1126,32 +470,27 @@ function initMap() {
   L.polyline(r1.map(pts), { color: '#15803d', weight: 4, opacity: .9 }).addTo(map);
   L.polyline(r2.map(pts), { color: '#7c3aed', weight: 3.5, opacity: .9, dashArray: '8,6' }).addTo(map);
   
-  // Interaktive Legende unten rechts hinzufügen
   const lg = L.control({ position: 'bottomright' });
   lg.onAdd = () => {
     const d = L.DomUtil.create('div', 'legend');
-    d.innerHTML = '<div class="lh" style="cursor:pointer;font-weight:800" aria-expanded="false">📌 Legende <span>▼</span></div><div class="lb" style="display:none"><span style="color:#15803d">━</span> Bereich 1 (#1–#8)<br><span style="color:#7c3aed">┅</span> Bereich 2 (#9–#' + KEYS.length + ')</div>';
+    d.innerHTML = '<div class="lh" style="cursor:pointer;font-weight:800">📌 Legende <span>▼</span></div><div class="lb" style="display:none"><span style="color:#15803d">━</span> Bereich 1 (#1–#8)<br><span style="color:#7c3aed">┅</span> Bereich 2 (#9–#' + KEYS.length + ')</div>';
     L.DomEvent.disableClickPropagation(d);
     
     d.querySelector('.lh').onclick = () => {
-      const b = d.querySelector('.lb'), h = d.querySelector('.lh'), o = b.style.display === 'none';
+      const b = d.querySelector('.lb'), o = b.style.display === 'none';
       b.style.display = o ? 'block' : 'none';
-      h.setAttribute('aria-expanded', o ? 'true' : 'false');
       d.querySelector('span').textContent = o ? '▲' : '▼';
     };
     return d;
   };
   lg.addTo(map);
   
-  // Kartenausschnitt auf gesamt Südamerika-Route ausrichten
   map.fitBounds([[-34.5, -78], [-12, -62]], { padding: [20, 20] });
 }
 
-// Kamerafahrt zu ausgewählten Stationen
 function go(keys) {
   const ms = keys.split(',').map(k => markers[k]).filter(Boolean);
   if (!ms.length) return;
-  
   if (ms.length === 1) {
     map.flyTo(ms[0].getLatLng(), 7, { duration: 1 });
     ms[0].openPopup();
@@ -1161,77 +500,56 @@ function go(keys) {
   $('#mapBox').scrollIntoView({ behavior: 'smooth' });
 }
 
-/* ==========================================================================
-   6. UI DOM-REFERENZEN & EVENT-HANDLER
-   ========================================================================== */
-const TAB_BUTTONS = document.querySelectorAll('.tab');
-const PANES = document.querySelectorAll('.pane');
-const PHASE_BUTTONS = document.querySelectorAll('.ph');
-
-// Tab-Wechsel-Logik
-TAB_BUTTONS.forEach(b => b.onclick = () => {
-  TAB_BUTTONS.forEach(x => x.classList.toggle('on', x === b));
-  PANES.forEach(x => x.classList.toggle('on', x.id === b.dataset.t));
+/* EVENT HANDLER */
+document.querySelectorAll('.tab').forEach(b => b.onclick = () => {
+  document.querySelectorAll('.tab').forEach(x => x.classList.toggle('on', x === b));
+  document.querySelectorAll('.pane').forEach(x => x.classList.toggle('on', x.id === b.dataset.t));
   if (b.dataset.t === 'route' && map) setTimeout(() => map.invalidateSize(), 100);
 });
 
-// Phasen-Wechsel-Buttons
-PHASE_BUTTONS.forEach(b => b.onclick = () => setPhase(+b.dataset.p));
+document.querySelectorAll('.ph').forEach(b => b.onclick = () => setPhase(+b.dataset.p));
 
-// Sucheingabe
-$('#q').oninput = render;
+const qInput = $('#q');
+if(qInput) qInput.oninput = render;
 
-// Filter-Button Events
-$('#filters').onclick = e => {
-  const b = e.target.closest('[data-r]');
-  if (b) {
-    region = b.dataset.r;
-    renderFilters();
-    render();
-  }
-};
+const filterEl = $('#filters');
+if(filterEl) {
+  filterEl.onclick = e => {
+    const b = e.target.closest('[data-r]');
+    if (b) {
+      region = b.dataset.r;
+      renderFilters();
+      render();
+    }
+  };
+}
 
-// Klick-Events für Tabellenzeilen/Karten -> Kamerafahrt auf Karte
 const pick = e => {
   const el = e.target.closest('[data-s]');
   if (el) go(el.dataset.s);
 };
-$('#tb').onclick = pick;
-$('#cards').onclick = pick;
+if($('#tb')) $('#tb').onclick = pick;
+if($('#cards')) $('#cards').onclick = pick;
 
-[$('#tb'), $('#cards')].forEach(el => el.onkeydown = e => {
-  if (e.key === 'Enter' || e.key === ' ') {
-    e.preventDefault();
-    pick(e);
-  }
-});
+const fsBtn = $('#fs');
+if(fsBtn) {
+  fsBtn.onclick = () => {
+    const f = $('#mapBox').classList.toggle('full');
+    fsBtn.textContent = f ? '❌ Verkleinern' : '🔍 Vollbild';
+    setTimeout(() => map.invalidateSize(), 200);
+  };
+}
 
-// Vollbild-Modus der Karte umschalten
-$('#fs').onclick = () => {
-  const f = $('#mapBox').classList.toggle('full');
-  $('#fs').textContent = f ? '❌ Verkleinern' : '🔍 Vollbild';
-  setTimeout(() => map.invalidateSize(), 200);
-};
-
-// ESC-Taste schließt Karten-Vollbild
 document.addEventListener('keydown', e => {
   if (e.key === 'Escape' && $('#mapBox').classList.contains('full')) $('#fs').click();
 });
 
-/* ==========================================================================
-   7. INITIALISIERUNG
-   ========================================================================== */
+/* SAUBERE LAUNCH-INITIALISIERUNG */
 window.addEventListener('DOMContentLoaded', () => {
   renderStats();
   renderCal();
   setPhase(1);
   initMap();
-  
-  // Sicherstellen, dass Kacheln nach dem DOM-Aufbau korrekt berechnet werden
-  setTimeout(() => {
-    if (map) map.invalidateSize();
-  }, 200);
-
   countdown();
   setInterval(countdown, 1000);
 });
