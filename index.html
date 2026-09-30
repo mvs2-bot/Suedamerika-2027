@@ -13,7 +13,6 @@
 <!-- Lama-Emoji -->
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🦙</text></svg>">
 
-
 <!-- Externe Schriftarten (Google Fonts: Plus Jakarta Sans) -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -21,7 +20,7 @@
 
 <!-- Leaflet CSS & JavaScript für die interaktive Karte -->
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 
 <style>
 /* ==========================================================================
@@ -131,12 +130,13 @@ header p {
   font-weight: 800;
 }
 
-/* Stat-Karten oben rechts */
+/* Stat-Karten oben rechts: 4-Spalten-Grid für Desktop nebeneinander */
 .stats {
   display: grid;
-  grid-template-columns: repeat(2, minmax(140px, 1fr));
+  grid-template-columns: repeat(4, minmax(110px, 1fr));
   gap: 10px;
-  max-width: 420px;
+  max-width: 680px;
+  width: 100%;
 }
 
 .stat {
@@ -148,6 +148,7 @@ header p {
   font-weight: 600;
   color: var(--ink);
   box-shadow: var(--shadow);
+  white-space: nowrap;
 }
 
 .stat b {
@@ -795,7 +796,7 @@ ul.tips li {
     <!-- Kartenbox -->
     <div class="box map" id="mapBox">
       <div class="mh">
-        <h2>Karte: Bereich 1 grün, Bereich 2 violett</h2>
+        <h2>Karte</h2>
         <button id="fs">🔍 Vollbild</button>
       </div>
       <div id="map"></div>
@@ -935,7 +936,7 @@ const ROWS = [
   ['03-19','','SI','arg','mdz','Weinberg-Radtour','Malbec-Weingüter in Luján de Cuyo.','🚲 Rad','Mendoza'],
   ['03-20','','SI','arg','mdz','Termas de Cacheuta','Thermalbäder in den Anden.','🚐 Shuttle','Mendoza'],
   ['03-21','','SI','arg','mdz','Uspallata & Puente del Inca','Hochgebirgsausflug mit Blick Richtung Aconcagua.','🚐 Tour','Mendoza'],
-  ['03-22','','SI','arg','sla','Mendoza ➔ Salta','Ganzer Reisetag, Flug meist über Buenos Aires.','✈️️ Flug','Salta'],
+  ['03-22','','SI','arg','sla','Mendoza ➔ Salta','Ganzer Reisetag, Flug meist über Buenos Aires.','✈ Flug','Salta'],
   ['03-23','','SI','arg','sla','Purmamarca & Salinas Grandes','Siebenfarbiger Berg und Salzwüste, langer Ausflugstag.','🚐 Tour','Salta'],
   ['03-24','','SI','arg','sla','Quebrada de las Conchas & Cafayate','Rote Schluchten mit Weinprobe.','🚐 Tour','Salta'],
   ['03-25','','SI','arg','sla','Salta Stadt & Puffer','Seilbahn San Bernardo, Museen, Ausruhen vor dem Grenztag.','🚡 Seilbahn · 🚶','Salta'],
@@ -959,7 +960,7 @@ const ROWS = [
   ['04-12','','SIT','peru','cuz','Salkantay Tag 2: Pass 4.630 m','Passüberquerung, Abstieg in den Nebelwald.','🥾 Trekking','Lodge Chaullay'],
   ['04-13','','SIT','peru','cuz','Salkantay Tag 3: Dschungel','Kaffeeplantagen, Hidroeléctrica, Weg nach Aguas Calientes.','🥾 · 🚶','Aguas Calientes'],
   ['04-14','','SIT','peru','cuz','Salkantay Tag 4: Machu Picchu','Morgens Machu Picchu, abends Zug Ollantaytambo und Bus nach Cusco.','🚌 · 🚆','Cusco'],
-  ['04-15','','SIT','peru','lim','Cusco ➔ Lima','Gemeinsamer Flug. Stefan fliegt abends heim, Ines & Tanja bleiben.','✈️ Flug','Lima (Ines, Tanja)'],
+  ['04-15','','SIT','peru','lim','Cusco ➔ Lima','Gemeinsamer Flug. Stefan fliegt abends heim, Ines & Tanja bleiben.','✈️️ Flug','Lima (Ines, Tanja)'],
   ['04-16','05-01','IT','peru,titi','par,ica,nas,aqp,col,pun','Ines + Tanja','Südküste, Arequipa, Colca & Puno · 16.04.–01.05.','🚌 Bus · 🛥️ Boot · ✈️ Kleinflugzeug','Paracas, Ica, Nasca, Arequipa, Chivay, Puno'],
   ['05-02','05-09','ITV','titi,bol','pun,lpb','Ines, Tanja, Verena','Titicacasee & La Paz · 02.05.–09.05.','🚌 Bus · 🛥️ Boot · 🚡 Gondel','Puno, Taquile, La Paz'],
   ['05-10','05-28','IV','bol','uyu,tup,pot,suc,sam,scz','Ines + Verena','Bolivien-Rundreise · 10.05.–28.05.','🚌 Bus · 🚙 4x4 · ✈️ Flug','Uyuni, Tupiza, Potosí, Sucre, Samaipata, Santa Cruz']
@@ -1093,12 +1094,36 @@ function renderCal() {
    5. INTERAKTIVE LEAFLET-KARTE
    ========================================================================== */
 function initMap() {
-  // Tile-Layer-Quellen (Standard OpenStreetMap & TopoMap)
-  const osm = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, attribution: '&copy; OpenStreetMap' });
-  const topo = L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', { maxZoom: 17, attribution: '&copy; OpenTopoMap' });
-  
-  map = L.map('map', { layers: [osm] });
-  L.control.layers({ 'OpenStreetMap': osm, 'OpenTopoMap': topo }, null, { collapsed: true }).addTo(map);
+      const osmDe = L.tileLayer('https://tile.openstreetmap.de/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> (Deutscher Stil)'
+      });
+      const osmMap = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { 
+        maxZoom: 19, 
+        attribution: '&copy; OpenStreetMap' 
+      });
+      const esriStreet = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', {
+        maxZoom: 19,
+        attribution: 'Tiles &copy; Esri'
+      });
+      const topoMap = L.tileLayer('https://{s}.tile-cyclosm.openstreetmap.fr/cyclosm/{z}/{x}/{y}.png', { 
+        maxZoom: 18, 
+        attribution: '&copy; OpenStreetMap / CyclOSM' 
+      });
+      const openTopo = L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
+        maxZoom: 17,
+        attribution: '&copy; OpenTopoMap'
+      });
+
+      map = L.map('map', { layers: [osmDe] });
+
+      L.control.layers({
+        "🇩🇪 OSM Deutsch (Deutsch / Landessprache)": osmDe,
+        "🌏 OSM Standard (NUR Landessprache)": osmMap,
+        "🗺️ Esri Street (Englisch)": esriStreet,
+        "⛰️ Topografisch (CyclOSM)": topoMap,
+        "⛰️ OpenTopoMap (Gelände)": openTopo
+      }, null, { collapsed: true, position: 'topright' }).addTo(map);
   
   // Marker für alle Haltepunkte erzeugen
   KEYS.forEach((k, i) => {
