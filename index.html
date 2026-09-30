@@ -449,12 +449,14 @@ function initMap() {
 
   // Standard OpenStreetMap URL verwendet (verhindert 403-Fehler von OSM.de)
   const baseLayers = {
-    "🌏 OpenStreetMap Standard": createLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', '&copy; OpenStreetMap contributors'),
-    "🗺️️ Esri Street": createLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', 'Tiles &copy; Esri'),
-    "⛰️ Topografisch (CyclOSM)": createLayer('https://{s}.tile-cyclosm.openstreetmap.fr/cyclosm/{z}/{x}/{y}.png', '&copy; OpenStreetMap / CyclOSM', 18)
+    "🇩🇪 OSM Deutsch (Deutsch / Landessprache)": createLayer('https://tile.openstreetmap.de/{z}/{x}/{y}.png', '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> (Deutscher Stil)'),
+    "🌏 OSM Standard (NUR Landessprache)": createLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', '&copy; OpenStreetMap'),
+    "🗺️ Esri Street (Englisch)": createLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', 'Tiles &copy; Esri'),
+    "⛰️ Topografisch (CyclOSM)": createLayer('https://{s}.tile-cyclosm.openstreetmap.fr/cyclosm/{z}/{x}/{y}.png', '&copy; OpenStreetMap / CyclOSM', 18),
+    "⛰️ OpenTopoMap (Gelände)": createLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', '&copy; OpenTopoMap', 17)
   };
 
-  map = L.map('map', { layers: [baseLayers["🌏 OpenStreetMap Standard"]] });
+  map = L.map('map', { layers: [baseLayers["🇩🇪 OSM Deutsch (Deutsch / Landessprache)"]] });
   L.control.layers(baseLayers, null, { collapsed: true, position: 'topright' }).addTo(map);
 
   KEYS.forEach((k, i) => {
