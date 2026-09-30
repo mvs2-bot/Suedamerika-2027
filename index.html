@@ -28,23 +28,23 @@
    ========================================================================== */
 :root {
   /* Farbpalette */
-  --bg: #f4f7f4;         /* Haupthintergrund */
-  --card: #ffffff;       /* Karten- & Boxenhintergrund */
+  --bg: #f4f7f4;          /* Haupthintergrund */
+  --card: #ffffff;        /* Karten- & Boxenhintergrund */
   --hover: #f0fdf4;      /* Hover-Effekt für Tabellenzeilen & Buttons */
-  --line: #cbd5e1;       /* Rahmen- und Trennlinien */
-  --ink: #0f172a;        /* Haupt-Textfarbe (Dunkel) */
-  --text: #334155;       /* Normaler Text */
-  --mute: #64748b;       /* Dezent-grauer Text */
+  --line: #cbd5e1;        /* Rahmen- und Trennlinien */
+  --ink: #0f172a;         /* Haupt-Textfarbe (Dunkel) */
+  --text: #334155;        /* Normaler Text */
+  --mute: #64748b;        /* Dezent-grauer Text */
   
   /* Primärfarben für Reisebereiche */
-  --p1: #15803d;         /* Bereich 1 (Grün) */
-  --p2: #7c3aed;         /* Bereich 2 (Violett) */
+  --p1: #15803d;          /* Bereich 1 (Grün) */
+  --p2: #7c3aed;          /* Bereich 2 (Violett) */
   
   /* Personenspezifische Akzentfarben */
-  --S: #2563eb;          /* Stefan (Blau) */
-  --I: #16a34a;          /* Ines (Grün) */
-  --T: #d97706;          /* Tanja (Orange) */
-  --V: #9333ea;          /* Verena (Violett) */
+  --S: #2563eb;           /* Stefan (Blau) */
+  --I: #16a34a;           /* Ines (Grün) */
+  --T: #d97706;           /* Tanja (Orange) */
+  --V: #9333ea;           /* Verena (Violett) */
   
   /* Radien & Schatten */
   --radius: 12px;
@@ -271,9 +271,12 @@ header p {
    ========================================================================== */
 #map {
   height: 560px;
+  width: 100%;
+  min-height: 300px;
   border-radius: 8px;
   border: 1px solid var(--line);
   overflow: hidden;
+  position: relative;
 }
 
 .box.full #map {
@@ -960,7 +963,7 @@ const ROWS = [
   ['04-12','','SIT','peru','cuz','Salkantay Tag 2: Pass 4.630 m','Passüberquerung, Abstieg in den Nebelwald.','🥾 Trekking','Lodge Chaullay'],
   ['04-13','','SIT','peru','cuz','Salkantay Tag 3: Dschungel','Kaffeeplantagen, Hidroeléctrica, Weg nach Aguas Calientes.','🥾 · 🚶','Aguas Calientes'],
   ['04-14','','SIT','peru','cuz','Salkantay Tag 4: Machu Picchu','Morgens Machu Picchu, abends Zug Ollantaytambo und Bus nach Cusco.','🚌 · 🚆','Cusco'],
-  ['04-15','','SIT','peru','lim','Cusco ➔ Lima','Gemeinsamer Flug. Stefan fliegt abends heim, Ines & Tanja bleiben.','✈️️ Flug','Lima (Ines, Tanja)'],
+  ['04-15','','SIT','peru','lim','Cusco ➔ Lima','Gemeinsamer Flug. Stefan fliegt abends heim, Ines & Tanja bleiben.','✈ Flug','Lima (Ines, Tanja)'],
   ['04-16','05-01','IT','peru,titi','par,ica,nas,aqp,col,pun','Ines + Tanja','Südküste, Arequipa, Colca & Puno · 16.04.–01.05.','🚌 Bus · 🛥️ Boot · ✈️ Kleinflugzeug','Paracas, Ica, Nasca, Arequipa, Chivay, Puno'],
   ['05-02','05-09','ITV','titi,bol','pun,lpb','Ines, Tanja, Verena','Titicacasee & La Paz · 02.05.–09.05.','🚌 Bus · 🛥️ Boot · 🚡 Gondel','Puno, Taquile, La Paz'],
   ['05-10','05-28','IV','bol','uyu,tup,pot,suc,sam,scz','Ines + Verena','Bolivien-Rundreise · 10.05.–28.05.','🚌 Bus · 🚙 4x4 · ✈️ Flug','Uyuni, Tupiza, Potosí, Sucre, Samaipata, Santa Cruz']
@@ -1087,7 +1090,7 @@ function renderCal() {
     
     h += '</div>';
   }
-  CAL_BODY.innerHTML = h;
+  $('#calBody').innerHTML = h;
 }
 
 /* ==========================================================================
@@ -1108,9 +1111,6 @@ function initMap() {
 
   L.control.layers(baseLayers, null, { collapsed: true, position: 'topright' }).addTo(map);
 
-
-
-  
   // Marker für alle Haltepunkte erzeugen
   KEYS.forEach((k, i) => {
     const [name, lat, lng, ph, info] = STOPS[k];
@@ -1167,13 +1167,12 @@ function go(keys) {
 const TAB_BUTTONS = document.querySelectorAll('.tab');
 const PANES = document.querySelectorAll('.pane');
 const PHASE_BUTTONS = document.querySelectorAll('.ph');
-const CAL_BODY = $('#calBody');
 
 // Tab-Wechsel-Logik
 TAB_BUTTONS.forEach(b => b.onclick = () => {
   TAB_BUTTONS.forEach(x => x.classList.toggle('on', x === b));
   PANES.forEach(x => x.classList.toggle('on', x.id === b.dataset.t));
-  if (b.dataset.t === 'route') setTimeout(() => map.invalidateSize(), 100);
+  if (b.dataset.t === 'route' && map) setTimeout(() => map.invalidateSize(), 100);
 });
 
 // Phasen-Wechsel-Buttons
@@ -1222,14 +1221,20 @@ document.addEventListener('keydown', e => {
 /* ==========================================================================
    7. INITIALISIERUNG
    ========================================================================== */
-renderStats();
-renderCal();
-setPhase(1);
-initMap();
+window.addEventListener('DOMContentLoaded', () => {
+  renderStats();
+  renderCal();
+  setPhase(1);
+  initMap();
+  
+  // Sicherstellen, dass Kacheln nach dem DOM-Aufbau korrekt berechnet werden
+  setTimeout(() => {
+    if (map) map.invalidateSize();
+  }, 200);
 
-// Erstes Ausführen des Countdowns + Timer-Intervall auf 1 Sekunde (1000ms) gesetzt
-countdown();
-setInterval(countdown, 1000);
+  countdown();
+  setInterval(countdown, 1000);
+});
 </script>
 </body>
 </html>
