@@ -65,15 +65,15 @@ tr.row{cursor:pointer}tr.row:hover td,.card:hover{background:var(--hover)}
 .cards{display:none;flex-direction:column;gap:8px}
 .card{background:var(--card);border:1px solid var(--line);border-radius:6px;padding:10px;cursor:pointer;font-size:.82rem}
 .cal{border:1px solid var(--line);border-radius:8px;overflow:auto;max-height:540px;background:#fff}
-.cr{display:grid;grid-template-columns:120px repeat(4,1fr);border-bottom:1px solid #f1f5f9;align-items:center;min-width:560px}
+.cr{display:grid;grid-template-columns:60px repeat(4,1fr);border-bottom:1px solid #f1f5f9;align-items:center}
 .cr.we{background:#f1f5f9}.cr.we .cd{color:#dc2626}
 .cr.hd{position:sticky;top:0;background:#e2e8f0;z-index:2;font-weight:800;text-align:center;font-size:.85rem}
-.cr.hd div{padding:9px 6px}
-.cd{padding:4px 10px;font-weight:800;font-size:.78rem;border-right:2px solid var(--line)}
-.cd small{display:block;font-size:.65rem;font-weight:500}
-.cc{padding:3px 6px;height:34px;display:flex}
-.bar{flex:1;border-radius:5px;color:#fff;font-size:.75rem;font-weight:800;display:flex;align-items:center;justify-content:center}
-.bar.fl{background:transparent!important;border:2px dashed;box-shadow:none}
+.cr.hd div{padding:8px 2px;font-size:.75rem}
+.cd{padding:3px 4px;font-weight:800;font-size:.68rem;border-right:2px solid var(--line)}
+.cd small{display:block;font-size:.58rem;font-weight:500}
+.cc{padding:2px 2px;height:28px;display:flex}
+.bar{flex:1;min-width:0;border-radius:4px;color:#fff;font-size:.68rem;font-weight:800;display:flex;align-items:center;justify-content:center}
+.bar.fl{background:transparent!important;border:1.5px dashed;box-shadow:none}
 .note{color:var(--mute);font-size:.85rem;margin:4px 0 10px}
 ul.fl{list-style:none;display:flex;flex-direction:column;gap:8px}
 ul.fl li{background:#f8fafc;border:1px solid var(--line);border-left:4px solid var(--p1);border-radius:6px;padding:8px 12px}
@@ -81,7 +81,19 @@ ul.fl b{display:block;font-size:.75rem;color:var(--p1)}
 ul.fl strong{font-size:.9rem;color:var(--ink)}
 ul.fl span{display:block;font-size:.8rem}
 ul.tips{padding-left:18px;font-size:.85rem;display:flex;flex-direction:column;gap:5px}
-@media(max-width:860px){.tw{display:none}.cards{display:flex}.switch{grid-template-columns:1fr}}
+@media(max-width:860px){
+  .tw{display:none}
+  .cards{display:flex}
+  .switch{grid-template-columns:1fr}
+  /* Anwesenheit: alle 4 Personen gleichzeitig auf dem Handy sichtbar */
+  .cal{width:100%;max-width:100%;overflow-x:hidden}
+  .cr{grid-template-columns:34px repeat(4,minmax(0,1fr))}
+  .cr.hd div{padding:6px 1px;font-size:.62rem;white-space:nowrap;overflow:hidden}
+  .cd{padding:3px 2px;font-size:.58rem}
+  .cd small{font-size:.49rem}
+  .cc{padding:2px 1px;height:25px}
+  .bar{font-size:.58rem;border-radius:3px}
+}
 </style>
 </head>
 <body>
@@ -158,6 +170,7 @@ const dn=md=>Math.round((ts(md)-D0)/864e5)+1;
 const fmt=md=>md.slice(3)+'.'+md.slice(0,2)+'.';
 const wd=md=>new Date(ts(md)).toLocaleDateString('de-DE',{weekday:'short',timeZone:'UTC'});
 const LAST1='04-15';
+const rgHtml=s=>s.split(',').map(k=>`<span class="rg r-${k}">${REG[k]}</span>`).join(' ');
 
 /* Stationen: key -> [Name, lat, lng, Bereich, Kurzinfo] – Nummer = Reihenfolge */
 const STOPS={
@@ -219,29 +232,9 @@ const ROWS=[
 ['04-13','','SIT','peru','cuz','Salkantay Tag 3: Dschungel','Kaffeeplantagen, Hidroeléctrica, Weg nach Aguas Calientes.','🥾 · 🚶','Aguas Calientes'],
 ['04-14','','SIT','peru','cuz','Salkantay Tag 4: Machu Picchu','Morgens Machu Picchu, abends Zug Ollantaytambo und Bus nach Cusco.','🚌 · 🚆','Cusco'],
 ['04-15','','SIT','peru','lim','Cusco ➔ Lima','Gemeinsamer Flug. Stefan fliegt abends heim, Ines & Tanja bleiben.','✈️ Flug','Lima (Ines, Tanja)'],
-['04-16','04-17','IT','peru','par','Paracas & Ballestas-Inseln','Bus ab Lima (ca. 4 Std.), Bootstour zu Seelöwen und Pinguinen.','🚌 · 🛥️','Paracas'],
-['04-18','04-19','IT','peru','ica','Ica & Huacachina','Dünenbuggy, Sandboarding, Oase.','🚌 · 🏎️','Huacachina'],
-['04-20','04-21','IT','peru','nas','Nasca-Linien','Rundflug am frühen Morgen (bessere Sicht).','✈️ Kleinflugzeug','Nasca'],
-['04-22','04-25','IT','peru','aqp','Arequipa','Nachtbus ab Nasca (ca. 9 Std.), Santa Catalina, Vulkane. Auf 2.300 m langsame Anpassung.','🚌 Bus','Arequipa'],
-['04-26','04-29','IT','peru','col','Colca Canyon','Chivay (3.600 m), Kondore am Cruz del Cóndor, Wanderung, Thermen.','🚐 · 🥾','Chivay'],
-['04-30','','IT','titi','pun','Chivay ➔ Puno','Busfahrt über Juliaca (ca. 6 Std.).','🚌 Bus','Puno'],
-['05-01','','IT','titi','pun','Sillustani · Verena fliegt ab','Grabtürme am See. Verena startet heute in Deutschland.','🚐 Tour','Puno'],
-['05-02','','ITV','titi','pun','Verena ist da','Ruhiger Tag auf 3.800 m, kurzer Spaziergang am See.','🚕 Taxi','Puno'],
-['05-03','','ITV','titi','pun','Uros & Taquile','Schilfinseln, Übernachtung bei Familien auf Taquile.','🛥️ Boot','Taquile (Homestay)'],
-['05-04','','ITV','titi','pun','Taquile ➔ Puno','Rückfahrt, Abendessen in Puno.','🛥️ Boot','Puno'],
-['05-05','','ITV','bol','lpb','Puno ➔ La Paz','Ganzer Reisetag via Copacabana, Grenzübergang.','🚌 Bus','La Paz'],
-['05-06','','ITV','bol','lpb','La Paz','Teleférico, Hexenmarkt, Mirador.','🚡 Gondel','La Paz'],
-['05-07','','ITV','bol','lpb','Tiwanaku','Prä-Inka-Ruinen vor der Stadt.','🚐 Tour','La Paz'],
-['05-08','','ITV','bol','lpb','Puffertag La Paz','Valle de la Luna oder Chacaltaya, Einkäufe.','🚐 Tour','La Paz'],
-['05-09','','ITV','bol','lpb','Tanjas Heimflug','Tanja fliegt ab La Paz. Ines & Verena nehmen abends den Nachtbus nach Uyuni.','✈️ · 🚌','Nachtbus (Ines, Verena)'],
-['05-10','','IV','bol','uyu','Ankunft Uyuni','Zugfriedhof, Tour-Vorbereitung.','🚌 Bus','Uyuni'],
-['05-11','05-13','IV','bol','uyu','Salar de Uyuni & Lagunas (3 Tage)','Salzwüste, Isla Incahuasi, Lagunas, Ende in Tupiza.','🚙 4x4','Salzhotel / Hostel'],
-['05-14','','IV','bol','tup','Tupiza Canyons','Rote Felsen, Reitausflug.','🐴 Pferd','Tupiza'],
-['05-15','05-17','IV','bol','pot','Potosí','Cerro Rico, Casa de la Moneda. 4.000 m, langsam machen.','🚌 Bus','Potosí'],
-['05-18','05-22','IV','bol','suc','Sucre','UNESCO-Altstadt, Dinosaurier-Spuren, mildes Klima.','🚌 Bus','Sucre'],
-['05-23','05-25','IV','bol','sam','Samaipata','Flug nach Santa Cruz, weiter nach Samaipata. El Fuerte, Nationalpark Amboró.','✈️ · 🚐','Samaipata'],
-['05-26','05-27','IV','bol','scz','Santa Cruz & Puffertag','Tropisches Tiefland, Packen, Reserve für Verspätungen.','🚐 Colectivo','Santa Cruz'],
-['05-28','','IV','bol','scz','Rückflug','Gemeinsamer Heimflug ab Viru Viru.','✈️ Flug','Im Flugzeug']
+['04-16','05-01','IT','peru,titi','par,ica,nas,aqp,col,pun','Ines + Tanja','Südküste, Arequipa, Colca & Puno · 16.04.–01.05.','🚌 Bus · 🛥️ Boot · ✈️ Kleinflugzeug','Paracas, Ica, Nasca, Arequipa, Chivay, Puno'],
+['05-02','05-09','ITV','titi,bol','pun,lpb','Ines, Tanja, Verena','Titicacasee & La Paz · 02.05.–09.05.','🚌 Bus · 🛥️ Boot · 🚡 Gondel','Puno, Taquile, La Paz'],
+['05-10','05-28','IV','bol','uyu,tup,pot,suc,sam,scz','Ines + Verena','Bolivien-Rundreise · 10.05.–28.05.','🚌 Bus · 🚙 4x4 · ✈️ Flug','Uyuni, Tupiza, Potosí, Sucre, Samaipata, Santa Cruz']
 ];
 
 /* ---------- Zustand ---------- */
@@ -271,22 +264,22 @@ function render(){
   const q=$('#q').value.toLowerCase();
   const list=ROWS.filter(r=>{
     if((r[0]<=LAST1?1:2)!==phase)return false;
-    if(region!=='all'&&r[3]!==region)return false;
+    if(region!=='all'&&!r[3].split(',').includes(region))return false;
     return !q||r.join(' ').toLowerCase().includes(q);
   });
   $('#tb').innerHTML=list.map(r=>`<tr class="row ${phase===2?'two-c':''}" tabindex="0" data-s="${r[4]}">
     <td><span class="dn">${dayLabel(r[0],r[1])}</span><div class="dt">${dateLabel(r[0],r[1])}</div>${whoHtml(r[2])}</td>
-    <td><span class="rg r-${r[3]}">${REG[r[3]]}</span></td>
+    <td>${rgHtml(r[3])}</td>
     <td class="tt">${r[5]}</td><td>${r[6]}</td>
     <td><span class="pill">${r[7]}</span></td><td><span class="pill">🏨 ${r[8]}</span></td></tr>`).join('')
     ||'<tr><td colspan="6">Keine Treffer.</td></tr>';
   $('#cards').innerHTML=list.map(r=>`<div class="card ${phase===2?'two-c':''}" tabindex="0" data-s="${r[4]}">
-    <div style="display:flex;justify-content:space-between;gap:6px;align-items:flex-start"><div><span class="dn">${dayLabel(r[0],r[1])}</span><div class="dt">${dateLabel(r[0],r[1])}</div>${whoHtml(r[2])}</div><span class="rg r-${r[3]}">${REG[r[3]]}</span></div>
+    <div style="display:flex;justify-content:space-between;gap:6px;align-items:flex-start"><div><span class="dn">${dayLabel(r[0],r[1])}</span><div class="dt">${dateLabel(r[0],r[1])}</div>${whoHtml(r[2])}</div><span>${rgHtml(r[3])}</span></div>
     <div class="tt" style="margin:6px 0 2px;color:var(--ink)">${r[5]}</div><div style="margin-bottom:6px">${r[6]}</div>
     <span class="pill">${r[7]}</span> <span class="pill">🏨 ${r[8]}</span></div>`).join('');
 }
 function renderFilters(){
-  const regs=[...new Set(ROWS.filter(r=>(r[0]<=LAST1?1:2)===phase).map(r=>r[3]))];
+  const regs=[...new Set(ROWS.filter(r=>(r[0]<=LAST1?1:2)===phase).flatMap(r=>r[3].split(',')))];
   $('#filters').innerHTML=['all',...regs].map(k=>`<button class="f ${k===region?'on':''}" data-r="${k}">${k==='all'?'Alle':REG[k]}</button>`).join('');
 }
 function setPhase(p){
@@ -333,13 +326,24 @@ function initMap(){
   L.polyline(r1.map(pts),{color:'#15803d',weight:4,opacity:.9}).addTo(map);
   L.polyline(r2.map(pts),{color:'#7c3aed',weight:3.5,opacity:.9,dashArray:'8,6'}).addTo(map);
   const lg=L.control({position:'bottomright'});
-  lg.onAdd=()=>{const d=L.DomUtil.create('div','legend');d.innerHTML='<b>Legende</b><br><span style="color:#15803d">━</span> Bereich 1 (#1–#8)<br><span style="color:#7c3aed">┅</span> Bereich 2 (#9–#'+KEYS.length+')';return d};
+  lg.onAdd=()=>{const d=L.DomUtil.create('div','legend');
+    d.innerHTML='<div class="lh" style="cursor:pointer;font-weight:800" aria-expanded="false">📌 Legende <span>▼</span></div><div class="lb" style="display:none"><span style="color:#15803d">━</span> Bereich 1 (#1–#8)<br><span style="color:#7c3aed">┅</span> Bereich 2 (#9–#'+KEYS.length+')</div>';
+    L.DomEvent.disableClickPropagation(d);
+    d.querySelector('.lh').onclick=()=>{
+  const b=d.querySelector('.lb'),h=d.querySelector('.lh'),o=b.style.display==='none';
+  b.style.display=o?'block':'none';
+  h.setAttribute('aria-expanded',o?'true':'false');
+  d.querySelector('span').textContent=o?'▲':'▼';
+};
+    return d};
   lg.addTo(map);
   map.fitBounds([[-34.5,-78],[-12,-62]],{padding:[20,20]});
 }
-function go(key){
-  const m=markers[key];if(!m)return;
-  map.flyTo(m.getLatLng(),7,{duration:1});m.openPopup();
+function go(keys){
+  const ms=keys.split(',').map(k=>markers[k]).filter(Boolean);
+  if(!ms.length)return;
+  if(ms.length===1){map.flyTo(ms[0].getLatLng(),7,{duration:1});ms[0].openPopup()}
+  else map.flyToBounds(L.latLngBounds(ms.map(m=>m.getLatLng())),{padding:[40,40],duration:1});
   $('#mapBox').scrollIntoView({behavior:'smooth'});
 }
 
